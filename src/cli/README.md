@@ -2,145 +2,129 @@
 
 > Find what's burning a hole in your AI coding budget.
 
-`burnd` is a local-first cost-control tool for [Claude Code](https://www.anthropic.com/claude-code) power users. It reads your `~/.claude/projects/*.jsonl` session files and tells you exactly where your spend is leaking — and how to plug the leaks.
+**Burnd** is a local-first cost-control tool for [Claude Code](https://www.anthropic.com/claude-code) power users. It reads your `~/.claude/projects/*.jsonl` session files and finds 8 patterns that waste tokens, with dollar values and concrete fixes.
 
-**Status:** v0.0.1, in development. Building toward launch end of July 2026.
+Built by [Garvit Surana](https://burnd.dev) — 16, Class 12 ISC, Guwahati, India — after spending $13,631 on Claude Code in six months.
 
-## What it does
+---
 
-```
-$ npx burnd
+## Install & run
 
-  burnd — find what's burning a hole in your AI coding budget
-  ─────────────────────────────────────────────────────────────
-
-  Scanned: 210 session files across 210 sessions
-  All-time spend: $312.45
-  Last 7 days:    $47.10
-  Potential savings (top leaks): $18.30
-
-  Top leaks (sorted by estimated savings):
-
-  1. Bash output is bloating context — wasting ~$8.40
-     $8.40  (~5 min to fix)
-     In this session, Bash was called 47 times with an average output of
-     12,400 bytes per call. Most of those bytes are getting fed back into
-     Claude's context on the next turn, which costs you tokens. Piping
-     commands through 'head', 'tail', or 'grep' would cut the average to
-     ~1,000 bytes and save approximately $8.40 of token spend on this
-     session alone.
-
-  2. Re-reading the same files — wasting ~$5.20
-     ...
-
-  3. Tool error storm — 38% of calls failed, wasting ~$4.70
-     ...
-
-  ─────────────────────────────────────────────────────────────
-  See the full dashboard at https://burnd.dev
+```bash
+npx burnd
 ```
 
-## How it works
+That's it. It scans your session files and prints the top 3 leaks to your terminal with dollar values and fixes. Free, MIT, open source. **Nothing leaves your machine.**
 
-`burnd` is built in 6 layers, each with one responsibility:
+For the full web dashboard:
 
-```
-┌────────────────┐
-│  walker.ts     │  Walks ~/.claude/projects/ recursively, yields .jsonl files
-└───────┬────────┘
-        ▼
-┌────────────────┐
-│  parser.ts     │  Streams each .jsonl file line-by-line, never loads whole files
-└───────┬────────┘
-        ▼
-┌────────────────┐
-│  session.ts    │  Aggregates parsed records into one SessionStats per file
-└───────┬────────┘
-        ▼
-┌────────────────┐
-│  pricing.ts    │  Computes USD cost per record using the Anthropic rate table
-└───────┬────────┘
-        ▼
-┌────────────────────────┐
-│  detectors/*.ts        │  Pattern detectors that find leaks (one file per detector)
-└───────┬────────────────┘
-        ▼
-┌────────────────┐
-│  insights.ts   │  Ranks detector output by estimated savings
-└───────┬────────┘
-        ▼
-┌────────────────┐
-│  output.ts     │  Pretty terminal printing — the "wow" moment
-└────────────────┘
+```bash
+npx burnd serve
 ```
 
-The `anonymize.ts` module is a separate boundary that takes parsed records and produces upload-safe payloads (used by `--dry-run` and the eventual cloud sync).
+Then open `http://localhost:4711` in your browser. Insights, Overview with 60-day spend chart, Projects, Tools, Sessions — all 5 views, all from your local data.
+
+## What it finds
+
+Burnd runs 8 leak detectors on your Claude Code session history:
+
+| Detector | What it finds |
+|---|---|
+| **Long Bash output** | Test runners / builds dumping 10k+ bytes into context |
+| **Repeated reads** | Same file read 3+ times in one session |
+| **Tool error storms** | Agent thrashing on broken environments |
+| **Tool overuse** | One tool dominating 70%+ of calls (usually Bash) |
+| **Late-night coding** | 00:00-05:00 sessions cost 2.5× more per session |
+| **API retry storms** | Hidden in system records, invisible from the UI |
+| **Skill firing** | Skills with broad triggers eating 40%+ of tool calls |
+| **Project cost outliers** | Projects costing 3× more per session than your average |
+
+Every insight has a dollar value, an effort estimate, and step-by-step fix instructions.
+
+## CLI
+
+```
+Usage:
+  npx burnd [scan]                 Scan ~/.claude/projects/, print top leaks
+  npx burnd serve                  Start the local web dashboard at localhost:4711
+
+Scan options:
+  --top <n>                        Print top N insights (default: 3)
+  --root <path>                    Use a custom Claude projects root
+  --dry-run                        Show the anonymized upload payload (no upload)
+
+Serve options:
+  --port <n>                       Dashboard port (default: 4711)
+  --root <path>                    Use a custom Claude projects root
+
+Misc:
+  --version, -v                    Print version
+  --help, -h                       Show this help
+```
 
 ## Privacy
 
-`burnd` is **local-first**. The CLI runs entirely on your machine and reads your session files locally. **It never uploads your code, prompts, file contents, or tool outputs.** When you opt into the optional cloud sync (Week 4+), only anonymized aggregates are uploaded — token counts, tool names, byte sizes, hashed project paths.
+Burnd is **local-first by default**. The CLI runs entirely on your machine. It reads your session files, computes the leaks, and serves a dashboard from a localhost HTTP server. **Zero data leaves your machine.**
 
-The full anonymization rules are documented in [`notes/anonymization.md`](../../notes/anonymization.md). Run `npx burnd --dry-run` to see exactly what would be uploaded for your data.
+- Never uploaded: code, prompts, file contents, tool outputs, file paths, git branches, AI-generated session titles
+- Parser source is public (this repo) — audit it yourself
+- CI tests assert no fake-secret markers leak through anonymization
+- Full anonymization spec: [notes/anonymization.md](https://github.com/garvitsurana271/burnd/blob/main/notes/anonymization.md)
 
-The CI test suite includes a load-bearing privacy test (`__tests__/secret-leak.test.ts`) that asserts no fake-secret markers leak through the anonymization pipeline. This test runs on every commit.
+The future cloud sync tier (for cross-device dashboards, weekly email reports) is explicitly opt-in and does not exist in v1.
 
-## Development
+## The ebook
 
-```bash
-# Install dependencies
-npm install
+If you want the full story behind each detector — with real data, real dollar values from my own $13k of spend, and tested fixes — there's a companion ebook called **Burning Tokens**. 7,400 words, 11 chapters.
 
-# Run the CLI in dev mode (uses tsx, no build needed)
-npm run dev
+**Price:** ₹399 (~$4.50 USD) via UPI for Indian buyers, email for international payment.
 
-# Run tests
-npm test
-
-# Type-check
-npm run typecheck
-
-# Build for distribution
-npm run build
-```
+**Get it:** [burnd.dev#ebook](https://burnd.dev#ebook)
 
 ## Project layout
 
 ```
 src/
-├── types.ts             — TypeScript types matching the Claude Code JSONL schema
-├── parser.ts            — streaming JSONL line-by-line parser
-├── walker.ts            — recursive walk of ~/.claude/projects/
-├── session.ts           — per-file SessionStats aggregator
-├── pricing.ts           — Anthropic rate table + cost formula
-├── anonymize.ts         — privacy boundary for upload payloads
-├── insights.ts          — insight ranking + top-N
-├── output.ts            — terminal output formatting
-├── index.ts             — CLI entry point
+├── types.ts             TypeScript types matching the Claude Code JSONL schema
+├── parser.ts            Streaming JSONL line-by-line parser
+├── walker.ts            Recursive walk of ~/.claude/projects/
+├── session.ts           Per-file SessionStats aggregator
+├── pricing.ts           Anthropic rate table + cost formula (verify before launch)
+├── anonymize.ts         Privacy boundary for upload payloads
+├── snapshot.ts          JSON contract the dashboard consumes
+├── serve.ts             Local HTTP server (Node built-in, zero deps)
+├── insights.ts          Insight ranking + top-N
+├── output.ts            Terminal output formatting (kleur)
+├── index.ts             CLI entry point
 └── detectors/
-    ├── types.ts         — Detector interface + Insight type
     ├── long-bash-output.ts
     ├── repeated-read.ts
     ├── thrash.ts
     ├── tool-overuse.ts
-    └── index.ts         — registry + runner
-
-__tests__/
-├── fixtures/
-│   ├── minimal-session.jsonl
-│   ├── synthetic-records.jsonl
-│   ├── tool-heavy-session.jsonl
-│   └── secret-leak.jsonl    — fake-secret markers for the privacy CI gate
-├── parser.test.ts
-├── pricing.test.ts
-├── anonymize.test.ts
-├── detectors.test.ts
-└── secret-leak.test.ts      — LOAD-BEARING privacy test
+    ├── tired-coding.ts
+    ├── retry-storm.ts
+    ├── skill-firing.ts
+    └── project-cost-outlier.ts
 ```
+
+The dashboard source is at [`src/web/`](https://github.com/garvitsurana271/burnd/tree/main/src/web) — React 18 + Vite + Tailwind + AXIS color palette.
+
+## Contributing
+
+If you find a pattern in your own Claude Code data that Burnd doesn't catch, open an issue or a pull request. Every new detector is a 50-line TypeScript file implementing the `Detector` interface. Look at `src/detectors/long-bash-output.ts` for the simplest example.
+
+If you find a bug — especially a correctness bug in the cost calculation — please open an issue. Attach sample anonymized data if you can. I reply to everything.
 
 ## License
 
-MIT — see [LICENSE](../../LICENSE).
+MIT — do whatever you want, just don't sue me.
 
-## Built by
+## Links
 
-[@garvitonpc](https://instagram.com/garvitonpc) — 16, Class 12 ISC, Guwahati, India.
+- **Landing page:** https://burnd.dev
+- **GitHub:** https://github.com/garvitsurana271/burnd
+- **npm:** https://www.npmjs.com/package/burnd
+- **Anonymization spec:** https://github.com/garvitsurana271/burnd/blob/main/notes/anonymization.md
+- **JSONL format study:** https://github.com/garvitsurana271/burnd/blob/main/notes/jsonl-format.md
+- **Ebook:** https://burnd.dev#ebook
+- **Built by:** [Garvit Surana](https://github.com/garvitsurana271), garvitsurana10@gmail.com

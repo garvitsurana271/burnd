@@ -8,25 +8,41 @@
     "anthropic",
     "ai",
     "cost",
+    "cost-analysis",
+    "cost-optimization",
     "analytics",
     "developer-tools",
-    "cli"
+    "cli",
+    "local-first"
   ],
   "homepage": "https://burnd.dev",
-  "bugs": "https://github.com/garvitonpc/burnd/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/garvitsurana271/burnd.git",
+    "directory": "src/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/garvitsurana271/burnd/issues"
+  },
   "license": "MIT",
-  "author": "Garvit Surana <garvitsurana10@gmail.com>",
+  "author": {
+    "name": "Garvit Surana",
+    "email": "garvitsurana10@gmail.com",
+    "url": "https://burnd.dev"
+  },
   "type": "module",
   "bin": {
     "burnd": "./dist/index.js"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node -e \"require('fs').chmodSync('./dist/index.js', 0o755)\"",
     "dev": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -44,5 +60,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
