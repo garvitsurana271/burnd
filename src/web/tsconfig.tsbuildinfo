@@ -1,1 +1,0 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/components/card.tsx","./src/components/layout.tsx","./src/components/pageheader.tsx","./src/lib/format.ts","./src/lib/snapshot.ts","./src/pages/insightspage.tsx","./src/pages/overviewpage.tsx","./src/pages/projectspage.tsx","./src/pages/sessionspage.tsx","./src/pages/toolspage.tsx"],"errors":true,"version":"5.9.3"}

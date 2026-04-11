@@ -87,6 +87,14 @@ export interface SnapshotTotalsView {
   potentialSavingsUsd: number;
 }
 
+export interface DailySpendBucketView {
+  date: string;
+  totalCostUsd: number;
+  sessionCount: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+}
+
 export interface SnapshotView {
   meta: SnapshotMetaView;
   totals: SnapshotTotalsView;
@@ -94,6 +102,7 @@ export interface SnapshotView {
   projects: ProjectView[];
   tools: ToolGlobalView[];
   insights: InsightView[];
+  dailySpend: DailySpendBucketView[];
 }
 
 // Fetch the latest snapshot from the local burnd serve API.

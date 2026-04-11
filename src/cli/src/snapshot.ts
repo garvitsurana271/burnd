@@ -92,6 +92,15 @@ export interface SnapshotTotals {
   potentialSavingsUsd: number;
 }
 
+export interface DailySpendBucket {
+  // YYYY-MM-DD UTC date string.
+  date: string;
+  totalCostUsd: number;
+  sessionCount: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+}
+
 export interface Snapshot {
   meta: SnapshotMeta;
   totals: SnapshotTotals;
@@ -99,6 +108,9 @@ export interface Snapshot {
   projects: SnapshotProject[];
   tools: SnapshotToolGlobal[];
   insights: Insight[];
+  // Daily spend buckets for the last 60 days, oldest first. Used by the
+  // dashboard's Overview chart.
+  dailySpend: DailySpendBucket[];
 }
 
 // Build a Snapshot from a list of SessionStats. Pure function — no I/O.
@@ -218,6 +230,35 @@ export function buildSnapshot(
     potentialSavingsUsd: allInsights.reduce((acc, i) => acc + i.savingsEstimateUsd, 0),
   };
 
+  // Daily spend buckets for the last 60 days. We pre-fill empty days
+  // (zero spend) so the chart shows continuous time, not gaps.
+  const DAYS = 60;
+  const dailyMap = new Map<string, DailySpendBucket>();
+  const today = new Date(now);
+  today.setUTCHours(0, 0, 0, 0);
+  for (let i = DAYS - 1; i >= 0; i--) {
+    const d = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+    const key = d.toISOString().slice(0, 10);
+    dailyMap.set(key, {
+      date: key,
+      totalCostUsd: 0,
+      sessionCount: 0,
+      totalInputTokens: 0,
+      totalOutputTokens: 0,
+    });
+  }
+  for (const s of allStats) {
+    if (!s.startedAt) continue;
+    const dateKey = s.startedAt.slice(0, 10);
+    const bucket = dailyMap.get(dateKey);
+    if (!bucket) continue; // older than 60 days, skip
+    bucket.totalCostUsd += s.totalCostUsd;
+    bucket.sessionCount += 1;
+    bucket.totalInputTokens += s.totalInputTokens;
+    bucket.totalOutputTokens += s.totalOutputTokens;
+  }
+  const dailySpend = [...dailyMap.values()].sort((a, b) => a.date.localeCompare(b.date));
+
   return {
     meta: {
       generatedAt: now.toISOString(),
@@ -232,6 +273,7 @@ export function buildSnapshot(
     projects: [...projectMap.values()].sort((a, b) => b.totalCostUsd - a.totalCostUsd),
     tools: [...toolMap.values()].sort((a, b) => b.totalCalls - a.totalCalls),
     insights: allInsights.sort((a, b) => b.savingsEstimateUsd - a.savingsEstimateUsd),
+    dailySpend,
   };
 }
 

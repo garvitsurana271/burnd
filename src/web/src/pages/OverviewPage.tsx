@@ -1,5 +1,6 @@
 import { PageHeader } from '../components/PageHeader.js';
-import { StatCard } from '../components/Card.js';
+import { Card, StatCard } from '../components/Card.js';
+import { SpendChart } from '../components/SpendChart.js';
 import type { SnapshotView } from '../lib/snapshot.js';
 import { formatUsd, formatTokens } from '../lib/format.js';
 
@@ -26,6 +27,17 @@ export function OverviewPage({ snapshot }: OverviewPageProps): JSX.Element {
           tone="warning"
           hint="if you applied every insight"
         />
+      </div>
+      <div className="mt-6">
+        <Card>
+          <div className="mb-4 flex items-baseline justify-between">
+            <div className="font-mono text-[11px] uppercase tracking-wider text-axis-textMuted">
+              Daily spend (last 60 days)
+            </div>
+            <div className="font-mono text-[11px] text-axis-textDim">USD per day</div>
+          </div>
+          <SpendChart data={snapshot.dailySpend} />
+        </Card>
       </div>
       <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
         <StatCard label="Sessions" value={t.totalSessions.toLocaleString()} />
