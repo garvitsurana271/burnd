@@ -1,0 +1,144 @@
+#!/usr/bin/env node
+// burnd — CLI entry point.
+//
+// Usage:
+//   npx burnd                  Scan ~/.claude/projects/, print top leaks.
+//   npx burnd --root <path>    Use a custom Claude projects root directory.
+//   npx burnd --top <n>        Print top N insights instead of the default 3.
+//   npx burnd --dry-run        Print the upload payload (anonymized) instead
+//                              of insights. Used to verify what would be
+//                              uploaded — never actually uploads.
+//   npx burnd --version        Print version and exit.
+//   npx burnd --help           Print help and exit.
+
+import { walkJsonlFiles, defaultClaudeProjectsRoot } from './walker.js';
+import type { JsonlFile } from './walker.js';
+import { streamRecords, type ParseStats } from './parser.js';
+import { newEmptyStats, ingestRecord, type SessionStats } from './session.js';
+import { runAllDetectors } from './detectors/index.js';
+import { topNBySavings, totalSavingsUsd } from './insights.js';
+import { printHeader, printOverview, printTopInsights, printFooter } from './output.js';
+import { anonymize } from './anonymize.js';
+import { basename } from 'node:path';
+
+const VERSION = '0.0.1';
+
+interface CliOptions {
+  root: string;
+  top: number;
+  dryRun: boolean;
+  printVersion: boolean;
+  printHelp: boolean;
+}
+
+function parseArgs(argv: string[]): CliOptions {
+  const opts: CliOptions = {
+    root: defaultClaudeProjectsRoot(),
+    top: 3,
+    dryRun: false,
+    printVersion: false,
+    printHelp: false,
+  };
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === '--version' || arg === '-v') opts.printVersion = true;
+    else if (arg === '--help' || arg === '-h') opts.printHelp = true;
+    else if (arg === '--dry-run') opts.dryRun = true;
+    else if (arg === '--root') opts.root = argv[++i] ?? opts.root;
+    else if (arg === '--top') opts.top = Number(argv[++i] ?? '3');
+  }
+  return opts;
+}
+
+function printHelp(): void {
+  process.stdout.write(`
+burnd ${VERSION} — find what's burning a hole in your AI coding budget
+
+Usage:
+  npx burnd                  Scan ~/.claude/projects/, print top leaks
+  npx burnd --top <n>        Print top N insights (default: 3)
+  npx burnd --root <path>    Use a custom Claude projects root
+  npx burnd --dry-run        Show the anonymized upload payload (no upload)
+  npx burnd --version        Print version
+  npx burnd --help           Show this help
+
+Burnd reads your local Claude Code session files and finds the leaks in your
+AI spend. We never see your code — only aggregates. Source code for the
+parser is at https://github.com/garvitonpc/burnd
+
+`);
+}
+
+async function main(): Promise<void> {
+  const opts = parseArgs(process.argv.slice(2));
+
+  if (opts.printVersion) {
+    process.stdout.write(`burnd ${VERSION}\n`);
+    return;
+  }
+  if (opts.printHelp) {
+    printHelp();
+    return;
+  }
+
+  const allStats: SessionStats[] = [];
+  const allFiles: JsonlFile[] = [];
+  const parseStats: ParseStats = {
+    recordsTotal: 0,
+    recordsParsed: 0,
+    recordsSkipped: 0,
+    bytesRead: 0,
+  };
+
+  for await (const file of walkJsonlFiles(opts.root)) {
+    allFiles.push(file);
+    const sessionId = basename(file.absPath, '.jsonl');
+    const stats = newEmptyStats(sessionId, file.absPath, file.projectDir, file.isSubagent);
+    for await (const record of streamRecords(file.absPath, parseStats)) {
+      ingestRecord(stats, record);
+      if (opts.dryRun) {
+        const anon = anonymize(record);
+        if (anon !== null) process.stdout.write(JSON.stringify(anon) + '\n');
+      }
+    }
+    allStats.push(stats);
+  }
+
+  // Dry-run mode is purely for piping to jq/grep — no human output.
+  if (opts.dryRun) return;
+
+  if (allFiles.length === 0) {
+    printHeader();
+    process.stdout.write(`  No Claude Code session files found at ${opts.root}\n`);
+    process.stdout.write(`  Have you run Claude Code yet? If you use a non-default location,\n`);
+    process.stdout.write(`  pass --root <path> to point burnd at it.\n\n`);
+    return;
+  }
+
+  // Aggregate insights across all sessions.
+  const allInsights = allStats.flatMap(runAllDetectors);
+  const top = topNBySavings(allInsights, opts.top);
+
+  // Compute the overview totals.
+  const totalCostUsdAllTime = allStats.reduce((acc, s) => acc + s.totalCostUsd, 0);
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const totalCostUsdLast7Days = allStats
+    .filter((s) => (s.startedAt ?? '') >= sevenDaysAgo)
+    .reduce((acc, s) => acc + s.totalCostUsd, 0);
+
+  printHeader();
+  printOverview({
+    filesScanned: allFiles.length,
+    sessionsScanned: allStats.length,
+    totalCostUsdAllTime,
+    totalCostUsdLast7Days,
+    totalSavingsAvailableUsd: totalSavingsUsd(top),
+  });
+  printTopInsights(top);
+  printFooter('https://burnd.dev');
+}
+
+main().catch((err: unknown) => {
+  process.stderr.write(`burnd: error: ${(err as Error).message ?? String(err)}\n`);
+  process.exit(1);
+});
