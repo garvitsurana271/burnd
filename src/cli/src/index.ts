@@ -15,7 +15,7 @@ import { walkJsonlFiles, defaultClaudeProjectsRoot } from './walker.js';
 import type { JsonlFile } from './walker.js';
 import { streamRecords, type ParseStats } from './parser.js';
 import { newEmptyStats, ingestRecord, type SessionStats } from './session.js';
-import { runAllDetectors } from './detectors/index.js';
+import { runAllDetectors, runAllMultiSessionDetectors } from './detectors/index.js';
 import { topNBySavings, totalSavingsUsd } from './insights.js';
 import { printHeader, printOverview, printTopInsights, printFooter } from './output.js';
 import { anonymize } from './anonymize.js';
@@ -115,8 +115,10 @@ async function main(): Promise<void> {
     return;
   }
 
-  // Aggregate insights across all sessions.
-  const allInsights = allStats.flatMap(runAllDetectors);
+  // Aggregate insights across all sessions: per-session detectors + cross-session detectors.
+  const perSessionInsights = allStats.flatMap(runAllDetectors);
+  const multiSessionInsights = runAllMultiSessionDetectors(allStats);
+  const allInsights = [...perSessionInsights, ...multiSessionInsights];
   const top = topNBySavings(allInsights, opts.top);
 
   // Compute the overview totals.

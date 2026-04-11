@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { newEmptyStats, ingestRecord } from '../src/session.js';
-import { runAllDetectors, ALL_DETECTORS } from '../src/detectors/index.js';
+import {
+  runAllDetectors,
+  runAllMultiSessionDetectors,
+  ALL_DETECTORS,
+  MULTI_SESSION_DETECTORS,
+} from '../src/detectors/index.js';
 import { rankBySavings, topNBySavings } from '../src/insights.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -111,6 +116,125 @@ describe('repeated-read detector', () => {
     expect(reread.length).toBe(1);
   });
 });
+
+describe('tired-coding detector', () => {
+  it('fires for late-night sessions', () => {
+    const stats = newEmptyStats('tired-001', '/tmp/t.jsonl', 'demo', false);
+    stats.startedAt = '2026-04-01T02:30:00.000Z'; // 2:30 AM UTC = late
+    stats.totalCostUsd = 5;
+    const insights = runAllDetectors(stats);
+    const tired = insights.filter((i) => i.detectorId === 'tired-coding');
+    expect(tired.length).toBe(1);
+  });
+
+  it('does not fire for daytime sessions', () => {
+    const stats = newEmptyStats('day-001', '/tmp/d.jsonl', 'demo', false);
+    stats.startedAt = '2026-04-01T14:00:00.000Z'; // 2 PM UTC = daytime
+    stats.totalCostUsd = 5;
+    const insights = runAllDetectors(stats);
+    const tired = insights.filter((i) => i.detectorId === 'tired-coding');
+    expect(tired.length).toBe(0);
+  });
+});
+
+describe('retry-storm detector', () => {
+  it('fires when there are 5+ retries', () => {
+    const stats = newEmptyStats('retry-001', '/tmp/r.jsonl', 'demo', false);
+    stats.apiErrorCount = 8;
+    stats.apiRetryCount = 8;
+    const insights = runAllDetectors(stats);
+    const storm = insights.filter((i) => i.detectorId === 'retry-storm');
+    expect(storm.length).toBe(1);
+  });
+
+  it('does not fire when retries are below threshold', () => {
+    const stats = newEmptyStats('retry-002', '/tmp/r.jsonl', 'demo', false);
+    stats.apiErrorCount = 2;
+    stats.apiRetryCount = 2;
+    const insights = runAllDetectors(stats);
+    const storm = insights.filter((i) => i.detectorId === 'retry-storm');
+    expect(storm.length).toBe(0);
+  });
+});
+
+describe('skill-firing detector', () => {
+  it('fires when Skill dominates the tool mix', () => {
+    const stats = newEmptyStats('skill-001', '/tmp/s.jsonl', 'demo', false);
+    stats.toolStats.set('Skill', { callCount: 10, totalOutputBytes: 100, errorCount: 0 });
+    stats.toolStats.set('Bash', { callCount: 5, totalOutputBytes: 100, errorCount: 0 });
+    stats.totalCostUsd = 5;
+    const insights = runAllDetectors(stats);
+    const skill = insights.filter((i) => i.detectorId === 'skill-firing');
+    expect(skill.length).toBe(1);
+  });
+
+  it('does not fire when Skill is occasional', () => {
+    const stats = newEmptyStats('skill-002', '/tmp/s.jsonl', 'demo', false);
+    stats.toolStats.set('Skill', { callCount: 2, totalOutputBytes: 100, errorCount: 0 });
+    stats.toolStats.set('Bash', { callCount: 50, totalOutputBytes: 100, errorCount: 0 });
+    stats.totalCostUsd = 5;
+    const insights = runAllDetectors(stats);
+    const skill = insights.filter((i) => i.detectorId === 'skill-firing');
+    expect(skill.length).toBe(0);
+  });
+});
+
+describe('project-cost-outlier detector (multi-session)', () => {
+  it('fires when one project has a much higher median than the user average', () => {
+    const allStats = [
+      // Lots of cheap sessions in 3 projects (so the overall median stays low)
+      makeStats('a1', 'project-a', 0.5),
+      makeStats('a2', 'project-a', 0.6),
+      makeStats('a3', 'project-a', 0.7),
+      makeStats('a4', 'project-a', 0.8),
+      makeStats('a5', 'project-a', 1.0),
+      makeStats('c1', 'project-c', 0.5),
+      makeStats('c2', 'project-c', 0.6),
+      makeStats('c3', 'project-c', 0.7),
+      makeStats('d1', 'project-d', 0.4),
+      makeStats('d2', 'project-d', 0.5),
+      makeStats('d3', 'project-d', 0.6),
+      // Project B: 5 sessions massively above the overall median
+      makeStats('b1', 'project-b', 30),
+      makeStats('b2', 'project-b', 40),
+      makeStats('b3', 'project-b', 50),
+      makeStats('b4', 'project-b', 60),
+      makeStats('b5', 'project-b', 70),
+    ];
+    const insights = runAllMultiSessionDetectors(allStats);
+    const outliers = insights.filter((i) => i.detectorId === 'project-cost-outlier');
+    expect(outliers.length).toBeGreaterThanOrEqual(1);
+    // The outlier should be project-b, not project-a.
+    expect(outliers.some((i) => i.projectDir === 'project-b')).toBe(true);
+    expect(outliers.every((i) => i.projectDir !== 'project-a')).toBe(true);
+  });
+
+  it('does not fire when all projects have similar cost', () => {
+    const allStats = [
+      makeStats('x1', 'project-x', 1),
+      makeStats('x2', 'project-x', 1.1),
+      makeStats('x3', 'project-x', 0.9),
+      makeStats('y1', 'project-y', 1.05),
+      makeStats('y2', 'project-y', 0.95),
+      makeStats('y3', 'project-y', 1),
+    ];
+    const insights = runAllMultiSessionDetectors(allStats);
+    const outliers = insights.filter((i) => i.detectorId === 'project-cost-outlier');
+    expect(outliers.length).toBe(0);
+  });
+});
+
+describe('multi-session detector registry', () => {
+  it('exposes a non-empty list', () => {
+    expect(MULTI_SESSION_DETECTORS.length).toBeGreaterThan(0);
+  });
+});
+
+function makeStats(sessionId: string, projectDir: string, cost: number) {
+  const s = newEmptyStats(sessionId, `/tmp/${sessionId}.jsonl`, projectDir, false);
+  s.totalCostUsd = cost;
+  return s;
+}
 
 describe('insights ranking', () => {
   it('ranks insights by savings descending', () => {
