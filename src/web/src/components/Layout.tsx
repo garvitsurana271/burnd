@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   Flame,
@@ -8,9 +8,13 @@ import {
   Wrench,
   ScrollText,
   RefreshCw,
+  Menu,
+  X,
 } from 'lucide-react';
 import type { SnapshotView } from '../lib/snapshot.js';
 import { formatUsd, formatRelativeTime } from '../lib/format.js';
+import { Skeleton } from './Skeleton.js';
+import { ErrorState } from './ErrorState.js';
 
 interface LayoutProps {
   snapshot: SnapshotView | null;
@@ -35,10 +39,31 @@ export function Layout({
   onRefresh,
   children,
 }: LayoutProps): JSX.Element {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
   return (
     <div className="flex h-full min-h-screen bg-axis-bg text-axis-text">
-      {/* Sidebar */}
-      <aside className="flex w-60 flex-col border-r border-axis-border bg-axis-surface">
+      {/* Mobile top bar — hidden on md and up */}
+      <div className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-axis-border bg-axis-surface px-4 py-3 md:hidden">
+        <NavLink to="/" className="flex items-center gap-2">
+          <Flame className="h-5 w-5 text-axis-accent" strokeWidth={2.5} />
+          <span className="font-mono text-sm font-semibold tracking-tight">burnd</span>
+        </NavLink>
+        <button
+          onClick={() => setMobileNavOpen(!mobileNavOpen)}
+          className="rounded-md p-1.5 text-axis-textMuted hover:bg-axis-muted hover:text-axis-text"
+          aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
+        >
+          {mobileNavOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
+
+      {/* Sidebar — hidden on mobile unless mobileNavOpen, always visible on md+ */}
+      <aside
+        className={`${
+          mobileNavOpen ? 'fixed inset-y-0 left-0 z-50 flex' : 'hidden'
+        } w-60 flex-col border-r border-axis-border bg-axis-surface md:flex`}
+      >
         <NavLink
           to="/"
           className="flex items-center gap-2 border-b border-axis-border px-5 py-4 transition-colors hover:bg-axis-muted"
@@ -60,6 +85,7 @@ export function Layout({
               <NavLink
                 key={item.to}
                 to={item.to}
+                onClick={() => setMobileNavOpen(false)}
                 className={({ isActive }) =>
                   [
                     'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
@@ -115,20 +141,22 @@ export function Layout({
         </div>
       </aside>
 
+      {/* Backdrop to close mobile nav when tapping outside */}
+      {mobileNavOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          onClick={() => setMobileNavOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-6xl px-8 py-8">
-          {error && (
-            <div className="mb-6 rounded-md border border-axis-danger/40 bg-axis-dangerSoft px-4 py-3 font-mono text-sm text-axis-danger">
-              <span className="font-semibold">error: </span>
-              {error}
-              <div className="mt-2 text-xs text-axis-danger/70">
-                Make sure <code>burnd serve</code> is running on port 4711.
-              </div>
-            </div>
-          )}
-          {loading && !snapshot ? (
-            <div className="font-mono text-sm text-axis-textMuted">scanning your sessions...</div>
+      <main className="flex-1 overflow-y-auto pt-14 md:pt-0">
+        <div className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-8">
+          {error ? (
+            <ErrorState error={error} onRetry={onRefresh} />
+          ) : loading && !snapshot ? (
+            <Skeleton />
           ) : (
             children
           )}
