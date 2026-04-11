@@ -21,11 +21,11 @@ interface LayoutProps {
 }
 
 const NAV_ITEMS = [
-  { to: '/insights', label: 'Insights', icon: Sparkles, badge: 'leaks' },
-  { to: '/overview', label: 'Overview', icon: LayoutDashboard, badge: null },
-  { to: '/projects', label: 'Projects', icon: FolderTree, badge: null },
-  { to: '/tools', label: 'Tools', icon: Wrench, badge: null },
-  { to: '/sessions', label: 'Sessions', icon: ScrollText, badge: null },
+  { to: '/app/insights', label: 'Insights', icon: Sparkles, badge: 'leaks' },
+  { to: '/app/overview', label: 'Overview', icon: LayoutDashboard, badge: null },
+  { to: '/app/projects', label: 'Projects', icon: FolderTree, badge: null },
+  { to: '/app/tools', label: 'Tools', icon: Wrench, badge: null },
+  { to: '/app/sessions', label: 'Sessions', icon: ScrollText, badge: null },
 ] as const;
 
 export function Layout({
@@ -39,7 +39,11 @@ export function Layout({
     <div className="flex h-full min-h-screen bg-axis-bg text-axis-text">
       {/* Sidebar */}
       <aside className="flex w-60 flex-col border-r border-axis-border bg-axis-surface">
-        <div className="flex items-center gap-2 border-b border-axis-border px-5 py-4">
+        <NavLink
+          to="/"
+          className="flex items-center gap-2 border-b border-axis-border px-5 py-4 transition-colors hover:bg-axis-muted"
+          title="Back to landing page"
+        >
           <Flame className="h-5 w-5 text-axis-accent" strokeWidth={2.5} />
           <span className="font-mono text-sm font-semibold tracking-tight text-axis-text">
             burnd
@@ -47,7 +51,7 @@ export function Layout({
           <span className="ml-auto rounded bg-axis-muted px-1.5 py-0.5 font-mono text-[10px] text-axis-textMuted">
             v{snapshot?.meta.burndVersion ?? '0.0.1'}
           </span>
-        </div>
+        </NavLink>
 
         <nav className="flex flex-col gap-0.5 px-2 py-3">
           {NAV_ITEMS.map((item) => {

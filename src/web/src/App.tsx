@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout.js';
+import { LandingPage } from './pages/LandingPage.js';
 import { InsightsPage } from './pages/InsightsPage.js';
 import { OverviewPage } from './pages/OverviewPage.js';
 import { ProjectsPage } from './pages/ProjectsPage.js';
@@ -9,9 +10,14 @@ import { SessionsPage } from './pages/SessionsPage.js';
 import { fetchSnapshot, type SnapshotView } from './lib/snapshot.js';
 
 export function App(): JSX.Element {
+  const location = useLocation();
+  const isAppRoute = location.pathname.startsWith('/app');
+
+  // Only fetch the snapshot when the user is actually on the dashboard.
+  // The marketing landing page doesn't need live data and works offline.
   const [snapshot, setSnapshot] = useState<SnapshotView | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   async function load(forceRefresh = false): Promise<void> {
     setLoading(true);
@@ -27,8 +33,22 @@ export function App(): JSX.Element {
   }
 
   useEffect(() => {
-    void load(false);
-  }, []);
+    if (isAppRoute && !snapshot) {
+      void load(false);
+    }
+  }, [isAppRoute, snapshot]);
+
+  // The marketing landing page renders WITHOUT the dashboard Layout chrome.
+  // It's a full-width page with its own header/footer.
+  if (!isAppRoute) {
+    return (
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        {/* Unknown public routes fall back to the landing page too. */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    );
+  }
 
   return (
     <Layout
@@ -39,14 +59,14 @@ export function App(): JSX.Element {
     >
       {snapshot ? (
         <Routes>
-          {/* Per the design doc positioning rule, Insights is the default route. */}
-          <Route path="/" element={<Navigate to="/insights" replace />} />
-          <Route path="/insights" element={<InsightsPage snapshot={snapshot} />} />
-          <Route path="/overview" element={<OverviewPage snapshot={snapshot} />} />
-          <Route path="/projects" element={<ProjectsPage snapshot={snapshot} />} />
-          <Route path="/tools" element={<ToolsPage snapshot={snapshot} />} />
-          <Route path="/sessions" element={<SessionsPage snapshot={snapshot} />} />
-          <Route path="*" element={<Navigate to="/insights" replace />} />
+          {/* /app is the dashboard root — redirects to the Insights view per the positioning rule. */}
+          <Route path="/app" element={<Navigate to="/app/insights" replace />} />
+          <Route path="/app/insights" element={<InsightsPage snapshot={snapshot} />} />
+          <Route path="/app/overview" element={<OverviewPage snapshot={snapshot} />} />
+          <Route path="/app/projects" element={<ProjectsPage snapshot={snapshot} />} />
+          <Route path="/app/tools" element={<ToolsPage snapshot={snapshot} />} />
+          <Route path="/app/sessions" element={<SessionsPage snapshot={snapshot} />} />
+          <Route path="/app/*" element={<Navigate to="/app/insights" replace />} />
         </Routes>
       ) : null}
     </Layout>
