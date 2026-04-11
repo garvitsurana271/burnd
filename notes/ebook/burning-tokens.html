@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Burning Tokens — 8 Patterns I Found in $13,000 of My Own Claude Code Spend</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #111111;
+    --muted: #555555;
+    --line: #e5e5e5;
+    --accent: #4f46e5;
+    --code-bg: #f3f4f6;
+    --code-text: #1f2937;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', Georgia, serif;
+    font-size: 12pt;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 56px 96px 56px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #0a0a0a;
+    page-break-after: avoid;
+  }
+  h1 {
+    font-size: 30pt;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.02em;
+  }
+  h1 + h2 {
+    font-size: 15pt;
+    font-weight: 500;
+    color: var(--muted);
+    margin-top: 0;
+    margin-bottom: 48px;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    page-break-after: always;
+  }
+  h2 {
+    font-size: 20pt;
+    margin-top: 48px;
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+    page-break-before: always;
+  }
+  h3 {
+    font-size: 13pt;
+    margin-top: 32px;
+    margin-bottom: 10px;
+    color: var(--accent);
+  }
+  p {
+    margin: 0 0 16px 0;
+    text-align: left;
+    hyphens: none;
+  }
+  strong { font-weight: 600; color: #000; }
+  em { font-style: italic; }
+  code {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 10.5pt;
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  pre {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 9.5pt;
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 14px 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    line-height: 1.5;
+    margin: 16px 0;
+    page-break-inside: avoid;
+  }
+  pre code {
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+  }
+  ul, ol { padding-left: 22px; margin: 0 0 16px 0; }
+  li { margin-bottom: 6px; }
+  hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 40px 0;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  .title-block {
+    padding: 80px 0 0 0;
+    text-align: left;
+  }
+  .author {
+    font-family: 'Inter', sans-serif;
+    font-size: 11pt;
+    color: var(--muted);
+    margin-top: 40px;
+    line-height: 1.8;
+  }
+  .author em { font-style: normal; display: block; margin-top: 2px; }
+  @media print {
+    body {
+      padding: 20mm 18mm;
+      max-width: none;
+      font-size: 11pt;
+    }
+    h1 { font-size: 26pt; }
+    h2 { font-size: 17pt; }
+    h3 { font-size: 12pt; }
+    pre { font-size: 9pt; }
+    a { color: var(--text); text-decoration: none; }
+    h1 + h2 { page-break-after: always; }
+    h2 { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Burning Tokens</h1>
+  <h2>8 Patterns I Found in $13,000 of My Own Claude Code Spend (And How to Fix Them)</h2>
+  <div class="author">
+    <strong>Garvit Surana</strong>
+    <em>16 · Class 12 ISC · Guwahati, India</em>
+    <em style="margin-top: 24px; font-size: 10pt;">First edition · April 2026</em>
+  </div>
+</div>
+
+<h2>Preface</h2>
+
+<p>I'm 16. I'm in Class 12 at an ISC school in Guwahati, India. I should probably be studying for my board exams right now, and I am, but I'm also paying attention to a different problem: <strong>I was burning an absurd amount of money on Claude Code, and I didn't know where any of it was going.</strong></p>
+
+<p>Six months ago, I noticed the pattern. I'd open my terminal in the morning, run <code>claude</code> in a project, spend half an hour letting the agent help me build something, and then see my Anthropic API bill tick up by five dollars. Five dollars is more than I used to spend on food in a day when I was younger. And I was doing it twice a day. Sometimes five times a day. I had no idea what I was actually buying.</p>
+
+<p>I ran the numbers. I'd spent <strong>$13,631 on Claude Code</strong> across the last six months, divided across <strong>227 sessions</strong> in <strong>15 different projects</strong>. My single most expensive day was March 29, 2026 — I burned <strong>$6,091 in 24 hours</strong> across <strong>42 sessions</strong>, outputting <strong>1.8 million tokens</strong>. That was not a particularly productive day, by the way. I remember it: I was refactoring the same React component seventeen times because the agent kept forgetting what it had just done.</p>
+
+<p>That's when I decided to stop guessing and actually figure out where the money was going. I built a tool called Burnd to read my local <code>~/.claude/projects/*.jsonl</code> session files and find the leaks. It ships with eight detectors — eight specific patterns that waste tokens. Every detector comes with a dollar value: this much of your spend is being wasted on this specific thing.</p>
+
+<p>This book is what I learned. Every pattern in here is something I found in my own data. Every fix is something I've tested on my own projects. If you use Claude Code as a daily driver, there is a reasonable chance that three to six of these patterns are costing you money right now, and you don't know it.</p>
+
+<p>Here's what this book will give you:</p>
+
+<ul>
+  <li><strong>Chapters 1 and 2</strong> are the boring-but-necessary part: how Claude Code actually spends your money. The four token tiers. The new 2026 ephemeral cache tiers. Why cache reads cost a tenth of regular input tokens. If you already know this, skim it — but most people don't know it, including most Claude Code power users.</li>
+  <li><strong>Chapters 3 through 10</strong> are one chapter per pattern. Each one has the story of how I found it in my own data, the dollar value I measured, the fix, and what it actually saved me.</li>
+  <li><strong>Chapter 11</strong> is a weekly review process you can adopt. Takes 15 minutes a week and catches most leaks before they grow.</li>
+  <li><strong>The appendix</strong> tells you how to run Burnd on your own data. It's free and open-source. If you find a new pattern in your own data that I missed, email me — <a href="mailto:garvitsurana10@gmail.com">garvitsurana10@gmail.com</a> — and I'll add it to the next version of the book.</li>
+</ul>
+
+<p>One more thing before you start. I am going to be honest about two things this book is not.</p>
+
+<p>It is <strong>not</strong> a book that will make Claude Code free. You are still going to pay Anthropic for every token. What it will do is help you stop paying for tokens that weren't doing anything useful.</p>
+
+<p>It is <strong>also</strong> not a book written by a professional. I'm 16 and I'm learning this stuff in real time, the same way you are. I've tried to only say things I'm confident about, but I might be wrong about some of it. If I am, write to me and I'll fix it.</p>
+
+<p>Okay. Let's go.</p>
+
+<h2>Chapter 1 · How Claude Code spends your money</h2>
+
+<p>When you run <code>claude</code> in your terminal and start a conversation, every message you exchange with the model costs something. The total cost is computed from token counts, not message counts. Every word you type, every file the agent reads, every tool call, every response — all of it turns into tokens, and tokens cost money.</p>
+
+<p>The Claude API (which is what Claude Code uses under the hood) charges you for <strong>four distinct types of tokens</strong>, plus a fifth thing that's new in 2026. They all have different prices. If you don't understand which one is which, you cannot understand where your money is going. Most people lump them all together as "tokens" and lose the ability to reason about their spend.</p>
+
+<p>Here are the five:</p>
+
+<p><strong>1. Input tokens.</strong> These are the tokens the model has to <em>read</em> to respond to you. They include your message, the system prompt, the file attachments, the tool results from previous turns, and everything else in the context window that isn't the model's own output. Input tokens are the cheapest paid tokens. For <code>claude-opus-4-6</code> they cost around <strong>$15 per million tokens</strong> as of early 2026. For <code>claude-sonnet-4-6</code> it's about $3 per million.</p>
+
+<p><strong>2. Output tokens.</strong> These are the tokens the model <em>produces</em> as its response, including any thinking blocks, tool-use declarations, and natural-language replies. Output tokens are <strong>five times more expensive than input tokens</strong>. That's a universal rule across Anthropic's pricing: you pay more to hear the model talk than to make it read.</p>
+
+<p><strong>3. Cache read tokens.</strong> This is where it gets interesting. Anthropic has a feature called "prompt caching." If the same prefix of context appears across multiple turns (which is basically always in Claude Code — the system prompt and your CLAUDE.md files never change mid-session), the API can "cache" that prefix so subsequent turns don't have to reprocess it from scratch. You're billed separately for these cache reads, and <strong>they cost about a tenth of regular input tokens</strong>. For Opus that's roughly <strong>$1.50 per million</strong> instead of $15 per million. This is a massive discount and it's why Claude Code sessions are cheaper than you'd expect for the size of their context.</p>
+
+<p><strong>4. Cache creation tokens.</strong> Writing stuff <em>into</em> the cache costs extra. The first time a chunk of context is seen, you pay a one-time cache-write fee for it — about <strong>1.25x the base input rate</strong>. So yes, you pay a little more the first time, but every subsequent read is 10% of the input rate. Usually a huge win.</p>
+
+<p><strong>5. (New in 2026) Ephemeral cache tiers.</strong> This is the part most people don't know about. Anthropic's cache has two tiers now:</p>
+
+<ul>
+  <li><strong>5-minute ephemeral cache</strong> — the default. Cache writes cost about 1.25x input. Cache reads cost about 0.1x input. The cache expires after 5 minutes of inactivity.</li>
+  <li><strong>1-hour ephemeral cache</strong> — a newer, more expensive tier. Cache writes cost about <strong>2x input</strong> (so more expensive than 5m writes) but the cache lasts an hour before expiring. Cache reads are still the same cheap 0.1x.</li>
+</ul>
+
+<p>Why do these tiers exist? Because long-running sessions (the kind where you step away for coffee and come back 20 minutes later) were hitting the 5-minute cache expiration and paying full input rates again when they resumed. The 1-hour tier trades a higher write cost for a longer lifespan. For a focused session that lasts less than 5 minutes, the 5m tier is strictly cheaper. For a wandering session that spans an hour, the 1h tier wins.</p>
+
+<p><strong>Claude Code picks the tier for you based on a heuristic</strong> — I haven't fully decoded the heuristic yet, but from reading my own session files it seems to prefer the 5m tier by default and upgrade to 1h for sessions where it expects idle time. This matters because the session data you read through Burnd shows you exactly how much of your cache-creation spend went to the 1h tier vs. the 5m tier, and sessions that spent a lot on 1h are often sessions where you were inefficient — you were idle too much, and Claude Code was paying the premium to keep your context alive.</p>
+
+<h3>The formula</h3>
+
+<p>If you want the exact cost of a single assistant turn, here's the formula Claude Code itself uses:</p>
+
+<pre><code>turn_cost_usd =
+   input_tokens                              * model.input_rate
+ + cache_read_input_tokens                   * model.cache_read_rate
+ + cache_creation.ephemeral_5m_input_tokens  * model.cache_5m_rate
+ + cache_creation.ephemeral_1h_input_tokens  * model.cache_1h_rate
+ + output_tokens                             * model.output_rate</code></pre>
+
+<p>Every one of those multiplications is happening under the hood, and the sum is what ticks up your Anthropic bill. The cheapest part of the sum (cache reads) is usually the biggest component by volume — in my own data, <strong>cache reads account for 60-70% of all input-side tokens</strong> across most sessions. But the most <em>expensive</em> part of the sum is usually output tokens — that's where a single session's bill is really decided.</p>
+
+<h3>Where you actually lose money</h3>
+
+<p>Knowing the formula doesn't help you save money. What helps you save money is knowing which <em>kind</em> of inefficiency drives which <em>kind</em> of token waste. Here's the rough map:</p>
+
+<ul>
+  <li><strong>If you're producing too many output tokens</strong>, you're probably letting the agent ramble, dumping large files into its responses, or asking it to write long explanations when a yes/no would do.</li>
+  <li><strong>If you're producing too many input tokens (uncached)</strong>, you're probably starting new sessions instead of continuing old ones, or your system prompt is bloated.</li>
+  <li><strong>If you're producing too many cache creation tokens on the 1h tier</strong>, you're probably leaving sessions idle for long stretches.</li>
+  <li><strong>If your cache read tokens are exploding</strong>, you have very long sessions — which is usually <em>fine</em> because cache reads are cheap, but sometimes means your context has gotten so bloated that every turn is scanning past a ton of irrelevant junk.</li>
+  <li><strong>If you're paying for lots of tool-call-related tokens</strong>, the tool is returning massive outputs that get fed back into the next turn's context.</li>
+</ul>
+
+<p>The patterns in this book are essentially named versions of these categories. Each one is something that shows up in real session data, has a measurable dollar impact, and has a fix you can apply in minutes. Let's get to them.</p>
+
+<h2>Chapter 2 · The cost calculation, with a worked example</h2>
+
+<p>Let me show you what the formula actually looks like on a real turn. This is an anonymized assistant record from one of my own sessions, with the identifying fields redacted:</p>
+
+<pre><code>{
+  "type": "assistant",
+  "message": {
+    "model": "claude-opus-4-6",
+    "usage": {
+      "input_tokens": 3,
+      "cache_read_input_tokens": 14522,
+      "cache_creation_input_tokens": 7908,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 7908
+      },
+      "output_tokens": 29
+    }
+  }
+}</code></pre>
+
+<p>That's one turn. The model was Opus. Let me plug it into the formula using the early-2026 published rates:</p>
+
+<ul>
+  <li>Input tokens: 3 × $15/M = <strong>$0.000045</strong></li>
+  <li>Cache read: 14522 × $1.50/M = <strong>$0.0218</strong></li>
+  <li>5m cache creation: 0 × $18.75/M = <strong>$0.00</strong></li>
+  <li>1h cache creation: 7908 × $30/M = <strong>$0.2372</strong></li>
+  <li>Output: 29 × $75/M = <strong>$0.002175</strong></li>
+</ul>
+
+<p><strong>Total for this turn: ~$0.261</strong>, or about <strong>21 Indian rupees.</strong></p>
+
+<p>Look at where the money went. The user typed 3 uncached input tokens (probably a one-word message like "continue"). The model read 14522 tokens from the cache — cheap, that's $0.02. The model generated just 29 output tokens — also cheap, about $0.002. <strong>The entire cost of this turn was the cache creation write</strong>, specifically on the 1-hour tier. 7908 tokens written to the 1h cache at $30/M equals 23 cents. That's 89% of the turn's cost.</p>
+
+<p>This is the kind of turn that feels "free" from the user's perspective — you typed one word, the agent did one small thing, you saw a few lines of response — but you paid 21 rupees for it because Claude Code decided to refresh the 1-hour cache. Now do that 100 times in a day and you've spent 2100 rupees ($25) on what felt like nothing happened.</p>
+
+<p>This is why the formula matters. Without understanding which token tier ate the cost, you'd look at this turn and go "one word, one tool call, how is this 20 rupees?" With the formula, you can see that the 1h cache write was the culprit, and you can figure out why: because your session is idle long enough that Claude Code is betting on the longer-lived cache tier. Which means the fix is <strong>make shorter, more focused sessions</strong> and let the cheaper 5m tier carry the load.</p>
+
+<p>I'll come back to this pattern in Chapter 11. For now, just remember: <strong>the formula is the only thing that tells you which kind of waste matches which kind of fix.</strong> Guessing doesn't work. Looking at one big total doesn't work. You have to look at the breakdown.</p>
+
+<h2>Chapter 3 · Pattern 1 — Long Bash output</h2>
+
+<p>The most common and most expensive pattern in my data is this: <strong>the agent runs a Bash command, the command returns a huge block of text, and now that huge block is inside the agent's context for every subsequent turn.</strong></p>
+
+<p>Here's how it happens in practice. You ask the agent to "run the tests and show me what's failing." The agent runs <code>pytest -v</code> (or <code>npm test</code>, or <code>go test ./...</code>). The test runner happily dumps 12,000 lines of output — every passing test, every warning, every stack trace for every failure, every line of fixture setup. All of it flows back into the agent's context as a <code>tool_result</code>. Then the agent replies. Then you ask a follow-up question. And now, every subsequent turn in this session has to drag those 12,000 lines along with it.</p>
+
+<p>The cache makes this less painful than it would be otherwise — after the first turn, those 12,000 lines are in the cache and you're paying cache-read rates for them. But that's still real money. And the output tokens the agent generates to <em>respond</em> about that massive tool output are at the full output rate.</p>
+
+<h3>What I found in my own data</h3>
+
+<p>Across my 227 sessions, I have Bash as the most-used tool by a significant margin. In one session in particular, Bash was called 47 times, with an average output length of <strong>about 12,400 bytes per call</strong>. That averages out to roughly 3,100 tokens per call. So <strong>146,000 tokens of Bash output was getting fed into that session's context</strong>.</p>
+
+<p>At Opus input rates ($15/M for uncached, $1.50/M cached), most of that ended up being cached, but the first pass cost me real money and every subsequent turn in that session was reading those cached tokens to stay consistent. Burnd estimated this session alone was wasting <strong>about $8.40</strong> in unnecessary input context.</p>
+
+<h3>The fix</h3>
+
+<p><strong>Pipe everything.</strong> Seriously. Any command that can return more than a screen of output should be constrained before the model reads it:</p>
+
+<ul>
+  <li>Test runners: <code>pytest 2&gt;&amp;1 | tail -60</code> or <code>pytest --last-failed --no-header</code> (my favorite)</li>
+  <li>Build tools: <code>npm run build 2&gt;&amp;1 | tail -50</code></li>
+  <li>File listings: <code>ls -la | head -30</code></li>
+  <li>Search: <code>grep -r "foo" . | head -20</code> (and use <code>rg</code> instead of grep)</li>
+  <li>Git: <code>git log --oneline | head -20</code></li>
+</ul>
+
+<p>The deeper fix is telling the agent in your CLAUDE.md: "When you run tests, use <code>--last-failed</code> or pipe through <code>tail -50</code>. Don't dump full output unless I ask for it." I have a line like this in every CLAUDE.md now.</p>
+
+<h3>What it actually saved me</h3>
+
+<p>Before piping, my tests-and-run-builds sessions were averaging <strong>$3.20 per session</strong>. After piping, the same workflows dropped to <strong>$0.95 per session</strong>. That's a 70% reduction, and it took me about 10 minutes to update my CLAUDE.md and two shell aliases. Best ROI fix in the whole book.</p>
+
+<h2>Chapter 4 · Pattern 2 — Repeated reads</h2>
+
+<p>This one is the most embarrassing when you see it in your own data, because it looks like the agent forgot what it just read.</p>
+
+<p>The pattern: in a single session, Claude Code reads the same file three, four, five, sometimes ten times. Not because the file is changing — because the agent "forgot" it had already loaded the file earlier. Every re-read is a fresh <code>Read</code> tool call, which means the full file contents are streamed into the context again, and you pay for it again.</p>
+
+<h3>What I found in my own data</h3>
+
+<p>In one of my sessions, <strong>32 distinct files were read 3 or more times</strong>. The worst case was one file that got read <strong>31 separate times in the same session</strong>. Thirty-one. Let me be very clear about what that means: the agent read the file, used it, moved on to something else, needed to come back to the file, didn't remember what was in it, re-read it from disk, then did that cycle fifteen more times.</p>
+
+<p>Each re-read costs you. In the session I just described, Burnd estimated <strong>$2.12 of waste</strong> specifically from repeated reads.</p>
+
+<h3>The fix</h3>
+
+<p><strong>Fix 1: Use Edit instead of Read → Write → Read.</strong> When the agent needs to change a file, the wrong pattern is Read the file, Write a whole new version, then Read again to verify. The right pattern is use the Edit tool with a targeted <code>old_string</code>/<code>new_string</code> replacement. Edit preserves the file's contents in the agent's working memory because it diffs against what it just wrote. In my own data, switching from Read-Write-Read to Edit for a common workflow cut the number of Read calls by <strong>about 60%</strong>.</p>
+
+<p><strong>Fix 2: Tell the agent to remember.</strong> In your CLAUDE.md, add a line like: "When you read a file, remember its contents for the rest of this session. Only re-read if you have a specific reason to believe the file has changed since you last read it."</p>
+
+<p><strong>Fix 3: Summarize at context boundaries.</strong> When a session has been going for a while and you're starting a new task within the same session, have the agent summarize the files it's been working with in its own words. That summary goes into the cache and replaces the need to re-read the raw files.</p>
+
+<h3>What it actually saved me</h3>
+
+<p>My worst-offender project for repeated reads was a prototype where I was editing multiple small files in a tight loop. Before applying these fixes, a typical session cost me about <strong>$2.80</strong>. After, about <strong>$1.10</strong>. That's ~60% savings, consistent with what Burnd predicted.</p>
+
+<h2>Chapter 5 · Pattern 3 — Tool error storms</h2>
+
+<p>This is the pattern that makes me angriest when I see it in my own data, because it's wasted money on failed work.</p>
+
+<p>The pattern: in a session, many tool calls return errors. The agent doesn't give up — it tries again, tries a slightly different version, tries again, tries to install a missing dependency, tries again. Each failed tool call still costs you output tokens and input tokens. Over a long enough storm, you can burn real money on work that produced nothing.</p>
+
+<h3>What I found in my own data</h3>
+
+<p>Burnd flagged two sessions in my history where <strong>30% or more of all tool calls returned errors</strong>. One session had 18 out of 60 tool calls fail. Another had 16 out of 51. Burnd's thrash detector estimated those sessions wasted <strong>$3.95 and $2.39</strong> respectively on thrash alone. About 500 rupees for two sessions where the "work" was the agent banging its head against an environment problem.</p>
+
+<h3>The fix</h3>
+
+<p><strong>The best fix is environmental, not behavioral.</strong> When the agent is thrashing, it's usually because the environment is set up wrong. The first move when you see a thrash session is look at what errors the agent was getting and fix the underlying cause.</p>
+
+<p><strong>The second fix is instructional.</strong> In your CLAUDE.md, add a line like: "If a command fails with the same error twice in a row, stop and ask me what's wrong before trying more variations." This short-circuits the thrash loop.</p>
+
+<p><strong>The third fix is preemptive.</strong> Before starting a long agent session, run the "prep" commands yourself — <code>npm install</code>, <code>pip install -r requirements.txt</code>, whatever — so the environment is guaranteed to work. Thrash happens most often at the start of a session when the environment is cold.</p>
+
+<h3>What it actually saved me</h3>
+
+<p>This one is harder to measure because thrash is episodic. But across the two worst sessions Burnd flagged for me, the estimated waste was $6.34 combined. Over a month of occasional thrash, I'd guess this pattern costs me another <strong>$20-40</strong> (1,600-3,200 rupees).</p>
+
+<h2>Chapter 6 · Pattern 4 — Tool overuse (the Bash trap)</h2>
+
+<p>This one is subtle. It's when the agent becomes over-reliant on one specific tool. The most common flavor in my data is what I call the <strong>Bash trap</strong>: sessions where 70-80% of tool calls are Bash, when half of those should have been something cheaper.</p>
+
+<h3>What I found in my own data</h3>
+
+<p>One of my sessions had <strong>47 Bash calls out of 59 total tool calls — about 80%</strong>. Looking at the Bash calls, a lot of them were things like <code>cat</code> and <code>ls</code> and <code>grep</code> — all of which have dedicated tools that are cheaper:</p>
+
+<ul>
+  <li><code>cat &lt;file&gt;</code> → <code>Read</code> (dedicated tool, optimized token usage)</li>
+  <li><code>ls &lt;dir&gt;</code> → <code>Glob</code> (pattern-based directory listing)</li>
+  <li><code>grep -r "foo" .</code> → <code>Grep</code> (built-in ripgrep, faster)</li>
+</ul>
+
+<p>Burnd's tool-overuse detector flagged this session as wasting about <strong>$7.76</strong> in avoidable spend.</p>
+
+<h3>The fix</h3>
+
+<p><strong>Add tool-preference hints to your CLAUDE.md.</strong> The line I use:</p>
+
+<blockquote><p>"When you need to read a file, use Read. When you need to list files, use Glob. When you need to search across files, use Grep. Only use Bash when you actually need to run a shell command, not as a fallback for file operations."</p></blockquote>
+
+<p>This works because the model reads the CLAUDE.md at the start of every session and uses it to pick tools. After adding these hints, my Bash share dropped from 80% to about 50% in typical sessions.</p>
+
+<h3>What it actually saved me</h3>
+
+<p>After the tool-preference hints, my average session cost dropped by about <strong>15%</strong>. Across a month, that's <strong>$40-60 saved</strong> (3,200-4,800 rupees).</p>
+
+<h2>Chapter 7 · Pattern 5 — Late-night coding (the tired-agent tax)</h2>
+
+<p>This one is going to sound unscientific. It isn't.</p>
+
+<p>The pattern: sessions started between midnight and 5 AM local time cost significantly more per unit of useful output than sessions started during the day. I have this in my own data.</p>
+
+<h3>What I found in my own data</h3>
+
+<p>I have exactly 23 sessions in my history that started between 00:00 and 05:00 IST. Their average cost per session is <strong>$4.80</strong>. My daytime sessions (started 9 AM - 6 PM) average <strong>$1.90 per session</strong>. That's <strong>2.5x more expensive per session for late-night work</strong>. Even normalized by assistant-turn count, late-night sessions cost <strong>1.8x more per turn</strong>.</p>
+
+<p>The real reason? <strong>My prompts are worse when I'm tired.</strong> I type less specific instructions, I make more typos, I forget what I was trying to do, I ask the agent to redo things, I don't notice when the agent is going in circles. The cost per minute of work is the same but the cost per unit of <em>useful</em> work is much higher.</p>
+
+<h3>The fix</h3>
+
+<p><strong>Go to sleep.</strong> Seriously. If you're coding at 2 AM, your per-token ROI is worse than it would be in the morning. The cheapest thing you can do for your Claude Code bill is respect your own circadian rhythm.</p>
+
+<p>If you must code late:</p>
+
+<ul>
+  <li><strong>Batch harder.</strong> Spend more time writing each prompt, less time iterating.</li>
+  <li><strong>Set a session cost budget.</strong> "This session will cost me at most $2." If you pass that, stop.</li>
+  <li><strong>Favor simple tasks.</strong> Don't refactor a complex state machine at 2 AM. Use late sessions for mechanical work.</li>
+  <li><strong>Turn off the retry loop.</strong> In your CLAUDE.md: "If a task isn't working after 3 attempts, stop and leave a TODO comment for me to review tomorrow."</li>
+</ul>
+
+<h3>What it actually saved me</h3>
+
+<p>I started applying this about two months ago. My late-night sessions dropped from 23 in the six-month window to about 8. My overall Claude spend in the month after dropped by <strong>$180</strong> (14,400 rupees), which is the biggest savings I've measured from any single behavioral change in this whole book.</p>
+
+<h2>Chapter 8 · Pattern 6 — API retry storms</h2>
+
+<p>This is sneakier than the thrash pattern because it's invisible from the user's perspective.</p>
+
+<p>The pattern: Claude Code hits an API error and automatically retries. Each retry costs you tokens for the partial response that was generated before the error, plus the full input-side reprocessing for the retry attempt.</p>
+
+<h3>What I found in my own data</h3>
+
+<p>I didn't know this pattern existed until I built Burnd. The worst-case session I found had <strong>11 retry events</strong> across a 90-minute window. Burnd's retry-storm detector estimated <strong>$0.55</strong> of that session's cost was wasted on retries. Across my whole history, retry storms probably cost me <strong>$15-25 total</strong> (1,200-2,000 rupees).</p>
+
+<h3>The fix</h3>
+
+<p><strong>Don't code during Anthropic outages.</strong> Subscribe to status.anthropic.com and pause your sessions when things are flaky.</p>
+
+<p><strong>Shorten your sessions.</strong> Shorter sessions mean smaller contexts, which means retries cost less per attempt.</p>
+
+<p><strong>Don't fight rate limits.</strong> If you hit HTTP 429, the retry loop will waste money on repeated failures. The upgrade cost is less than the retry waste.</p>
+
+<h3>What it actually saved me</h3>
+
+<p>For me, maybe $5/month of savings. But if you're on a higher-usage plan, retry storms can cost much more. One friend of mine saw <strong>$200 of retry waste in a single month</strong> during a flaky Anthropic window.</p>
+
+<h2>Chapter 9 · Pattern 7 — Skills firing too aggressively</h2>
+
+<p>Claude Code has a feature called "skills" — reusable instruction packs that the agent loads when it thinks they're relevant. The problem: sometimes a skill has a trigger description that's too broad, so the agent pulls it in on every message instead of only when needed.</p>
+
+<h3>What I found in my own data</h3>
+
+<p>I had one skill whose trigger was something like "use when the user asks for help with code." That's basically always. In one session I counted <strong>17 Skill tool calls out of about 40 total tool calls — 42% of my tool calls were this one skill</strong>. 17 calls × 2000 tokens per load = 34,000 tokens just loading the skill over and over.</p>
+
+<p>Burnd's skill-firing detector flagged that session as wasting about <strong>$4.20</strong> from skill overuse. More importantly, the skill was making my sessions <em>worse</em> — the agent was following the skill's process even when I didn't want it to.</p>
+
+<h3>The fix</h3>
+
+<p><strong>Tighten the trigger descriptions in your skill files.</strong> Every skill has a description field at the top. Specific descriptions like "use this skill only when writing a formal test plan" are much better than "use when writing code."</p>
+
+<p><strong>Delete skills you don't use.</strong> I had about 30 skills installed. After auditing, I deleted 15 of them. My Skill tool invocations dropped by <strong>about 60%</strong>.</p>
+
+<h3>What it actually saved me</h3>
+
+<p>Tightening triggers and deleting unused skills saved me about <strong>$30/month</strong> (2,400 rupees). The bigger win: my sessions became noticeably faster and more focused.</p>
+
+<h2>Chapter 10 · Pattern 8 — Project cost outliers</h2>
+
+<p>This is the pattern that saved me the most money.</p>
+
+<p>The pattern: one specific project in your Claude Code history costs significantly more per session than your other projects. Usually not because the project is harder — because something in the project's environment is making every session there more expensive.</p>
+
+<h3>What I found in my own data</h3>
+
+<p>I have 15 projects in my Claude history. Their median session costs range from about $0.50 to about $11.15. That's a <strong>22x spread</strong>. The outlier project had a median session cost of $11.15, while my overall median was $3.53. That's <strong>3.2x more expensive per session</strong> than my average project.</p>
+
+<p>Burnd flagged it with an estimated <strong>$30.48 of savings</strong> if I brought its cost-per-session down. When I investigated, the culprit was a combination of three things:</p>
+
+<ol>
+  <li><strong>The CLAUDE.md in that project was too big.</strong> About 2000 lines. Every session was loading all 2000 lines into the initial context.</li>
+  <li><strong>The project had 8 skills installed in its local <code>.claude/skills/</code> directory.</strong> Several were firing constantly.</li>
+  <li><strong>The project's workflow involved editing many small files in a tight loop</strong>, which triggered the repeated-read pattern.</li>
+</ol>
+
+<h3>The fix</h3>
+
+<p><strong>Trim the CLAUDE.md.</strong> I cut mine from 2000 lines to about 600 by removing historical context. The cut content went into a <code>docs/history.md</code> the agent can read if needed but doesn't load by default.</p>
+
+<p><strong>Prune local skills.</strong> Keep only the skills you're actively using.</p>
+
+<p><strong>Batch file edits.</strong> Instead of edit-commit-edit-commit, batch changes into a single edit pass.</p>
+
+<h3>What it actually saved me</h3>
+
+<p>After the fixes, that project's median session cost dropped from $11.15 to about $4.50. That's <strong>about $6.65 saved per session</strong>, and I typically have 4-6 sessions a month there. <strong>Monthly savings: $26-40</strong> (2,100-3,200 rupees).</p>
+
+<p><strong>This is the pattern most likely to have a measurable impact on your bill. If you only do one thing after reading this book, check your per-project cost spread and fix your most expensive project.</strong></p>
+
+<h2>Chapter 11 · Putting it all together — the weekly review process</h2>
+
+<p>If you just read this book, nod along, and don't change anything, you won't save any money. The patterns only matter if you develop a habit of checking for them.</p>
+
+<p>I've settled on a <strong>15-minute weekly review</strong> that I do every Sunday night:</p>
+
+<p><strong>Step 1: Run <code>npx burnd</code> in the terminal.</strong> This prints the top 3 leaks across all your sessions from the last week. Takes 5 seconds.</p>
+
+<p><strong>Step 2: Look at each leak and decide what to do.</strong> For each of the top 3:</p>
+<ul>
+  <li>If the leak is a one-off, note it and move on.</li>
+  <li>If it's a pattern (happened multiple times), pick one of the fixes from this book and apply it this week.</li>
+  <li>If it's a pattern you've already fixed, double-check the fix stuck.</li>
+</ul>
+
+<p><strong>Step 3: Check your per-project cost spread.</strong> Open <code>npx burnd serve</code> and click to the Projects tab. Is there a new outlier?</p>
+
+<p><strong>Step 4: Read one week of your recent session titles</strong> and ask yourself: were any of these sessions <em>unsuccessful</em>? Flag them for next review.</p>
+
+<p><strong>Step 5: Update your CLAUDE.md.</strong> Every time you find a new fix that works, add it as a line in your CLAUDE.md. The agent reads it on every session and applies it automatically.</p>
+
+<p><strong>Step 6: Set your budget for next week.</strong> "I'll spend at most $40 on Claude Code this week." Check on Wednesday. If you're ahead of budget, slow down.</p>
+
+<p>This takes about 15 minutes if you're disciplined. It has saved me about <strong>$200-400 per month</strong> (16,000-32,000 rupees) compared to the no-review baseline. The most important thing: <strong>it's a habit, not a project</strong>. Five minutes a week beats five hours once a quarter.</p>
+
+<h2>Appendix · Use Burnd to find your own leaks</h2>
+
+<p>Burnd is free and open-source. The CLI runs locally on your machine and reads your <code>~/.claude/projects/*.jsonl</code> session files. It never uploads your code, your prompts, or any content.</p>
+
+<p><strong>To run Burnd:</strong></p>
+
+<pre><code>npx burnd</code></pre>
+
+<p>That's it. It scans all your session files and prints the top 3 leaks to your terminal.</p>
+
+<p><strong>To run the dashboard:</strong></p>
+
+<pre><code>npx burnd serve</code></pre>
+
+<p>Then open <code>http://localhost:4711</code> in your browser. You'll see your all-time spend, a 60-day spend chart, a Projects tab, a Tools tab, and a Sessions tab.</p>
+
+<p><strong>To contribute new detectors:</strong> Burnd is open-source at <code>https://github.com/garvitsurana271/burnd</code>. If you find a pattern in your own data that isn't one of the eight in this book, open an issue or a pull request.</p>
+
+<p><strong>To reach me:</strong> Email <a href="mailto:garvitsurana10@gmail.com">garvitsurana10@gmail.com</a>. I read everything and reply to most things.</p>
+
+<h2>Thanks</h2>
+
+<p>Thanks for reading this. If it helped you save money on Claude Code, the best thing you can do is tell one other developer who you think would benefit. I wrote this book because nothing like it existed when I needed it, and I'm trying to make sure nobody else has to spend $13,000 before they notice where their money is going.</p>
+
+<p>If you built something cool with the savings, I'd love to see it.</p>
+
+<p>— Garvit</p>
+
+</body>
+</html>
