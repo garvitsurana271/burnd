@@ -512,7 +512,7 @@ function BuyTheEbook(): JSX.Element {
 }
 
 function BuyFlow(): JSX.Element {
-  const [submitted, setSubmitted] = useState(false);
+  const submitted = new URLSearchParams(window.location.search).get('submitted') === 'true';
 
   if (submitted) {
     return (
@@ -568,13 +568,12 @@ function BuyFlow(): JSX.Element {
           <form
             action="https://formsubmit.co/garvitsurana10@gmail.com"
             method="POST"
-            onSubmit={() => setSubmitted(true)}
             className="flex flex-col gap-3"
           >
             <input type="hidden" name="_subject" value="Burning Tokens — new purchase!" />
             <input type="hidden" name="_captcha" value="true" />
             <input type="hidden" name="_template" value="table" />
-            <input type="hidden" name="_next" value="https://getburnd.vercel.app/#buy" />
+            <input type="hidden" name="_next" value="https://getburnd.vercel.app/?submitted=true#buy" />
 
             <div>
               <label className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-axis-textMuted">Your name</label>
