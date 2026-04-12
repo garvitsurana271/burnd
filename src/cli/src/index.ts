@@ -177,7 +177,7 @@ async function main(): Promise<void> {
     totalSavingsAvailableUsd: totalSavingsUsd(top),
   });
   printTopInsights(top);
-  printFooter('https://burnd.vercel.app');
+  printFooter('https://getburnd.vercel.app');
 }
 
 main().catch((err: unknown) => {

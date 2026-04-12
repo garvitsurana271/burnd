@@ -52,13 +52,13 @@ Three things:
 
 ## The reason for the ebook pricing thing
 
-I'm 16 and in India. Stripe, Lemon Squeezy, Gumroad, all the normal indie-maker payment infrastructure requires 18+. So for my first revenue product I'm doing the most Indian indie thing possible: selling via UPI direct. Indian buyers get a UPI QR code, they pay, they fill a Google Form with their transaction ID + email, I email them the PDF within a few hours. No platform fees, no KYC, no 18+ requirement, legal.
+I'm 16 and in India. Stripe, Lemon Squeezy, Gumroad, all the normal indie-maker payment infrastructure requires 18+. So for my first revenue product I'm doing the most Indian indie thing possible: selling via UPI direct. Indian buyers send UPI to my handle, then fill a checkout form on the landing page (name + email + transaction ID) — it goes straight to my Gmail. I verify the UPI receipt and email the PDF within a few hours. No platform fees, no KYC, no 18+ requirement, legal.
 
 If you're outside India, email me (garvitsurana10@gmail.com) with subject "buy burning tokens" and I'll figure out Wise/PayPal friends-and-family or whatever works. Manual and slow but real.
 
 ## Links
 
-- Landing: https://burnd.vercel.app
+- Landing: https://getburnd.vercel.app
 - GitHub (MIT): https://github.com/garvitsurana271/burnd
 - The dashboard: `npx burnd serve` → localhost:4711
 - Ebook: the landing page has the buy flow

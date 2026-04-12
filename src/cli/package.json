@@ -15,7 +15,7 @@
     "cli",
     "local-first"
   ],
-  "homepage": "https://burnd.vercel.app",
+  "homepage": "https://getburnd.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/garvitsurana271/burnd.git",
@@ -28,7 +28,7 @@
   "author": {
     "name": "Garvit Surana",
     "email": "garvitsurana10@gmail.com",
-    "url": "https://burnd.vercel.app"
+    "url": "https://getburnd.vercel.app"
   },
   "type": "module",
   "bin": {

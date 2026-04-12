@@ -4,7 +4,7 @@
 
 **Burnd** is a local-first cost-control tool for [Claude Code](https://www.anthropic.com/claude-code) power users. It reads your `~/.claude/projects/*.jsonl` session files and finds 8 patterns that waste tokens, with dollar values and concrete fixes.
 
-Built by [Garvit Surana](https://burnd.vercel.app) — 16, Class 12 ISC, Guwahati, India — after spending $13,631 on Claude Code in six months.
+Built by [Garvit Surana](https://getburnd.vercel.app) — 16, Class 12 ISC, Guwahati, India — after spending $13,631 on Claude Code in six months.
 
 ---
 
@@ -79,7 +79,7 @@ If you want the full story behind each detector — with real data, real dollar 
 
 **Price:** ₹399 (~$4.50 USD) via UPI for Indian buyers, email for international payment.
 
-**Get it:** [burnd.dev#ebook](https://burnd.vercel.app#ebook)
+**Get it:** [burnd.dev#ebook](https://getburnd.vercel.app#ebook)
 
 ## Project layout
 
@@ -121,10 +121,10 @@ MIT — do whatever you want, just don't sue me.
 
 ## Links
 
-- **Landing page:** https://burnd.vercel.app
+- **Landing page:** https://getburnd.vercel.app
 - **GitHub:** https://github.com/garvitsurana271/burnd
 - **npm:** https://www.npmjs.com/package/burnd
 - **Anonymization spec:** https://github.com/garvitsurana271/burnd/blob/main/notes/anonymization.md
 - **JSONL format study:** https://github.com/garvitsurana271/burnd/blob/main/notes/jsonl-format.md
-- **Ebook:** https://burnd.vercel.app#ebook
+- **Ebook:** https://getburnd.vercel.app#ebook
 - **Built by:** [Garvit Surana](https://github.com/garvitsurana271), garvitsurana10@gmail.com

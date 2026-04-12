@@ -8,7 +8,7 @@ Two paths: GUI (recommended, ~8 min) or CLI (faster once you know it, ~3 min).
 2. Click **Import** next to `garvitsurana271/burnd` in the repo list
    - If you don't see the repo, click "Adjust GitHub App Permissions" and grant access
 3. On the Configure Project screen:
-   - **Project Name:** `burnd` (must be unique in your account — if taken, use `burnd-app`)
+   - **Project Name:** `getburnd` (must be unique in your account — this gives you `getburnd.vercel.app`)
    - **Framework Preset:** leave as `Other` or `Vite` (the vercel.json overrides build settings anyway)
    - **Root Directory:** leave as `./` (root). The `vercel.json` at the repo root handles the `src/web` subdirectory build.
    - **Build Command:** leave empty — vercel.json provides this
@@ -17,7 +17,7 @@ Two paths: GUI (recommended, ~8 min) or CLI (faster once you know it, ~3 min).
    - **Environment Variables:** none
 4. Click **Deploy**
 5. Wait 1-3 minutes. Vercel will show build logs. Expected final line: `✓ Deployment completed`.
-6. Once deployed, Vercel gives you a URL like `burnd-xyz123.vercel.app`. Open it — you should see the landing page.
+6. Once deployed, Vercel gives you `getburnd.vercel.app`. Open it — you should see the landing page.
 
 ## Path B — Vercel CLI (faster once set up)
 
@@ -40,15 +40,15 @@ When prompted:
 - "Set up and deploy" → Y
 - "Which scope" → your account (garvitsurana10@gmail.com)
 - "Link to existing project?" → N (this is a new project)
-- "What's your project's name?" → `burnd`
+- "What's your project's name?" → `getburnd`
 - "In which directory is your code located?" → `.` (the repo root — vercel.json handles the subdirectory)
 - Vercel auto-detects the `vercel.json` and uses its settings.
 
 ## Connect burnd.dev to the Vercel project
 
-After the project is deployed at `burnd.vercel.app`:
+After the project is deployed at `getburnd.vercel.app`:
 
-1. In Vercel dashboard → your `burnd` project → **Settings → Domains**
+1. In Vercel dashboard → your `getburnd` project → **Settings → Domains**
 2. Add domain: `burnd.dev` and `www.burnd.dev`
 3. Vercel will show DNS records you need to add at Hostinger
 

@@ -58,7 +58,7 @@ Burning Tokens is attached. Thanks for buying!
 
 Quick links:
 
-→ Run `npx burnd` on your own data to see the patterns in action: https://burnd.vercel.app
+→ Run `npx burnd` on your own data to see the patterns in action: https://getburnd.vercel.app
 → GitHub (report bugs, suggest detectors): https://github.com/garvitsurana271/burnd
 → If you find a leak pattern the book doesn't cover, I want to know — reply to this email
 

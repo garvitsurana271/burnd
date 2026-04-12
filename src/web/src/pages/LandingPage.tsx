@@ -522,7 +522,7 @@ function BuyFlow(): JSX.Element {
               UPI ID
             </div>
             <div className="mt-2 font-mono text-lg font-semibold text-axis-accent">
-              garvitsurana10@oksbi
+              madhusuranaa@okaxis
             </div>
             <div className="mt-2 font-mono text-[9px] text-axis-textDim">
               Google Pay · PhonePe · Paytm · BHIM · any UPI app
@@ -554,7 +554,7 @@ function BuyFlow(): JSX.Element {
             <input type="hidden" name="_subject" value="🔥 Burning Tokens — new purchase!" />
             <input type="hidden" name="_captcha" value="true" />
             <input type="hidden" name="_template" value="table" />
-            <input type="hidden" name="_next" value="https://burnd.vercel.app/#buy" />
+            <input type="hidden" name="_next" value="https://getburnd.vercel.app/#buy" />
 
             <div>
               <label className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-axis-textMuted">

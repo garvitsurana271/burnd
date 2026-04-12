@@ -6,11 +6,11 @@
 
 ## LAUNCH COSTS: ₹0
 
-No money spent until after first rupee comes in. Domain registration is deferred — you launch on `burnd.vercel.app` (free Vercel subdomain). Register `burnd.dev` later using revenue from the first few sales.
+No money spent until after first rupee comes in. Domain registration is deferred — you launch on `getburnd.vercel.app` (free Vercel subdomain). Register `burnd.dev` later using revenue from the first few sales.
 
 ## CHECKOUT: No Google Form
 
-The checkout is built directly into the landing page at `burnd.vercel.app/#buy`. Buyers fill out name + email + UPI transaction ID on YOUR site. Submissions go to your Gmail via FormSubmit.co (free, no signup). You verify the UPI receipt and email the PDF. Professional-looking, zero Google branding.
+The checkout is built directly into the landing page at `getburnd.vercel.app/#buy`. Buyers fill out name + email + UPI transaction ID on YOUR site. Submissions go to your Gmail via FormSubmit.co (free, no signup). You verify the UPI receipt and email the PDF. Professional-looking, zero Google branding.
 
 ---
 
@@ -23,7 +23,7 @@ The checkout is built directly into the landing page at `burnd.vercel.app/#buy`.
 5. Set up a GitHub repo for burnd under `garvitsurana271/burnd` and push the code (8 min)
 6. Sign up for npm and publish `burnd` CLI (5 min)
 7. Deploy the landing page + dashboard to Vercel as a new project (8 min)
-8. Final smoke test: open burnd.vercel.app + test the checkout form (5 min)
+8. Final smoke test: open getburnd.vercel.app + test the checkout form (5 min)
 9. Post the launch artifacts (Twitter, HN, Reddit, PH) using the pre-written files (10-15 min spread across the day)
 
 **First-rupee path:** After step 9, you wait. Realistic timeline for first ₹399 sale = 2-24 hours after the first Reddit India / Twitter post gains any traction.
@@ -284,13 +284,13 @@ You have a Vercel account already on `garvitsurana10@gmail.com`. **Create a NEW 
 
 **Wait 1-3 minutes** for the build to complete. Vercel will show you build logs in real-time.
 
-**Expected outcome:** the build succeeds and Vercel gives you a URL like `burnd.vercel.app` or `burnd-garvitsurana271.vercel.app`. Open it in a browser.
+**Expected outcome:** the build succeeds and Vercel gives you a URL like `getburnd.vercel.app` or `burnd-garvitsurana271.vercel.app`. Open it in a browser.
 
 **You should see:** the landing page rendering at the Vercel URL. The hero, the brutal-facts strip, the 8 detectors, the pricing, the buy section with the inline checkout form.
 
 **Known issue:** clicking "open dashboard" or navigating to /app/insights will show an error state (with a "burnd serve isn't running" hint) because there's no `burnd serve` backend on Vercel. The dashboard is a LOCAL tool, not a cloud one. The landing page works perfectly; the /app/* routes are local-only by design. This is expected and the error state now has a beautiful UI explaining what to do.
 
-**Custom domain comes LATER:** After your first ₹399 sale lands, use the revenue to register `burnd.dev` via Hostinger UPI. Full instructions for the domain + DNS setup are in `notes/queue/2026-04-12-register-burnd-dev.md` and `DEPLOY_INSTRUCTIONS.md`. For now, `burnd.vercel.app` is your launch URL. Many successful indie products launched on Vercel subdomains.
+**Custom domain comes LATER:** After your first ₹399 sale lands, use the revenue to register `burnd.dev` via Hostinger UPI. Full instructions for the domain + DNS setup are in `notes/queue/2026-04-12-register-burnd-dev.md` and `DEPLOY_INSTRUCTIONS.md`. For now, `getburnd.vercel.app` is your launch URL. Many successful indie products launched on Vercel subdomains.
 
 ---
 

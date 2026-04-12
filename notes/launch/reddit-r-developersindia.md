@@ -79,7 +79,7 @@ No Stripe, no Gumroad, no 18+ KYC, no platform fees. Just rupees direct.
 
 ## The links
 
-- Landing: **https://burnd.vercel.app**
+- Landing: **https://getburnd.vercel.app**
 - GitHub (MIT): **https://github.com/garvitsurana271/burnd**
 - Ebook buy flow: linked from the landing page
 
