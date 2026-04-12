@@ -1007,95 +1007,200 @@ function PricingCards(): JSX.Element {
   const fade = useFadeIn();
   return (
     <section id="pricing" className="border-b border-axis-border py-24">
-      <div
-        ref={fade.ref}
-        className={`mx-auto max-w-7xl px-6 ${fade.cls}`}
-      >
-        <div className="mb-4 font-mono text-[11px] uppercase tracking-widest text-axis-accent">
-          Pricing
-        </div>
+      <div ref={fade.ref} className={`mx-auto max-w-7xl px-6 ${fade.cls}`}>
+        <div className="mb-4 font-mono text-[11px] uppercase tracking-widest text-axis-accent">Pricing</div>
         <h2 className="font-serif text-4xl tracking-tight text-axis-text md:text-5xl">
           Honest. Scrappy. Indian-first.
         </h2>
         <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-axis-textMuted">
-          The CLI is free forever. The ebook is &#8377;399 (founding price). BurndPro is &#8377;149/month — less than one day of Claude Code spend for most users.
+          The CLI is free forever. The ebook explains every pattern in depth. BurndPro keeps you honest every week.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
+        {/* Top row — compact cards for Free + Ebook */}
+        <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2">
           {/* Free */}
-          <div className="flex flex-col rounded-xl border border-axis-border bg-axis-surface/50 p-6">
-            <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-axis-textMuted">Free forever</div>
-            <div className="text-xl font-semibold text-axis-text">CLI + Dashboard</div>
-            <div className="mt-4 font-mono text-4xl font-bold text-axis-text">&#8377;0</div>
+          <div className="flex flex-col rounded-xl border border-axis-border bg-axis-surface/40 p-5">
+            <div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-axis-textMuted">Free forever</div>
+            <div className="text-lg font-semibold text-axis-text">CLI + Dashboard</div>
+            <div className="mt-3 font-mono text-3xl font-bold text-axis-text">&#8377;0</div>
             <div className="font-mono text-[11px] text-axis-textDim">MIT · open source · no signup</div>
-            <ul className="mt-6 flex flex-col gap-2 text-xs text-axis-textMuted">
+            <ul className="mt-4 flex flex-col gap-1.5 text-xs text-axis-textMuted">
               {['All 8 leak detectors', 'Local web dashboard', '60-day spend chart', 'Per-project breakdown', 'Works offline'].map((f) => (
                 <li key={f} className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-400" />
+                  <Check className="mt-0.5 h-3 w-3 flex-shrink-0 text-emerald-400" />
                   <span>{f}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-auto pt-6">
-              <div className="rounded border border-axis-border bg-axis-bg px-3 py-2.5 text-center font-mono text-xs text-axis-textMuted">npx getburnd</div>
+            <div className="mt-auto pt-5">
+              <div className="rounded border border-axis-border bg-axis-bg px-3 py-2 text-center font-mono text-xs text-axis-textMuted">npx getburnd</div>
             </div>
           </div>
 
-          {/* Ebook — highlighted */}
-          <div className="relative flex flex-col rounded-xl border border-amber-500/40 bg-amber-500/5 p-6 md:-my-3">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-amber-500/40 bg-axis-bg px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-amber-400">
+          {/* Ebook */}
+          <div className="relative flex flex-col rounded-xl border border-amber-500/35 bg-amber-500/5 p-5">
+            <div className="absolute -top-3 left-5 rounded-full border border-amber-500/40 bg-axis-bg px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-amber-400">
               available now
             </div>
-            <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-amber-500">The ebook</div>
-            <div className="text-xl font-semibold text-axis-text">Burning Tokens</div>
-            <div className="mt-4 flex items-baseline gap-2">
-              <span className="font-mono text-4xl font-bold text-axis-text">&#8377;399</span>
+            <div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-amber-500">The ebook</div>
+            <div className="text-lg font-semibold text-axis-text">Burning Tokens</div>
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-mono text-3xl font-bold text-axis-text">&#8377;399</span>
               <span className="font-mono text-sm text-axis-textDim line-through">&#8377;999</span>
             </div>
-            <div className="font-mono text-[11px] text-axis-textDim">founding · first 50</div>
-            <ul className="mt-6 flex flex-col gap-2 text-xs text-axis-textMuted">
+            <div className="font-mono text-[11px] text-axis-textDim">founding · first 50 only</div>
+            <ul className="mt-4 flex flex-col gap-1.5 text-xs text-axis-textMuted">
               {['7,400 words · 11 chapters', 'Every detector with real data', 'Weekly review process', 'Lifetime updates', 'UPI instant payment'].map((f) => (
                 <li key={f} className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-400" />
+                  <Check className="mt-0.5 h-3 w-3 flex-shrink-0 text-emerald-400" />
                   <span>{f}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-auto pt-6">
-              <a href="#buy"
-                className="flex items-center justify-center gap-2 rounded-md bg-amber-500 px-4 py-2.5 text-sm font-semibold text-axis-bg transition-all hover:bg-amber-400">
-                Buy via UPI
-                <ArrowRight className="h-4 w-4" />
+            <div className="mt-auto pt-5">
+              <a href="#buy" className="flex items-center justify-center gap-2 rounded-md bg-amber-500 px-4 py-2.5 text-sm font-semibold text-axis-bg transition-all hover:bg-amber-400">
+                Buy via UPI <ArrowRight className="h-4 w-4" />
               </a>
             </div>
           </div>
+        </div>
 
-          {/* BurndPro */}
-          <div className="relative flex flex-col rounded-xl border border-axis-accent/40 bg-axis-accent/5 p-6">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-axis-accent/40 bg-axis-bg px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-axis-accent">
-              new
+        {/* ── BurndPro HERO CARD ─────────────────────────────────────────── */}
+        <div
+          className="pro-card relative mt-4 overflow-hidden rounded-2xl"
+          style={{
+            background: 'linear-gradient(135deg, #0c0c1a 0%, #111118 45%, #0e0e1f 100%)',
+            border: '1px solid rgba(99,102,241,0.35)',
+          }}
+        >
+          {/* Animated scanline sweep */}
+          <div
+            className="pro-scanline pointer-events-none absolute left-0 right-0 h-px"
+            style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.7) 40%, rgba(148,163,184,0.4) 50%, rgba(99,102,241,0.7) 60%, transparent 100%)' }}
+          />
+          {/* Subtle grid overlay */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px)',
+              backgroundSize: '48px 48px',
+            }}
+          />
+          {/* Top-right ambient glow */}
+          <div
+            className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full"
+            style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)' }}
+          />
+
+          <div className="relative p-7 md:p-10">
+            {/* Header row */}
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-axis-accent/40 bg-axis-accent/10 px-4 py-1.5">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-axis-accent" />
+                  <span className="font-mono text-[11px] uppercase tracking-widest text-axis-accent">Most value · Recommended</span>
+                </div>
+                <div className="mt-3 font-mono text-[11px] uppercase tracking-wider text-axis-accent/60">Monthly subscription</div>
+                <div className="mt-1 font-serif text-4xl font-bold text-axis-text md:text-5xl">BurndPro</div>
+              </div>
+              {/* Price block */}
+              <div className="text-right">
+                <div className="font-mono text-6xl font-bold leading-none text-white md:text-7xl">&#8377;149</div>
+                <div className="mt-1 font-mono text-sm text-axis-textMuted">/month &nbsp;·&nbsp; ≈ $1.80</div>
+                <div className="mt-1 rounded border border-axis-accent/20 bg-axis-accent/5 px-2.5 py-0.5 text-right font-mono text-[10px] text-axis-accent/70">
+                  cancel anytime
+                </div>
+              </div>
             </div>
-            <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-axis-accent">Monthly subscription</div>
-            <div className="text-xl font-semibold text-axis-text">BurndPro</div>
-            <div className="mt-4 flex items-baseline gap-2">
-              <span className="font-mono text-4xl font-bold text-axis-text">&#8377;149</span>
-              <span className="font-mono text-sm text-axis-textMuted">/month</span>
+
+            {/* The math block — this is the conversion moment */}
+            <div
+              className="mt-6 rounded-xl border p-5"
+              style={{
+                borderColor: 'rgba(99,102,241,0.2)',
+                background: 'rgba(9,9,15,0.6)',
+              }}
+            >
+              <div className="font-mono text-[10px] uppercase tracking-wider text-axis-textDim">the math</div>
+              <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
+                <div className="flex flex-col gap-1">
+                  <div className="font-mono text-2xl font-bold text-amber-400">₹3k–12k</div>
+                  <div className="font-mono text-[11px] text-axis-textDim">avg monthly Claude Code waste</div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <div className="font-mono text-2xl font-bold text-axis-accent">₹149</div>
+                  <div className="font-mono text-[11px] text-axis-textDim">BurndPro cost to stop it</div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <div className="font-mono text-2xl font-bold text-emerald-400">20–80x</div>
+                  <div className="font-mono text-[11px] text-axis-textDim">ROI in the first month</div>
+                </div>
+              </div>
             </div>
-            <div className="font-mono text-[11px] text-axis-textDim">≈ $1.80/mo · cancel anytime · UPI</div>
-            <ul className="mt-6 flex flex-col gap-2 text-xs text-axis-textMuted">
-              {['Weekly budget alerts', 'HTML cost reports', 'Historical trend tracking', 'CSV/Excel export', 'Custom detector thresholds'].map((f) => (
-                <li key={f} className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-400" />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-auto pt-6">
-              <a href="mailto:garvitsurana10@gmail.com?subject=BurndPro%20subscription"
-                className="flex items-center justify-center gap-2 rounded-md border border-axis-accent bg-axis-accent/10 px-4 py-2.5 text-sm font-semibold text-axis-accent transition-all hover:bg-axis-accent/20">
-                Email to subscribe
-                <ArrowRight className="h-4 w-4" />
-              </a>
+
+            {/* Features + CTA */}
+            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-10">
+              {/* Feature grid */}
+              <div className="grid grid-cols-1 gap-2.5">
+                {[
+                  { icon: '📬', title: 'Weekly budget alerts', desc: 'Monday email: top 3 leaks, dollar amounts, fix time' },
+                  { icon: '📊', title: 'HTML cost reports', desc: 'Shareable, self-contained — send to your team or yourself' },
+                  { icon: '📈', title: 'Historical trend tracking', desc: 'See if your spend is creeping up month over month' },
+                  { icon: '📁', title: 'CSV / Excel export', desc: 'Pipe your data into any spreadsheet or BI tool' },
+                  { icon: '⚡', title: 'Custom thresholds', desc: 'Alert me when any project exceeds $X/week' },
+                ].map((f) => (
+                  <div
+                    key={f.title}
+                    className="flex items-start gap-3 rounded-lg p-3"
+                    style={{ background: 'rgba(9,9,15,0.5)', border: '1px solid rgba(99,102,241,0.1)' }}
+                  >
+                    <span className="mt-0.5 text-base leading-none">{f.icon}</span>
+                    <div>
+                      <div className="font-mono text-[12px] font-semibold text-axis-text">{f.title}</div>
+                      <div className="mt-0.5 font-mono text-[11px] text-axis-textDim">{f.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA column */}
+              <div className="flex flex-col justify-center gap-4">
+                <a
+                  href="mailto:garvitsurana10@gmail.com?subject=BurndPro%20subscription"
+                  onClick={() => track('pro_cta_click')}
+                  className="group flex items-center justify-center gap-2.5 rounded-xl px-6 py-4 font-mono text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98]"
+                  style={{
+                    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                    boxShadow: '0 0 30px rgba(99,102,241,0.45), 0 4px 20px rgba(99,102,241,0.25)',
+                  }}
+                >
+                  Subscribe to BurndPro
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </a>
+                <div className="space-y-1.5 font-mono text-[11px] text-axis-textDim">
+                  <div className="flex items-center gap-2">
+                    <Check className="h-3 w-3 flex-shrink-0 text-emerald-400" />
+                    Email garvitsurana10@gmail.com to subscribe
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-3 w-3 flex-shrink-0 text-emerald-400" />
+                    Pay ₹149 via UPI — I confirm within 4 hrs
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-3 w-3 flex-shrink-0 text-emerald-400" />
+                    Cancel anytime — reply "unsubscribe"
+                  </div>
+                </div>
+
+                {/* vs ebook clarifier */}
+                <div
+                  className="rounded-lg p-3.5 font-mono text-[11px]"
+                  style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)' }}
+                >
+                  <span className="text-amber-400/80">Ebook vs Pro:</span>
+                  <span className="text-axis-textDim"> The ebook teaches you the 8 patterns once. Pro monitors them every week so you never slip back.</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

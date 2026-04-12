@@ -106,3 +106,21 @@ body {
 .mobile-cta-bar {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* BurndPro hero card — scanline sweep + border pulse */
+@keyframes pro-scanline {
+  0%   { top: -2px; opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+@keyframes pro-border-glow {
+  0%, 100% { box-shadow: 0 0 40px rgba(99,102,241,0.15), 0 0 80px rgba(99,102,241,0.07), inset 0 1px 0 rgba(99,102,241,0.12); }
+  50%       { box-shadow: 0 0 60px rgba(99,102,241,0.25), 0 0 120px rgba(99,102,241,0.12), inset 0 1px 0 rgba(99,102,241,0.20); }
+}
+.pro-card {
+  animation: pro-border-glow 4s ease-in-out infinite;
+}
+.pro-scanline {
+  animation: pro-scanline 5s ease-in-out infinite;
+}
