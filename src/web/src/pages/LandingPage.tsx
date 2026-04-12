@@ -40,23 +40,25 @@ export function LandingPage(): JSX.Element {
   );
 }
 
-function useFadeIn(): { ref: (el: HTMLDivElement | null) => void; visible: boolean } {
-  const elRef = useRef<HTMLDivElement | null>(null);
+function useFadeIn(): { ref: (el: HTMLDivElement | null) => void; cls: string } {
   const [visible, setVisible] = useState(false);
   const obsRef = useRef<IntersectionObserver | null>(null);
 
   const ref = (el: HTMLDivElement | null) => {
-    elRef.current = el;
     if (obsRef.current) { obsRef.current.disconnect(); obsRef.current = null; }
     if (!el) return;
     obsRef.current = new IntersectionObserver(
       ([entry]) => { if (entry?.isIntersecting) { setVisible(true); obsRef.current?.disconnect(); } },
-      { threshold: 0.15 },
+      { threshold: 0.1, rootMargin: '0px 0px 100px 0px' },
     );
     obsRef.current.observe(el);
   };
 
-  return { ref, visible };
+  const cls = visible
+    ? 'translate-y-0 opacity-100 transition-all duration-700'
+    : 'translate-y-4 opacity-100 sm:opacity-0 sm:translate-y-6 transition-all duration-700';
+
+  return { ref, cls };
 }
 
 // ===========================================================================
@@ -262,7 +264,7 @@ function NumbersStrip(): JSX.Element {
   return (
     <section
       ref={fade.ref}
-      className={`border-b border-axis-border bg-axis-surface/50 transition-all duration-700 ${fade.visible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+      className={`border-b border-axis-border bg-axis-surface/50 ${fade.cls}`}
     >
       <div className="mx-auto grid max-w-7xl grid-cols-2 md:grid-cols-4">
         {[
@@ -305,7 +307,7 @@ function DetectorGrid(): JSX.Element {
     <section id="detectors" className="border-b border-axis-border py-24">
       <div
         ref={fade.ref}
-        className={`mx-auto max-w-7xl px-6 transition-all duration-700 ${fade.visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
+        className={`mx-auto max-w-7xl px-6 ${fade.cls}`}
       >
         <div className="mb-4 font-mono text-[11px] uppercase tracking-widest text-amber-500">
           What it finds
@@ -358,7 +360,7 @@ function HowItWorks(): JSX.Element {
     <section className="border-b border-axis-border py-24">
       <div
         ref={fade.ref}
-        className={`mx-auto max-w-7xl px-6 transition-all duration-700 ${fade.visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
+        className={`mx-auto max-w-7xl px-6 ${fade.cls}`}
       >
         <div className="mb-4 font-mono text-[11px] uppercase tracking-widest text-axis-accent">
           How it works
@@ -402,7 +404,7 @@ function BuyTheEbook(): JSX.Element {
     <section id="ebook" className="border-b border-axis-border py-24">
       <div
         ref={fade.ref}
-        className={`mx-auto max-w-7xl px-6 transition-all duration-700 ${fade.visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
+        className={`mx-auto max-w-7xl px-6 ${fade.cls}`}
       >
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Book cover — floating */}
@@ -608,7 +610,7 @@ function DashboardPreview(): JSX.Element {
     <section className="border-b border-axis-border py-24">
       <div
         ref={fade.ref}
-        className={`mx-auto max-w-7xl px-6 transition-all duration-700 ${fade.visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
+        className={`mx-auto max-w-7xl px-6 ${fade.cls}`}
       >
         <div className="mb-4 font-mono text-[11px] uppercase tracking-widest text-axis-accent">
           Free forever
@@ -691,7 +693,7 @@ function PrivacyCallout(): JSX.Element {
     <section className="border-b border-axis-border py-20">
       <div
         ref={fade.ref}
-        className={`mx-auto max-w-4xl px-6 transition-all duration-700 ${fade.visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
+        className={`mx-auto max-w-4xl px-6 ${fade.cls}`}
       >
         <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-8 md:p-10">
           <div className="flex items-start gap-5">
@@ -739,7 +741,7 @@ function PricingCards(): JSX.Element {
     <section id="pricing" className="border-b border-axis-border py-24">
       <div
         ref={fade.ref}
-        className={`mx-auto max-w-7xl px-6 transition-all duration-700 ${fade.visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
+        className={`mx-auto max-w-7xl px-6 ${fade.cls}`}
       >
         <div className="mb-4 font-mono text-[11px] uppercase tracking-widest text-axis-accent">
           Pricing
@@ -838,7 +840,7 @@ function TheStory(): JSX.Element {
       />
       <div
         ref={fade.ref}
-        className={`relative mx-auto max-w-4xl px-6 transition-all duration-700 ${fade.visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
+        className={`relative mx-auto max-w-4xl px-6 ${fade.cls}`}
       >
         <div className="mb-8 font-mono text-[11px] uppercase tracking-widest text-amber-500">
           The builder

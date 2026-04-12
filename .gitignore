@@ -38,3 +38,5 @@ Thumbs.db
 
 # Test fixtures with potentially private data
 notes/jsonl-samples/
+
+.vercel
