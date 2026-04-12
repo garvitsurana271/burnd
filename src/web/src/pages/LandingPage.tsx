@@ -574,6 +574,8 @@ function BuyFlow(): JSX.Element {
             <input type="hidden" name="_captcha" value="false" />
             <input type="hidden" name="_template" value="table" />
             <input type="hidden" name="_next" value="https://getburnd.vercel.app/?submitted=true#buy" />
+            {/* Honeypot — bots fill this, humans don't see it */}
+            <input type="text" name="_honey" style={{ display: 'none' }} />
 
             <div>
               <label className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-axis-textMuted">Your name</label>
