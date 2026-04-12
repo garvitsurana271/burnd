@@ -163,7 +163,28 @@ function Hero(): JSX.Element {
           <p className="mt-2 font-serif text-[1.2rem] italic text-axis-textMuted">
             Then I built the tool to find where it all went.
           </p>
+
+          {/* PRIMARY CTA: ebook purchase — this is where money is made */}
           <div className="mt-5">
+            <a
+              href="#ebook"
+              className="flex w-full items-center justify-between rounded border border-amber-500/50 bg-amber-500/10 px-4 py-3 transition-all hover:bg-amber-500/15 hover:border-amber-500/70 active:scale-[0.98]"
+              onClick={() => track('ebook_cta_hero_mobile_click')}
+            >
+              <div>
+                <div className="font-mono text-[13px] font-semibold text-amber-400">
+                  Get the 8-pattern breakdown
+                </div>
+                <div className="mt-0.5 font-mono text-[10px] text-amber-500/60">
+                  8 patterns · exact fixes · $9 intro price
+                </div>
+              </div>
+              <span className="font-mono text-[18px] text-amber-400/80">→</span>
+            </a>
+          </div>
+
+          {/* SECONDARY CTA: free CLI */}
+          <div className="mt-3">
             <InstallCommand />
           </div>
           <div className="mt-2 flex items-center gap-3 font-mono text-[10px] text-axis-textDim">
@@ -172,12 +193,6 @@ function Hero(): JSX.Element {
             <span>open source</span>
             <span className="h-3 w-px bg-axis-border" />
             <span>100% local</span>
-          </div>
-          <div className="mt-1.5 font-mono text-[10px] text-axis-textDim">
-            Also: the ebook →{' '}
-            <a href="#ebook" className="text-amber-500/70 hover:text-amber-400 transition-colors">
-              8 patterns that burned $13k →
-            </a>
           </div>
 
           {/* Terminal — immediately below CTA, no scroll needed */}
@@ -241,7 +256,20 @@ function Hero(): JSX.Element {
               Nothing leaves your machine.
             </p>
 
-            <div className="mt-10 flex items-center gap-4">
+            {/* PRIMARY CTA — ebook */}
+            <div className="mt-10">
+              <a
+                href="#ebook"
+                className="inline-flex items-center gap-3 rounded border border-amber-500/50 bg-amber-500/10 px-6 py-3 font-mono text-sm font-semibold text-amber-400 transition-all hover:bg-amber-500/15 hover:border-amber-500/70"
+                onClick={() => track('ebook_cta_hero_desktop_click')}
+              >
+                get the 8-pattern breakdown
+                <span className="font-mono text-[11px] text-amber-500/60">$9 intro price →</span>
+              </a>
+            </div>
+
+            {/* SECONDARY CTA — free CLI + GitHub */}
+            <div className="mt-4 flex items-center gap-4">
               <InstallCommand />
               <a
                 href="https://github.com/garvitsurana271/burnd"
@@ -254,7 +282,7 @@ function Hero(): JSX.Element {
               </a>
             </div>
 
-            <div className="mt-6 flex items-center gap-4 font-mono text-[10px] text-axis-textDim">
+            <div className="mt-4 flex items-center gap-4 font-mono text-[10px] text-axis-textDim">
               <span>free</span>
               <span className="h-3 w-px bg-axis-border" />
               <span>open source (MIT)</span>
