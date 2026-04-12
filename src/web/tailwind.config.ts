@@ -24,7 +24,7 @@ export default {
           accentHover: '#4f46e5',
           accentSoft: '#6366f120',
           text: '#e2e8f0',
-          textMuted: '#64748b',
+          textMuted: '#94a3b8',
           textDim: '#334155',
           success: '#10b981',
           successSoft: '#10b98120',

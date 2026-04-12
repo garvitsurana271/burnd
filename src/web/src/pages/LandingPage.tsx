@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
   Flame,
   Terminal,
@@ -19,6 +18,8 @@ import {
   ArrowRight,
   ArrowDown,
   Mail,
+  Menu,
+  X,
 } from 'lucide-react';
 
 export function LandingPage(): JSX.Element {
@@ -48,6 +49,14 @@ function useFadeIn(): { ref: undefined; cls: string } {
 // ===========================================================================
 
 function Header(): JSX.Element {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const navLinks = [
+    { href: '#detectors', label: 'detectors' },
+    { href: '#ebook', label: 'ebook' },
+    { href: '#pricing', label: 'pricing' },
+    { href: '#story', label: 'my story' },
+  ];
+
   return (
     <header className="sticky top-0 z-50 border-b border-axis-border/50 bg-axis-bg/70 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-3">
@@ -55,28 +64,48 @@ function Header(): JSX.Element {
           <Flame className="h-5 w-5 text-amber-500" strokeWidth={2.5} />
           <span className="font-mono text-sm font-bold tracking-tight">burnd</span>
         </a>
-        <nav className="ml-auto flex items-center gap-6 font-mono text-[11px] text-axis-textMuted">
-          <a href="#detectors" className="hidden transition-colors hover:text-axis-text sm:block">detectors</a>
-          <a href="#ebook" className="hidden transition-colors hover:text-axis-text sm:block">ebook</a>
-          <a href="#pricing" className="hidden transition-colors hover:text-axis-text sm:block">pricing</a>
-          <a href="#story" className="hidden transition-colors hover:text-axis-text sm:block">my story</a>
-          <a
-            href="https://github.com/garvitsurana271/burnd"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1.5 transition-colors hover:text-axis-text"
-          >
-            <Github className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">github</span>
+
+        {/* Desktop nav */}
+        <nav className="ml-auto hidden items-center gap-6 font-mono text-[11px] text-axis-textMuted sm:flex">
+          {navLinks.map((l) => (
+            <a key={l.href} href={l.href} className="transition-colors hover:text-axis-text">{l.label}</a>
+          ))}
+          <a href="https://github.com/garvitsurana271/burnd" target="_blank" rel="noreferrer"
+            className="flex items-center gap-1.5 transition-colors hover:text-axis-text">
+            <Github className="h-3.5 w-3.5" /> github
           </a>
-          <Link
-            to="/app/insights"
-            className="rounded border border-axis-accent/50 bg-axis-accent/10 px-3 py-1.5 text-axis-accent transition-all hover:border-axis-accent hover:bg-axis-accent/20"
-          >
-            dashboard
-          </Link>
+          <a href="#buy"
+            className="rounded border border-amber-500/50 bg-amber-500/10 px-3 py-1.5 text-amber-400 transition-all hover:border-amber-500 hover:bg-amber-500/20">
+            get the ebook
+          </a>
         </nav>
+
+        {/* Mobile hamburger */}
+        <button type="button" onClick={() => setMobileOpen(!mobileOpen)}
+          className="ml-auto flex h-8 w-8 items-center justify-center rounded text-axis-textMuted sm:hidden">
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
       </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="border-t border-axis-border bg-axis-bg px-6 py-4 sm:hidden">
+          <nav className="flex flex-col gap-3 font-mono text-sm text-axis-textMuted">
+            {navLinks.map((l) => (
+              <a key={l.href} href={l.href} onClick={() => setMobileOpen(false)}
+                className="transition-colors hover:text-axis-text">{l.label}</a>
+            ))}
+            <a href="https://github.com/garvitsurana271/burnd" target="_blank" rel="noreferrer"
+              className="flex items-center gap-1.5 transition-colors hover:text-axis-text">
+              <Github className="h-3.5 w-3.5" /> github
+            </a>
+            <a href="#buy" onClick={() => setMobileOpen(false)}
+              className="mt-2 rounded border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-center text-amber-400">
+              get the ebook
+            </a>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
@@ -131,13 +160,15 @@ function Hero(): JSX.Element {
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
               <InstallCommand />
-              <Link
-                to="/app/insights"
+              <a
+                href="https://github.com/garvitsurana271/burnd"
+                target="_blank"
+                rel="noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-md border border-axis-border px-5 py-3 font-mono text-sm text-axis-textMuted transition-all hover:border-axis-textMuted hover:text-axis-text"
               >
-                see the dashboard
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+                <Github className="h-4 w-4" />
+                view source
+              </a>
             </div>
 
             <div className="mt-6 flex items-center gap-4 font-mono text-[10px] text-axis-textDim">
@@ -223,13 +254,14 @@ function InstallCommand(): JSX.Element {
 
   return (
     <button
+      type="button"
       onClick={copy}
       className="group inline-flex items-center gap-3 rounded-md border border-amber-500/40 bg-amber-500/10 px-6 py-3 font-mono text-sm text-axis-text transition-all hover:border-amber-500/60 hover:bg-amber-500/15"
     >
       <Terminal className="h-4 w-4 text-amber-500" />
-      <span>$ {cmd}</span>
+      <span>{copied ? 'copied!' : `$ ${cmd}`}</span>
       {copied ? (
-        <Check className="h-4 w-4 text-axis-success" />
+        <Check className="h-4 w-4 text-emerald-400" />
       ) : (
         <Copy className="h-4 w-4 text-axis-textDim transition-colors group-hover:text-amber-500" />
       )}
@@ -652,13 +684,23 @@ function DashboardPreview(): JSX.Element {
         </div>
 
         <div className="mt-10 text-center">
-          <Link
-            to="/app/insights"
+          <div
+            className="inline-flex flex-col items-center gap-2 rounded-md border border-axis-border bg-axis-surface/50 px-6 py-3 font-mono text-sm text-axis-textMuted"
+          >
+            <span>Run <code className="rounded bg-axis-muted px-1.5 text-axis-accent">npx burnd serve</code> to see this on your own data</span>
+            <span className="text-[10px] text-axis-textDim">localhost:4711 · your data never leaves your machine</span>
+          </div>
+          <div className="mt-4">
+          <a
+            href="https://github.com/garvitsurana271/burnd"
+            target="_blank"
+            rel="noreferrer"
             className="inline-flex items-center gap-2 rounded-md border border-axis-accent/40 bg-axis-accent/10 px-6 py-3 font-mono text-sm text-axis-accent transition-all hover:border-axis-accent hover:bg-axis-accent/20"
           >
-            Open the live demo
+            View on GitHub
             <ArrowRight className="h-4 w-4" />
-          </Link>
+          </a>
+          </div>
         </div>
       </div>
     </section>
@@ -916,7 +958,7 @@ function Footer(): JSX.Element {
               className="transition-colors hover:text-axis-text">github</a>
             <a href="https://github.com/garvitsurana271/burnd/blob/main/notes/anonymization.md" target="_blank" rel="noreferrer"
               className="transition-colors hover:text-axis-text">privacy spec</a>
-            <Link to="/app/insights" className="transition-colors hover:text-axis-text">dashboard</Link>
+            <a href="#buy" className="transition-colors hover:text-axis-text">buy the ebook</a>
           </div>
         </div>
         <div className="mt-6 font-mono text-[10px] text-axis-textDim">
