@@ -1,6 +1,6 @@
 {
   "name": "burnd",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Find what's burning a hole in your AI coding budget. Local-first cost-control tool for Claude Code power users.",
   "keywords": [
     "claude",
