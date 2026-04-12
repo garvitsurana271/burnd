@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   Zap,
   TrendingDown,
-  Clock,
   AlertTriangle,
   Repeat,
   Sparkles,
@@ -733,7 +732,7 @@ function PricingCards(): JSX.Element {
           Honest. Scrappy. Indian-first.
         </h2>
         <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-axis-textMuted">
-          The CLI is free forever. The ebook is &#8377;399 (founding price). The SaaS tier launches after I turn 18 and can legally sign up for a payment processor.
+          The CLI is free forever. The ebook is &#8377;399 (founding price). BurndPro is &#8377;149/month — less than one day of Claude Code spend for most users.
         </p>
 
         <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -785,22 +784,32 @@ function PricingCards(): JSX.Element {
             </div>
           </div>
 
-          {/* Coming soon */}
-          <div className="flex flex-col rounded-xl border border-axis-border bg-axis-surface/30 p-6 opacity-60">
-            <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-axis-textDim">Coming post-v2</div>
-            <div className="text-xl font-semibold text-axis-text">Pro (cloud sync)</div>
-            <div className="mt-4 font-mono text-4xl font-bold text-axis-text">$9/mo</div>
-            <div className="font-mono text-[11px] text-axis-textDim">or $79 founding lifetime</div>
+          {/* BurndPro */}
+          <div className="relative flex flex-col rounded-xl border border-axis-accent/40 bg-axis-accent/5 p-6">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-axis-accent/40 bg-axis-bg px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-axis-accent">
+              new
+            </div>
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-axis-accent">Monthly subscription</div>
+            <div className="text-xl font-semibold text-axis-text">BurndPro</div>
+            <div className="mt-4 flex items-baseline gap-2">
+              <span className="font-mono text-4xl font-bold text-axis-text">&#8377;149</span>
+              <span className="font-mono text-sm text-axis-textMuted">/month</span>
+            </div>
+            <div className="font-mono text-[11px] text-axis-textDim">≈ $1.80/mo · cancel anytime · UPI</div>
             <ul className="mt-6 flex flex-col gap-2 text-xs text-axis-textMuted">
-              {['Everything in CLI', 'Cross-device sync', 'Weekly leak reports', 'Historical trends', 'Team dashboards'].map((f) => (
+              {['Weekly budget alerts', 'HTML cost reports', 'Historical trend tracking', 'CSV/Excel export', 'Custom detector thresholds'].map((f) => (
                 <li key={f} className="flex items-start gap-2">
-                  <Clock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-axis-textDim" />
+                  <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-400" />
                   <span>{f}</span>
                 </li>
               ))}
             </ul>
             <div className="mt-auto pt-6">
-              <div className="rounded border border-axis-border bg-axis-bg px-3 py-2.5 text-center font-mono text-xs text-axis-textDim">after I turn 18</div>
+              <a href="#buy"
+                className="flex items-center justify-center gap-2 rounded-md border border-axis-accent bg-axis-accent/10 px-4 py-2.5 text-sm font-semibold text-axis-accent transition-all hover:bg-axis-accent/20">
+                Subscribe via UPI
+                <ArrowRight className="h-4 w-4" />
+              </a>
             </div>
           </div>
         </div>
