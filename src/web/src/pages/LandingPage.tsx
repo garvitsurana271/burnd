@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Flame,
@@ -40,25 +40,8 @@ export function LandingPage(): JSX.Element {
   );
 }
 
-function useFadeIn(): { ref: (el: HTMLDivElement | null) => void; cls: string } {
-  const [visible, setVisible] = useState(false);
-  const obsRef = useRef<IntersectionObserver | null>(null);
-
-  const ref = (el: HTMLDivElement | null) => {
-    if (obsRef.current) { obsRef.current.disconnect(); obsRef.current = null; }
-    if (!el) return;
-    obsRef.current = new IntersectionObserver(
-      ([entry]) => { if (entry?.isIntersecting) { setVisible(true); obsRef.current?.disconnect(); } },
-      { threshold: 0.1, rootMargin: '0px 0px 100px 0px' },
-    );
-    obsRef.current.observe(el);
-  };
-
-  const cls = visible
-    ? 'translate-y-0 opacity-100 transition-all duration-700'
-    : 'translate-y-4 opacity-100 sm:opacity-0 sm:translate-y-6 transition-all duration-700';
-
-  return { ref, cls };
+function useFadeIn(): { ref: undefined; cls: string } {
+  return { ref: undefined, cls: '' };
 }
 
 // ===========================================================================
