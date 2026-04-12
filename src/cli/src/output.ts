@@ -53,16 +53,37 @@ export function printTopInsights(insights: Insight[]): void {
   }
 }
 
+export function printShareBlock(topInsightTitle: string, totalSavingsUsd: number): void {
+  if (totalSavingsUsd <= 0) return;
+  const savingsStr = '$' + totalSavingsUsd.toFixed(0);
+  const tweetText = `Just ran npx getburnd on my Claude Code sessions — found ${savingsStr}/mo of waste. Top leak: ${topInsightTitle}. Free tool: getburnd.vercel.app`;
+
+  process.stdout.write(kleur.dim('  ─────────────────────────────────────────────────────────────\n'));
+  process.stdout.write('  ' + kleur.bold().yellow('Share your results') + kleur.dim(' (copy-paste):\n\n'));
+  process.stdout.write(kleur.dim('  "') + tweetText + kleur.dim('"\n\n'));
+  process.stdout.write(
+    kleur.dim('  ⭐ Found this useful? ') +
+      kleur.cyan('github.com/garvitsurana271/burnd') +
+      kleur.dim(' — a star helps a lot\n'),
+  );
+}
+
 export function printFooter(installedDomain?: string): void {
   process.stdout.write(kleur.dim('  ─────────────────────────────────────────────────────────────\n'));
   if (installedDomain) {
     process.stdout.write(
-      kleur.dim('  See the full dashboard, all insights, and weekly leak reports at ') +
+      kleur.dim('  Full dashboard + weekly reports: ') +
         kleur.cyan(installedDomain) +
         '\n',
     );
   } else {
-    process.stdout.write(kleur.dim('  See the full dashboard at ') + kleur.cyan('https://getburnd.vercel.app') + '\n');
+    process.stdout.write(
+      kleur.dim('  Full dashboard (8 detectors, spend chart): ') +
+        kleur.cyan('https://getburnd.vercel.app') +
+        kleur.dim('  |  ') +
+        kleur.bold('npx getburnd serve') +
+        '\n',
+    );
   }
   process.stdout.write('\n');
 }

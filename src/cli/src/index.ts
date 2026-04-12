@@ -6,7 +6,7 @@ import { streamRecords, type ParseStats } from './parser.js';
 import { newEmptyStats, ingestRecord, type SessionStats } from './session.js';
 import { runAllDetectors, runAllMultiSessionDetectors, type Insight } from './detectors/index.js';
 import { topNBySavings, totalSavingsUsd } from './insights.js';
-import { printHeader, printOverview, printTopInsights, printFooter } from './output.js';
+import { printHeader, printOverview, printTopInsights, printShareBlock, printFooter } from './output.js';
 import { anonymize } from './anonymize.js';
 import { startServer, DEFAULT_PORT, DEFAULT_DASHBOARD_DIST } from './serve.js';
 import { readConfig, writeConfig, validateLicense, generateKey, isProActive } from './license.js';
@@ -303,6 +303,9 @@ async function main(): Promise<void> {
     totalSavingsAvailableUsd: totalSavingsUsd(top),
   });
   printTopInsights(top);
+  if (top.length > 0) {
+    printShareBlock(top[0]!.title, totalSavingsUsd(top));
+  }
 
   // ── Pro: budget after scan ──────────────────────────────────────────
   if (opts.command === 'budget' || isProActive()) {
