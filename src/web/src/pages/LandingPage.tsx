@@ -173,6 +173,12 @@ function Hero(): JSX.Element {
             <span className="h-3 w-px bg-axis-border" />
             <span>100% local</span>
           </div>
+          <div className="mt-1.5 font-mono text-[10px] text-axis-textDim">
+            Also: the ebook →{' '}
+            <a href="#ebook" className="text-amber-500/70 hover:text-amber-400 transition-colors">
+              8 patterns that burned $13k →
+            </a>
+          </div>
 
           {/* Terminal — immediately below CTA, no scroll needed */}
           <div className="mt-6">
@@ -460,7 +466,7 @@ function NumbersStrip(): JSX.Element {
     >
       <div className="mx-auto grid max-w-7xl grid-cols-2 md:grid-cols-4">
         {[
-          { val: '$13,631', desc: 'spent on Claude Code', sub: '6 months · 15 projects', color: 'text-amber-400' },
+          { val: '$13,631', desc: 'spent on Claude Code', sub: '6 months · read the breakdown →', subHref: '#ebook', color: 'text-amber-400' },
           { val: '227', desc: 'sessions analyzed', sub: 'across all projects', color: 'text-axis-text' },
           { val: '8', desc: 'leak patterns', sub: 'auto-detected', color: 'text-axis-accent' },
           { val: '16', desc: 'years old', sub: 'Class 12 · Guwahati, India', color: 'text-emerald-400' },
@@ -470,7 +476,11 @@ function NumbersStrip(): JSX.Element {
               {n.val}
             </div>
             <div className="mt-2 text-sm font-medium text-axis-text">{n.desc}</div>
-            <div className="mt-0.5 font-mono text-[10px] text-axis-textDim">{n.sub}</div>
+            <div className="mt-0.5 font-mono text-[10px] text-axis-textDim">
+              {'subHref' in n
+                ? <a href={(n as { subHref: string }).subHref} className="hover:text-amber-400 transition-colors">{n.sub}</a>
+                : n.sub}
+            </div>
           </div>
         ))}
       </div>
