@@ -61,7 +61,7 @@ Everything runs on your machine. The CLI never uploads anything. The eventual cl
 **Stack:** Node/TypeScript for the CLI, React/Vite/Tailwind for the dashboard, Recharts for the spend chart. Zero runtime dependencies on the CLI side. Built and tested against my own 227-session data.
 
 **Links:**
-- Landing page: https://burnd.dev
+- Landing page: https://burnd.vercel.app
 - GitHub (MIT licensed): https://github.com/garvitsurana271/burnd
 - Schema study of the Claude Code JSONL format (useful reading even if you don't use Burnd): https://github.com/garvitsurana271/burnd/blob/main/notes/jsonl-format.md
 - Anonymization spec (the public trust commitment): https://github.com/garvitsurana271/burnd/blob/main/notes/anonymization.md

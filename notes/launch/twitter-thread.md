@@ -128,7 +128,7 @@ $ npx burnd
 
 runs locally. takes 30 seconds. free and open source (MIT)
 
-dashboard + landing + buy the book: https://burnd.dev
+dashboard + landing + buy the book: https://burnd.vercel.app
 
 github: https://github.com/garvitsurana271/burnd
 ```

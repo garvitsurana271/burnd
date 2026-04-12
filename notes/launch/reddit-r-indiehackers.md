@@ -22,7 +22,7 @@ This post is half about the product, half about the weird legal situation of try
 I'm Garvit, 16, in my senior year of high school in Guwahati, India. I built a local-first CLI + dashboard called Burnd that finds leaks in your Claude Code spend. The product is real — it runs on my own $13,631 of Claude Code history and finds $76 of waste via 8 detectors. The CLI is free and open-source. There's an optional companion ebook priced at ₹399 (~$4.50 USD) that walks through all 8 patterns with real data.
 
 Source: https://github.com/garvitsurana271/burnd
-Landing: https://burnd.dev
+Landing: https://burnd.vercel.app
 
 ## The age / legal situation (the part r/IndieHackers will care about)
 

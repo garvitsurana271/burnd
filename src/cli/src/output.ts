@@ -62,7 +62,7 @@ export function printFooter(installedDomain?: string): void {
         '\n',
     );
   } else {
-    process.stdout.write(kleur.dim('  See the full dashboard at ') + kleur.cyan('https://burnd.dev') + '\n');
+    process.stdout.write(kleur.dim('  See the full dashboard at ') + kleur.cyan('https://burnd.vercel.app') + '\n');
   }
   process.stdout.write('\n');
 }

@@ -1,24 +1,34 @@
 # QUEUE: Morning Launch Routine — Burnd
 
-> **Read this first thing when you wake up.** This is the complete click-by-click morning routine to take Burnd from "built overnight" to "live on the internet generating real revenue." Total time: ~60 minutes of focused work. You can pause between any two steps — the order matters but the spacing doesn't.
+> **Read this first thing when you wake up.** This is the complete click-by-click morning routine to take Burnd from "built overnight" to "live on the internet generating real revenue." Total time: ~45 minutes of focused work. You can pause between any two steps.
+
+---
+
+## LAUNCH COSTS: ₹0
+
+No money spent until after first rupee comes in. Domain registration is deferred — you launch on `burnd.vercel.app` (free Vercel subdomain). Register `burnd.dev` later using revenue from the first few sales.
+
+## CHECKOUT: No Google Form
+
+The checkout is built directly into the landing page at `burnd.vercel.app/#buy`. Buyers fill out name + email + UPI transaction ID on YOUR site. Submissions go to your Gmail via FormSubmit.co (free, no signup). You verify the UPI receipt and email the PDF. Professional-looking, zero Google branding.
 
 ---
 
 ## TL;DR — what you're doing
 
 1. Verify everything from overnight is still working (5 min)
-2. Register `burnd.dev` via Hostinger UPI (~₹1,200) (8 min)
+2. Verify your UPI handle works for receiving payments (2 min)
 3. Generate the ebook PDF from the HTML (2 min)
-4. Create the Google Form for ₹399 UPI fulfillment (5 min)
-5. Update the landing page with the real UPI handle + Google Form URL (2 min)
-6. Set up a GitHub repo for burnd under `garvitsurana271/burnd` and push the code (8 min)
-7. Sign up for npm and publish `burnd` CLI (5 min)
-8. Deploy the landing page + dashboard to Vercel as a new project (8 min)
-9. Connect burnd.dev to Vercel (DNS) (5 min)
-10. Final smoke test: run `npx burnd` (from npm) and open https://burnd.dev (5 min)
-11. Post the launch artifacts (Twitter, HN, Reddit, PH) using the pre-written files (10-15 min spread across the day)
+4. Update the landing page with your correct UPI handle if different from default (2 min)
+5. Set up a GitHub repo for burnd under `garvitsurana271/burnd` and push the code (8 min)
+6. Sign up for npm and publish `burnd` CLI (5 min)
+7. Deploy the landing page + dashboard to Vercel as a new project (8 min)
+8. Final smoke test: open burnd.vercel.app + test the checkout form (5 min)
+9. Post the launch artifacts (Twitter, HN, Reddit, PH) using the pre-written files (10-15 min spread across the day)
 
-**First-rupee path:** After step 11, you wait. Realistic timeline for first ₹399 sale = 2-24 hours after the first Reddit India / Twitter post gains any traction.
+**First-rupee path:** After step 9, you wait. Realistic timeline for first ₹399 sale = 2-24 hours after the first Reddit India / Twitter post gains any traction.
+
+**After first rupee lands:** THEN register `burnd.dev` via Hostinger UPI (~₹1,200) using the revenue, connect DNS to Vercel, and upgrade from the free subdomain. Instructions for that are in `notes/queue/2026-04-12-register-burnd-dev.md` (existing file, unchanged).
 
 ---
 
@@ -65,28 +75,20 @@ npx tsx src/index.ts --top 5
 
 ---
 
-## STEP 1 — Register burnd.dev (Tier 3 — spending money)
+## STEP 1 — Verify your UPI handle
 
-**Time:** 8 minutes
-**Cost:** ~₹1,200-1,500 (Year 1 including WHOIS privacy)
-**Existing queue file:** `notes/queue/2026-04-12-register-burnd-dev.md` has the full click-by-click walkthrough
+**Time:** 2 minutes
 
-**Short version:**
+The landing page shows `garvitsurana10@oksbi` as the UPI ID for receiving ₹399 payments. Verify this is YOUR actual UPI handle:
 
-1. Open https://www.hostinger.in/domain-name-search on phone or laptop
-2. Search for `burnd.dev`
-3. Add to cart, decline all upsells EXCEPT "Domain Privacy" (enable that one — it's free)
-4. Sign up with `garvitsurana10@gmail.com`
-5. Pay via UPI (~₹1,200-1,500)
-6. In Hostinger dashboard, toggle Auto-Renew ON (critical — prevents accidental expiry during board exam lockdown)
-7. Take screenshots of the payment success page and the domain in your dashboard
+1. Open your UPI app (SBI Pay, Google Pay, PhonePe — whatever you use for SBI)
+2. Go to "My UPI IDs" or "Profile"
+3. Check that `garvitsurana10@oksbi` is one of your registered IDs
+4. If it's different (e.g., `garvitsurana10@sbi` or `garvit@oksbi` or a different bank), note it down — you'll update the landing page in Step 3
 
-**If `burnd.dev` is suddenly taken:** STOP. Tell Claude immediately — do not pick a similar variant on your own. Fallback is `burnd.io` per the design doc Appendix A.
+**If you don't have a UPI handle at all:** you can create one in any UPI app linked to your savings account. Takes 5 minutes.
 
-**After this step:** Delete the old queue file for domain registration:
-```bash
-rm "C:\Users\Garvit Surana\Desktop\Projects\ChangeLife\notes\queue\2026-04-12-register-burnd-dev.md"
-```
+**Quick test (optional but reassuring):** Send ₹1 to your own UPI handle from a different UPI app (e.g., send from PhonePe to your SBI UPI handle). If it goes through, the handle works. You'll get ₹1 back in your own account.
 
 ---
 
@@ -123,52 +125,19 @@ git commit -m "docs: ebook PDF generated from HTML"
 
 ---
 
-## STEP 3 — Create the Google Form for ₹399 UPI fulfillment
+## STEP 3 — Update the landing page with your correct UPI handle (if different)
 
-**Time:** 5 minutes
-**Spec:** `notes/launch/google-form-template.md` has every question and setting
+**Time:** 2 minutes (skip entirely if `garvitsurana10@oksbi` is correct)
 
-**Short version:**
+The checkout form is built directly into the landing page — NO Google Form needed. Buyers fill out name + email + transaction ID on your site. FormSubmit.co relays submissions to your Gmail (free, no signup, no branding).
 
-1. Open https://forms.google.com (signed in as `garvitsurana10@gmail.com`)
-2. Click "+ Blank"
-3. Title: `Burning Tokens — get your ebook`
-4. Description: copy from `notes/launch/google-form-template.md`
-5. Add 7 questions per the template:
-   - Q1: Your name (short answer, required)
-   - Q2: Email address (short answer, required, email validation)
-   - Q3: UPI transaction ID / UTR (short answer, required)
-   - Q4: Amount paid in ₹ (number, required)
-   - Q5: How did you hear about Burnd? (multiple choice, optional)
-   - Q6: UPI handle for refund (short answer, optional)
-   - Q7: Anything else? (long answer, optional)
-6. Click the **Responses** tab → click the link icon to get the shareable URL
-7. Click **Send** → click the link icon → copy the full form URL (https://forms.gle/XXXXX)
-8. Save this URL — you need it in Step 4
+**Only do this if your UPI handle is different from `garvitsurana10@oksbi`:**
 
-**Also copy the confirmation message** from `notes/launch/google-form-template.md` and paste it into Settings → Presentation → Confirmation message.
-
-**Test the form:** Fill it out yourself with test data to make sure all 7 questions work. Delete your test response from the Responses sheet.
-
----
-
-## STEP 4 — Update the landing page with real UPI + Google Form URL
-
-**Time:** 2 minutes
-
-Open `src/web/src/pages/LandingPage.tsx` in your editor and do TWO find-and-replace operations:
-
-**Replace 1:** Find this string:
+Open `src/web/src/pages/LandingPage.tsx` in your editor. Find all instances of:
 ```
 garvitsurana10@oksbi
 ```
-Replace with your ACTUAL UPI handle. If `garvitsurana10@oksbi` is correct (check your SBI account — open BHIM or your UPI app and look at "My UPI IDs"), leave as-is. Otherwise replace with whatever your actual handle is.
-
-**Replace 2:** Find this string:
-```
-https://forms.gle/PLACEHOLDER-REPLACE-WITH-REAL-FORM
-```
-Replace with the Google Form URL from Step 3.
+Replace with your actual UPI handle.
 
 Save the file. Rebuild:
 
@@ -177,19 +146,17 @@ cd "C:\Users\Garvit Surana\Desktop\Projects\ChangeLife\src\web"
 npm run build
 ```
 
-**Expected: build succeeds, no errors.** The build output goes to `src/web/dist/`.
-
-**Commit:**
+**Commit (only if you changed the UPI handle):**
 
 ```bash
 cd "C:\Users\Garvit Surana\Desktop\Projects\ChangeLife"
 git add src/web/src/pages/LandingPage.tsx
-git commit -m "feat: real UPI handle + Google Form URL on landing page"
+git commit -m "feat: real UPI handle on landing page"
 ```
 
 ---
 
-## STEP 5 — Push code to a public GitHub repo
+## STEP 4 — Push code to a public GitHub repo
 
 **Time:** 8 minutes
 
@@ -230,7 +197,7 @@ git push -u origin main
 
 ---
 
-## STEP 6 — Sign up for npm and publish the CLI
+## STEP 5 — Sign up for npm and publish the CLI
 
 **Time:** 5 minutes
 **Risk:** PUBLIC — once published, you cannot un-publish a name on npm (you can deprecate but not delete). Only proceed if you're ready.
@@ -294,7 +261,7 @@ Should print the version. If it does, **the CLI is live on the public npm regist
 
 ---
 
-## STEP 7 — Deploy the landing page to Vercel
+## STEP 6 — Deploy the landing page to Vercel
 
 **Time:** 8 minutes
 
@@ -319,52 +286,15 @@ You have a Vercel account already on `garvitsurana10@gmail.com`. **Create a NEW 
 
 **Expected outcome:** the build succeeds and Vercel gives you a URL like `burnd.vercel.app` or `burnd-garvitsurana271.vercel.app`. Open it in a browser.
 
-**You should see:** the landing page rendering at the Vercel URL. The hero, the brutal-facts strip, the 8 detectors, the pricing, the buy section.
+**You should see:** the landing page rendering at the Vercel URL. The hero, the brutal-facts strip, the 8 detectors, the pricing, the buy section with the inline checkout form.
 
-**Known issue:** clicking "open dashboard" or navigating to /app/insights will fail because there's no `burnd serve` backend attached to the static hosting. The dashboard is a LOCAL tool, not a cloud one. The landing page works; the dashboard links will 404 on Vercel. That's expected for v1 — you explain this in the launch posts.
+**Known issue:** clicking "open dashboard" or navigating to /app/insights will show an error state (with a "burnd serve isn't running" hint) because there's no `burnd serve` backend on Vercel. The dashboard is a LOCAL tool, not a cloud one. The landing page works perfectly; the /app/* routes are local-only by design. This is expected and the error state now has a beautiful UI explaining what to do.
 
----
-
-## STEP 8 — Connect burnd.dev to the Vercel project
-
-**Time:** 5 minutes
-
-You now need to point `burnd.dev` (which you registered in Step 1 at Hostinger) to the Vercel deployment from Step 7.
-
-**In Vercel:**
-
-1. Open your burnd project → **Settings → Domains**
-2. Type `burnd.dev` in the domain input → click **Add**
-3. Vercel will show you DNS records you need to configure (specifically, an A record or a CNAME)
-
-**The exact records you need:**
-- **A record** on the root domain (`@`) pointing to `76.76.21.21`
-- **CNAME record** on `www` pointing to `cname.vercel-dns.com`
-
-(Vercel shows the exact values on their UI — use those, not the above, if they differ.)
-
-**In Hostinger's DNS panel:**
-
-1. Go to your Hostinger dashboard → **Domains → burnd.dev → DNS / Name Servers → DNS records**
-2. Delete any existing A or CNAME records on the root or `www` (Hostinger may have added parking page records — kill those)
-3. Add the records Vercel specified
-4. Save
-
-**Wait 5-15 minutes** for DNS propagation. You can test with:
-
-```bash
-nslookup burnd.dev
-```
-
-Should eventually return Vercel's IP address.
-
-**Once propagation completes:** visit `https://burnd.dev` in your browser. **You should see the landing page with the custom domain and a green padlock** (Vercel auto-provisions Let's Encrypt SSL for custom domains).
-
-**If DNS isn't propagating after 30 minutes:** the records probably aren't saved. Go back to Hostinger DNS panel and verify the records are there and correct.
+**Custom domain comes LATER:** After your first ₹399 sale lands, use the revenue to register `burnd.dev` via Hostinger UPI. Full instructions for the domain + DNS setup are in `notes/queue/2026-04-12-register-burnd-dev.md` and `DEPLOY_INSTRUCTIONS.md`. For now, `burnd.vercel.app` is your launch URL. Many successful indie products launched on Vercel subdomains.
 
 ---
 
-## STEP 9 — Final smoke test
+## STEP 7 — Final smoke test
 
 **Time:** 5 minutes
 
@@ -414,7 +344,7 @@ Open `https://www.npmjs.com/package/burnd` (or `burnd-cli` if you used the fallb
 
 ---
 
-## STEP 10 — Launch posts (the marketing layer)
+## STEP 8 — Launch posts (the marketing layer)
 
 **Time:** 10-15 minutes for the first posts, then sporadic replies across the day.
 **Detailed schedule:** `notes/launch/launch-day-checklist.md` has the hour-by-hour IST timeline.
@@ -438,7 +368,7 @@ Open `https://www.npmjs.com/package/burnd` (or `burnd-cli` if you used the fallb
 
 ---
 
-## STEP 11 — First-customer email handling
+## STEP 9 — First-customer email handling
 
 When the Google Form receives its first response:
 

@@ -477,6 +477,26 @@ function BuyTheEbook(): JSX.Element {
 }
 
 function BuyFlow(): JSX.Element {
+  const [submitted, setSubmitted] = useState(false);
+
+  if (submitted) {
+    return (
+      <div id="buy" className="mx-auto mt-16 max-w-3xl rounded-lg border border-axis-success/40 bg-axis-success/5 p-8 text-center">
+        <div className="mb-3 inline-flex h-14 w-14 items-center justify-center rounded-full bg-axis-success/20">
+          <Check className="h-7 w-7 text-axis-success" />
+        </div>
+        <h3 className="font-sans text-2xl font-bold text-axis-text">Got it!</h3>
+        <p className="mx-auto mt-3 max-w-md leading-relaxed text-axis-textMuted">
+          I'll verify the payment in my UPI app and email the <strong className="text-axis-text">Burning Tokens</strong> PDF to the address you provided.
+          Usually within 1 hour if I'm awake, always within 12 hours.
+        </p>
+        <div className="mt-6 font-mono text-[11px] text-axis-textDim">
+          Questions? garvitsurana10@gmail.com
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div id="buy" className="mx-auto mt-16 max-w-3xl rounded-lg border border-axis-border bg-axis-surface p-8">
       <div className="text-center">
@@ -488,7 +508,8 @@ function BuyFlow(): JSX.Element {
         </h3>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2">
+        {/* LEFT: UPI payment instructions */}
         <div className="rounded-md border border-axis-border bg-axis-bg p-5">
           <div className="mb-3 flex items-center gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-axis-accent font-mono text-[11px] font-semibold text-white">
@@ -504,47 +525,94 @@ function BuyFlow(): JSX.Element {
               garvitsurana10@oksbi
             </div>
             <div className="mt-2 font-mono text-[9px] text-axis-textDim">
-              works with Google Pay, PhonePe, Paytm, BHIM, and any UPI app
+              Google Pay · PhonePe · Paytm · BHIM · any UPI app
             </div>
           </div>
           <p className="mt-3 text-[11px] leading-relaxed text-axis-textMuted">
-            Open your UPI app, pay ₹399 to this ID, and note down the transaction ID (you'll need it in step 2).
+            Open your UPI app, pay ₹399, and note the transaction ID from the confirmation screen.
           </p>
         </div>
 
+        {/* RIGHT: Inline fulfillment form (submitted via FormSubmit.co) */}
         <div className="rounded-md border border-axis-border bg-axis-bg p-5">
           <div className="mb-3 flex items-center gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-axis-accent font-mono text-[11px] font-semibold text-white">
               2
             </div>
-            <div className="font-sans text-sm font-semibold text-axis-text">Fill the form</div>
+            <div className="font-sans text-sm font-semibold text-axis-text">
+              Confirm your payment
+            </div>
           </div>
-          <a
-            href="https://forms.gle/PLACEHOLDER-REPLACE-WITH-REAL-FORM"
-            target="_blank"
-            rel="noreferrer"
-            className="block rounded border border-axis-border bg-axis-surface p-4 text-center transition-colors hover:border-axis-accent"
+
+          <form
+            action="https://formsubmit.co/garvitsurana10@gmail.com"
+            method="POST"
+            onSubmit={() => setSubmitted(true)}
+            className="flex flex-col gap-3"
           >
-            <div className="font-mono text-[10px] uppercase tracking-wider text-axis-textMuted">
-              Fulfillment form
+            {/* FormSubmit config (hidden fields) */}
+            <input type="hidden" name="_subject" value="🔥 Burning Tokens — new purchase!" />
+            <input type="hidden" name="_captcha" value="true" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_next" value="https://burnd.vercel.app/#buy" />
+
+            <div>
+              <label className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-axis-textMuted">
+                Your name
+              </label>
+              <input
+                type="text"
+                name="name"
+                required
+                placeholder="First name is fine"
+                className="w-full rounded border border-axis-border bg-axis-surface px-3 py-2 font-mono text-xs text-axis-text placeholder:text-axis-textDim focus:border-axis-accent focus:outline-none"
+              />
             </div>
-            <div className="mt-2 flex items-center justify-center gap-1.5 font-mono text-sm text-axis-accent">
-              Open the form
-              <ArrowRight className="h-3.5 w-3.5" />
+
+            <div>
+              <label className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-axis-textMuted">
+                Email address
+              </label>
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="I'll send the PDF here"
+                className="w-full rounded border border-axis-border bg-axis-surface px-3 py-2 font-mono text-xs text-axis-text placeholder:text-axis-textDim focus:border-axis-accent focus:outline-none"
+              />
             </div>
-            <div className="mt-2 font-mono text-[9px] text-axis-textDim">
-              transaction ID + email address
+
+            <div>
+              <label className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-axis-textMuted">
+                UPI Transaction ID / UTR
+              </label>
+              <input
+                type="text"
+                name="transaction_id"
+                required
+                placeholder="From your UPI app confirmation"
+                className="w-full rounded border border-axis-border bg-axis-surface px-3 py-2 font-mono text-xs text-axis-text placeholder:text-axis-textDim focus:border-axis-accent focus:outline-none"
+              />
             </div>
-          </a>
-          <p className="mt-3 text-[11px] leading-relaxed text-axis-textMuted">
-            Submit your transaction ID + email. The PDF lands in your inbox within 12 hours. Usually within the hour if Garvit is awake.
+
+            <button
+              type="submit"
+              className="mt-2 flex items-center justify-center gap-2 rounded-md bg-axis-accent px-4 py-2.5 font-sans text-sm font-semibold text-white transition-colors hover:bg-axis-accentHover"
+            >
+              Send — I'll email the PDF
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </form>
+
+          <p className="mt-3 text-[10px] leading-relaxed text-axis-textDim">
+            Delivery: within 12 hours (usually within the hour if I'm awake). Zero automation, I personally verify and email every copy.
           </p>
         </div>
       </div>
 
       <div className="mt-6 rounded border border-axis-border bg-axis-bg p-4 font-mono text-[11px] text-axis-textMuted">
         <div className="mb-1 text-axis-textDim">Not in India? No UPI?</div>
-        Email <a href="mailto:garvitsurana10@gmail.com" className="text-axis-accent hover:underline">garvitsurana10@gmail.com</a> with the subject <code className="rounded bg-axis-muted px-1 text-axis-text">buy burning tokens</code>. International payment will be handled case-by-case (Wise, PayPal friends-and-family, or alternatives). Slow but real.
+        Email <a href="mailto:garvitsurana10@gmail.com" className="text-axis-accent hover:underline">garvitsurana10@gmail.com</a> with the subject <code className="rounded bg-axis-muted px-1 text-axis-text">buy burning tokens</code>. International payment handled case-by-case (Wise, PayPal, crypto, whatever works). Manual but real.
       </div>
     </div>
   );

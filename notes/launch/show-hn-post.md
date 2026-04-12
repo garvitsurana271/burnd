@@ -24,7 +24,7 @@ Show HN: Burnd – I found $76 of waste in my own $13k of Claude Code spend
 ## URL field
 
 ```
-https://burnd.dev
+https://burnd.vercel.app
 ```
 
 ## Body text (the first comment, which HN shows below the link)

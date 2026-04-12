@@ -56,7 +56,7 @@ This is the big one. HN is won or lost in the first hour.
 
 - [ ] Go to news.ycombinator.com/submit
 - [ ] Paste the title from show-hn-post.md (exactly — every character matters)
-- [ ] URL field: https://burnd.dev
+- [ ] URL field: https://burnd.vercel.app
 - [ ] Submit
 - [ ] IMMEDIATELY post the body text as the first comment on your own submission (from show-hn-post.md)
 - [ ] Keep the HN thread tab open and refresh every 2-3 minutes for the first 45 minutes

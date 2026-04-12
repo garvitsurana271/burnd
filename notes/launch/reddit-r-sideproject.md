@@ -58,7 +58,7 @@ If you're outside India, email me (garvitsurana10@gmail.com) with subject "buy b
 
 ## Links
 
-- Landing: https://burnd.dev
+- Landing: https://burnd.vercel.app
 - GitHub (MIT): https://github.com/garvitsurana271/burnd
 - The dashboard: `npx burnd serve` → localhost:4711
 - Ebook: the landing page has the buy flow
