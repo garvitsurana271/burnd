@@ -6,11 +6,13 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({ error, onRetry }: ErrorStateProps): JSX.Element {
-  const looksLikeConnectionRefused =
+  const looksLikeNotRunning =
     error.toLowerCase().includes('failed to fetch') ||
     error.toLowerCase().includes('networkerror') ||
     error.toLowerCase().includes('connection') ||
-    error.toLowerCase().includes('fetch');
+    error.toLowerCase().includes('fetch') ||
+    error.toLowerCase().includes('not valid json') ||
+    error.toLowerCase().includes('doctype');
 
   return (
     <div className="animate-fade-in rounded-lg border border-axis-danger/40 bg-axis-dangerSoft p-8">
@@ -23,7 +25,7 @@ export function ErrorState({ error, onRetry }: ErrorStateProps): JSX.Element {
             The dashboard couldn't reach burnd
           </h2>
           <p className="mt-1 text-sm text-axis-textMuted">
-            {looksLikeConnectionRefused ? (
+            {looksLikeNotRunning ? (
               <>
                 It looks like <code className="rounded bg-axis-muted px-1.5 py-0.5 font-mono text-xs text-axis-text">burnd serve</code> isn't running, or isn't on port 4711.
               </>
@@ -37,7 +39,7 @@ export function ErrorState({ error, onRetry }: ErrorStateProps): JSX.Element {
             {error}
           </div>
 
-          {looksLikeConnectionRefused && (
+          {looksLikeNotRunning && (
             <div className="mt-5">
               <div className="mb-2 font-mono text-[11px] uppercase tracking-wider text-axis-textDim">
                 Try this

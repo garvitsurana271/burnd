@@ -32,11 +32,31 @@ firebase-debug.log
 .DS_Store
 Thumbs.db
 
-# Claude Code session data — private to the developer running it
+# Claude Code session data
 .claude/
-**/jsonl-samples/
+
+# Internal planning docs (keep local, not for public repo)
+CLAUDE.md
+OVERNIGHT_BATTLE_PLAN.md
+WAKEUP_v2.md
+LAUNCH_NOW.sh
+DEPLOY_INSTRUCTIONS.md
+PUBLISH_CHECKLIST.md
+docs/superpowers/
+notes/queue/
+notes/launch/
+notes/ebook/
+notes/week-1-summary.md
+notes/domain-verification.md
+
+# Vercel / Playwright internals
+.vercel
+.playwright-mcp/
+
+# Screenshots (audit artifacts)
+*.png
+*.jpg
 
 # Test fixtures with potentially private data
 notes/jsonl-samples/
-
-.vercel
+**/jsonl-samples/

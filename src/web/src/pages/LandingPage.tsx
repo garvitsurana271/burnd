@@ -116,7 +116,7 @@ function Header(): JSX.Element {
 
 function Hero(): JSX.Element {
   return (
-    <section className="relative overflow-hidden border-b border-axis-border">
+    <section className="relative overflow-hidden">
       <div className="hero-glow pointer-events-none absolute inset-0" />
       <div
         className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[800px] -translate-x-1/2 opacity-20"
