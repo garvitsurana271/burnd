@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout.js';
 import { LandingPage } from './pages/LandingPage.js';
-import { InsightsPage } from './pages/InsightsPage.js';
-import { OverviewPage } from './pages/OverviewPage.js';
-import { ProjectsPage } from './pages/ProjectsPage.js';
-import { ToolsPage } from './pages/ToolsPage.js';
-import { SessionsPage } from './pages/SessionsPage.js';
 import { fetchSnapshot, type SnapshotView } from './lib/snapshot.js';
+
+// Dashboard pages are only needed on /app routes — lazy-load so landing page
+// visitors don't download Recharts, chart components, etc.
+const InsightsPage = lazy(() => import('./pages/InsightsPage.js').then(m => ({ default: m.InsightsPage })));
+const OverviewPage = lazy(() => import('./pages/OverviewPage.js').then(m => ({ default: m.OverviewPage })));
+const ProjectsPage = lazy(() => import('./pages/ProjectsPage.js').then(m => ({ default: m.ProjectsPage })));
+const ToolsPage = lazy(() => import('./pages/ToolsPage.js').then(m => ({ default: m.ToolsPage })));
+const SessionsPage = lazy(() => import('./pages/SessionsPage.js').then(m => ({ default: m.SessionsPage })));
 
 export function App(): JSX.Element {
   const location = useLocation();
@@ -58,16 +61,18 @@ export function App(): JSX.Element {
       onRefresh={() => void load(true)}
     >
       {snapshot ? (
-        <Routes>
-          {/* /app is the dashboard root — redirects to the Insights view per the positioning rule. */}
-          <Route path="/app" element={<Navigate to="/app/insights" replace />} />
-          <Route path="/app/insights" element={<InsightsPage snapshot={snapshot} />} />
-          <Route path="/app/overview" element={<OverviewPage snapshot={snapshot} />} />
-          <Route path="/app/projects" element={<ProjectsPage snapshot={snapshot} />} />
-          <Route path="/app/tools" element={<ToolsPage snapshot={snapshot} />} />
-          <Route path="/app/sessions" element={<SessionsPage snapshot={snapshot} />} />
-          <Route path="/app/*" element={<Navigate to="/app/insights" replace />} />
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            {/* /app is the dashboard root — redirects to the Insights view per the positioning rule. */}
+            <Route path="/app" element={<Navigate to="/app/insights" replace />} />
+            <Route path="/app/insights" element={<InsightsPage snapshot={snapshot} />} />
+            <Route path="/app/overview" element={<OverviewPage snapshot={snapshot} />} />
+            <Route path="/app/projects" element={<ProjectsPage snapshot={snapshot} />} />
+            <Route path="/app/tools" element={<ToolsPage snapshot={snapshot} />} />
+            <Route path="/app/sessions" element={<SessionsPage snapshot={snapshot} />} />
+            <Route path="/app/*" element={<Navigate to="/app/insights" replace />} />
+          </Routes>
+        </Suspense>
       ) : null}
     </Layout>
   );

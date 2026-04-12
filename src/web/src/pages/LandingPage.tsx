@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { track } from '@vercel/analytics';
 import {
   Flame,
   Terminal,
@@ -23,6 +24,7 @@ import {
 } from 'lucide-react';
 
 export function LandingPage(): JSX.Element {
+  useScrollDepthTracking();
   return (
     <div className="noise-overlay min-h-screen bg-axis-bg text-axis-text pb-16 sm:pb-0">
       <Header />
@@ -30,6 +32,7 @@ export function LandingPage(): JSX.Element {
       <NumbersStrip />
       <DetectorGrid />
       <HowItWorks />
+      <MidPageCta />
       <BuyTheEbook />
       <DashboardPreview />
       <PrivacyCallout />
@@ -39,6 +42,28 @@ export function LandingPage(): JSX.Element {
       <MobileCtaBar />
     </div>
   );
+}
+
+function useScrollDepthTracking(): void {
+  useEffect(() => {
+    const milestones = [25, 50, 75, 90];
+    const fired = new Set<number>();
+
+    function onScroll(): void {
+      const scrolled = window.scrollY + window.innerHeight;
+      const total = document.documentElement.scrollHeight;
+      const pct = Math.round((scrolled / total) * 100);
+      for (const m of milestones) {
+        if (pct >= m && !fired.has(m)) {
+          fired.add(m);
+          track('scroll_depth', { pct: m });
+        }
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 }
 
 function useFadeIn(): { ref: undefined; cls: string } {
@@ -254,6 +279,7 @@ function InstallCommand(): JSX.Element {
   const cmd = 'npx getburnd';
 
   function copy(): void {
+    track('install_command_copied');
     void navigator.clipboard.writeText(cmd).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
@@ -376,7 +402,27 @@ function TerminalAnimation(): JSX.Element {
 
 function MobileCtaBar(): JSX.Element {
   const [copied, setCopied] = useState(false);
+  const [pulse, setPulse] = useState(false);
+  const interacted = useRef(false);
+
+  useEffect(() => {
+    function onScroll(): void {
+      if (interacted.current) return;
+      const scrolled = window.scrollY + window.innerHeight;
+      const total = document.documentElement.scrollHeight;
+      if (scrolled / total >= 0.6) {
+        setPulse(true);
+        setTimeout(() => setPulse(false), 2000);
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   function copy(): void {
+    interacted.current = true;
+    setPulse(false);
+    track('install_command_copied_mobile');
     void navigator.clipboard.writeText('npx getburnd').then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
@@ -387,7 +433,11 @@ function MobileCtaBar(): JSX.Element {
       <button
         type="button"
         onClick={copy}
-        className="flex w-full items-center justify-center gap-2 rounded-md border border-amber-500/50 bg-amber-500/10 py-3 font-mono text-sm text-amber-400 active:bg-amber-500/20"
+        className={`flex w-full items-center justify-center gap-2 rounded-md border py-3 font-mono text-sm text-amber-400 active:bg-amber-500/20 transition-all duration-300 ${
+          pulse
+            ? 'border-amber-500 bg-amber-500/20 shadow-lg shadow-amber-500/20'
+            : 'border-amber-500/50 bg-amber-500/10'
+        }`}
       >
         <Terminal className="h-4 w-4" />
         <span>{copied ? 'copied! paste in terminal' : '$ npx getburnd — free, runs locally'}</span>
@@ -489,6 +539,33 @@ function DetectorGrid(): JSX.Element {
 // ===========================================================================
 // How it works — 3 steps
 // ===========================================================================
+
+// ===========================================================================
+// Mid-page CTA — catches users who scrolled 50%+ but haven't installed yet
+// ===========================================================================
+
+function MidPageCta(): JSX.Element {
+  return (
+    <section className="border-b border-axis-border bg-axis-surface/30 py-14">
+      <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 px-6 text-center">
+        <p className="font-mono text-[11px] uppercase tracking-widest text-axis-accent">
+          Free · open source · 100% local
+        </p>
+        <h2 className="font-serif text-3xl tracking-tight text-axis-text md:text-4xl">
+          See exactly where your Claude spend is leaking.
+        </h2>
+        <p className="max-w-lg text-[14px] leading-relaxed text-axis-textMuted">
+          One command. No signup. No cloud. Works with your existing{' '}
+          <code className="rounded bg-axis-muted px-1 py-0.5 font-mono text-xs text-axis-accent">
+            ~/.claude/projects/
+          </code>{' '}
+          files right now.
+        </p>
+        <InstallCommand />
+      </div>
+    </section>
+  );
+}
 
 function HowItWorks(): JSX.Element {
   const fade = useFadeIn();
