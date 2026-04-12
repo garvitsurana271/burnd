@@ -199,7 +199,7 @@ function Hero(): JSX.Element {
                 </div>
                 <div className="mt-1 text-axis-textDim">  ─────────────────────────────────────────────────────────────</div>
                 <div className="mt-3">
-                  {'  '}Scanned: <span className="text-cyan-400">227</span> session files across <span className="text-cyan-400">227</span> sessions
+                  {'  '}Scanned: <span className="text-cyan-400">15</span> projects across <span className="text-cyan-400">227</span> sessions
                 </div>
                 <div>
                   {'  '}All-time spend: <span className="font-bold text-emerald-400">$13,631.00</span>
@@ -571,7 +571,7 @@ function BuyFlow(): JSX.Element {
             className="flex flex-col gap-3"
           >
             <input type="hidden" name="_subject" value="Burning Tokens — new purchase!" />
-            <input type="hidden" name="_captcha" value="true" />
+            <input type="hidden" name="_captcha" value="false" />
             <input type="hidden" name="_template" value="table" />
             <input type="hidden" name="_next" value="https://getburnd.vercel.app/?submitted=true#buy" />
 
@@ -846,9 +846,9 @@ function PricingCards(): JSX.Element {
               ))}
             </ul>
             <div className="mt-auto pt-6">
-              <a href="#buy"
+              <a href="mailto:garvitsurana10@gmail.com?subject=BurndPro%20subscription"
                 className="flex items-center justify-center gap-2 rounded-md border border-axis-accent bg-axis-accent/10 px-4 py-2.5 text-sm font-semibold text-axis-accent transition-all hover:bg-axis-accent/20">
-                Subscribe via UPI
+                Email to subscribe
                 <ArrowRight className="h-4 w-4" />
               </a>
             </div>
