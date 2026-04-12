@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "name": "getburnd",
   "buildCommand": "cd src/web && npm install && npm run build",
   "outputDirectory": "src/web/dist",
   "framework": null,
