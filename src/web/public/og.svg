@@ -1,0 +1,58 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#09090f"/>
+      <stop offset="100%" stop-color="#111118"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="400" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle grid lines -->
+  <line x1="0" y1="210" x2="1200" y2="210" stroke="#1e1e2e" stroke-width="1"/>
+  <line x1="0" y1="420" x2="1200" y2="420" stroke="#1e1e2e" stroke-width="1"/>
+  <line x1="400" y1="0" x2="400" y2="630" stroke="#1e1e2e" stroke-width="1"/>
+  <line x1="800" y1="0" x2="800" y2="630" stroke="#1e1e2e" stroke-width="1"/>
+
+  <!-- Accent bar -->
+  <rect x="80" y="80" width="6" height="80" fill="url(#accent)" rx="3"/>
+
+  <!-- Brand -->
+  <text x="104" y="130" font-family="monospace" font-size="52" font-weight="700" fill="#f8f8ff" letter-spacing="-1">burnd</text>
+
+  <!-- Tagline -->
+  <text x="104" y="175" font-family="monospace" font-size="22" fill="#6366f1">find what's burning your Claude Code budget</text>
+
+  <!-- Divider -->
+  <line x1="80" y1="215" x2="1120" y2="215" stroke="#1e1e2e" stroke-width="1.5"/>
+
+  <!-- Stat 1 -->
+  <text x="104" y="290" font-family="monospace" font-size="48" font-weight="700" fill="#f8f8ff">$13,631</text>
+  <text x="104" y="325" font-family="monospace" font-size="18" fill="#6b7280">spent in 6 months</text>
+
+  <!-- Stat 2 -->
+  <text x="460" y="290" font-family="monospace" font-size="48" font-weight="700" fill="#f8f8ff">8</text>
+  <text x="460" y="325" font-family="monospace" font-size="18" fill="#6b7280">leak detectors</text>
+
+  <!-- Stat 3 -->
+  <text x="700" y="290" font-family="monospace" font-size="48" font-weight="700" fill="#6366f1">$76</text>
+  <text x="700" y="325" font-family="monospace" font-size="18" fill="#6b7280">waste found instantly</text>
+
+  <!-- CLI command box -->
+  <rect x="80" y="390" width="700" height="72" rx="8" fill="#0d0d14" stroke="#1e1e2e" stroke-width="1.5"/>
+  <text x="110" y="435" font-family="monospace" font-size="26" fill="#6366f1">$</text>
+  <text x="140" y="435" font-family="monospace" font-size="26" fill="#f8f8ff">npx getburnd</text>
+
+  <!-- Free badge -->
+  <rect x="820" y="395" width="140" height="34" rx="17" fill="#6366f1" opacity="0.15" stroke="#6366f1" stroke-width="1"/>
+  <text x="890" y="417" font-family="monospace" font-size="15" fill="#6366f1" text-anchor="middle">free · MIT</text>
+
+  <!-- Footer -->
+  <text x="104" y="565" font-family="monospace" font-size="18" fill="#4b5563">getburnd.vercel.app</text>
+  <text x="1096" y="565" font-family="monospace" font-size="18" fill="#4b5563" text-anchor="end">nothing leaves your machine</text>
+</svg>
