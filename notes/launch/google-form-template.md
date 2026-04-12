@@ -19,7 +19,7 @@ Total time: 60 seconds
 Delivery time: within 12 hours (usually within 1 hour if I'm awake)
 
 If you haven't paid yet:
-1. Send ₹399 via UPI to: garvitsurana10@oksbi
+1. Send ₹399 via UPI to: madhusuranaa@okaxis
 2. Note down the transaction ID (it's in your UPI app's history)
 3. Come back here and fill this form
 ```
@@ -41,7 +41,7 @@ If you haven't paid yet:
 ### Q3 — UPI transaction ID (short answer, required)
 
 **Question:** `UPI transaction ID / UTR number`
-**Help text:** `From your UPI app after you sent ₹399 to garvitsurana10@oksbi. It looks like a 12-digit number or a longer reference code.`
+**Help text:** `From your UPI app after you sent ₹399 to madhusuranaa@okaxis. It looks like a 12-digit number or a longer reference code.`
 **Validation:** Text, required
 
 ### Q4 — Payment amount (short answer, required)

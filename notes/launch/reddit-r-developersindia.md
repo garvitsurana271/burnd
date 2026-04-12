@@ -68,7 +68,7 @@ I also wrote a book called **"Burning Tokens"** that walks through every detecto
 **How to buy (India, via UPI):**
 
 1. Open your UPI app (Google Pay, PhonePe, Paytm, BHIM, any of them)
-2. Pay ₹399 to `garvitsurana10@oksbi` (my UPI ID)
+2. Pay ₹399 to `madhusuranaa@okaxis` (my UPI ID)
 3. Note down the transaction ID
 4. Fill this form (linked on the landing page) with your transaction ID + email
 5. I email you the ebook PDF within a few hours

@@ -48,7 +48,7 @@ So the checkout is:
 
 1. Buyer opens my landing page (burnd.dev)
 2. Clicks "Buy via UPI"
-3. Sees my UPI ID (like `garvitsurana10@oksbi`) and the amount (₹399)
+3. Sees my UPI ID (like `madhusuranaa@okaxis`) and the amount (₹399)
 4. Pays from their own UPI app — Google Pay, PhonePe, Paytm, BHIM, whatever
 5. Fills a Google Form with their transaction ID + email address
 6. I email them the ebook PDF within a few hours (manually, for now)

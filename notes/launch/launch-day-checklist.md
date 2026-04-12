@@ -7,7 +7,7 @@
 
 - [ ] Google Form is live with the real URL (not the placeholder)
 - [ ] Landing page has the real Google Form URL (search for PLACEHOLDER in LandingPage.tsx)
-- [ ] Landing page has the real UPI ID (currently `garvitsurana10@oksbi` as default guess — verify this works)
+- [ ] Landing page has the real UPI ID (currently `madhusuranaa@okaxis` as default guess — verify this works)
 - [ ] burnd.dev resolves to the Vercel deployment
 - [ ] `npx burnd` installs and runs on a clean machine (test in WSL or a fresh terminal)
 - [ ] Ebook PDF is generated and saved at `notes/ebook/burning-tokens.pdf` (open .html in browser → Ctrl+P → Save as PDF)
