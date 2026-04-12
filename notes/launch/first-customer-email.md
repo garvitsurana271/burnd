@@ -21,7 +21,7 @@ Burning Tokens is attached. You were my #N buyer — genuinely means a lot given
 
 Two quick things:
 
-1. If the book is useful, the best possible thing you can do is run `npx burnd` on your own data and tell me what you find. If there's a leak pattern I didn't cover in the book, I want to know — I'll add it to v1.1 and you get the update free.
+1. If the book is useful, the best possible thing you can do is run `npx getburnd` on your own data and tell me what you find. If there's a leak pattern I didn't cover in the book, I want to know — I'll add it to v1.1 and you get the update free.
 
 2. If the book is NOT useful, tell me why. I've been working on this for weeks and I want to know where it falls short. I won't get defensive. Honest feedback from customer #1-10 is the most valuable thing I can get right now.
 
@@ -58,7 +58,7 @@ Burning Tokens is attached. Thanks for buying!
 
 Quick links:
 
-→ Run `npx burnd` on your own data to see the patterns in action: https://getburnd.vercel.app
+→ Run `npx getburnd` on your own data to see the patterns in action: https://getburnd.vercel.app
 → GitHub (report bugs, suggest detectors): https://github.com/garvitsurana271/burnd
 → If you find a leak pattern the book doesn't cover, I want to know — reply to this email
 

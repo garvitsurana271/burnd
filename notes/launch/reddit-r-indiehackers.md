@@ -91,7 +91,7 @@ Honest first-month floor: 0 sales. I might just not find my audience and that's 
 
 ## Ask
 
-If you use Claude Code and have ever wondered where your API money goes: please try `npx burnd` on your own data and tell me what you find. The CLI + dashboard are free forever. The ebook is ₹399 if you want it, but the free CLI covers the main use case.
+If you use Claude Code and have ever wondered where your API money goes: please try `npx getburnd` on your own data and tell me what you find. The CLI + dashboard are free forever. The ebook is ₹399 if you want it, but the free CLI covers the main use case.
 
 Also: if you have experience running a micro-SaaS or productized service in India (especially with minor / under-18 founders), I'd love to hear your war stories. I'm pretty sure I'm going to make at least 3 mistakes in the next 2 months that someone here has already made and could warn me about.
 

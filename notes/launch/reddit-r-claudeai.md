@@ -48,10 +48,10 @@ Six months ago I looked at my Anthropic bill and realized I'd spent **$13,631** 
 
 **How it works:**
 
-    $ npx burnd
+    $ npx getburnd
     # scans ~/.claude/projects/, prints top 3 leaks with dollar values and fixes
 
-    $ npx burnd serve
+    $ npx getburnd serve
     # opens a local web dashboard at localhost:4711 with all 8 detectors,
     # a 60-day spend chart, per-project breakdown, per-tool stats, and
     # a Sessions view

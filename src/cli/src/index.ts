@@ -87,8 +87,8 @@ function printHelp(): void {
 burnd ${VERSION} — find what's burning a hole in your AI coding budget
 
 Usage:
-  npx burnd [scan]                 Scan ~/.claude/projects/, print top leaks
-  npx burnd serve                  Start the local web dashboard at localhost:${DEFAULT_PORT}
+  npx getburnd [scan]                 Scan ~/.claude/projects/, print top leaks
+  npx getburnd serve                  Start the local web dashboard at localhost:${DEFAULT_PORT}
 
 Scan options:
   --top <n>                  Print top N insights (default: 3)
@@ -100,12 +100,12 @@ Serve options:
   --root <path>              Use a custom Claude projects root
 
 ${kleur.bold().yellow('BurndPro')} (₹149/month):
-  npx burnd pro activate <email> <key>   Activate your Pro license
-  npx burnd pro status                   Check license status
-  npx burnd budget                       Show weekly budget status
-  npx burnd budget set <amount>          Set weekly budget in USD
-  npx burnd report                       Generate weekly HTML report
-  npx burnd export                       Export all sessions to CSV
+  npx getburnd pro activate <email> <key>   Activate your Pro license
+  npx getburnd pro status                   Check license status
+  npx getburnd budget                       Show weekly budget status
+  npx getburnd budget set <amount>          Set weekly budget in USD
+  npx getburnd report                       Generate weekly HTML report
+  npx getburnd export                       Export all sessions to CSV
 
   Pro features: budget alerts, weekly reports, historical trends, CSV export.
   Get a license: https://getburnd.vercel.app/#buy or garvitsurana10@gmail.com
@@ -163,7 +163,7 @@ async function main(): Promise<void> {
       const email = opts.positionalArgs[0];
       const key = opts.positionalArgs[1];
       if (!email || !key) {
-        process.stderr.write('Usage: npx burnd pro activate <email> <key>\n');
+        process.stderr.write('Usage: npx getburnd pro activate <email> <key>\n');
         process.exit(1);
       }
       config.email = email;
@@ -203,7 +203,7 @@ async function main(): Promise<void> {
       const email = opts.positionalArgs[0];
       const month = opts.positionalArgs[1];
       if (!email || !month) {
-        process.stderr.write('Usage: npx burnd pro keygen <email> <YYYY-MM>\n');
+        process.stderr.write('Usage: npx getburnd pro keygen <email> <YYYY-MM>\n');
         process.exit(1);
       }
       process.stdout.write(generateKey(email, month) + '\n');
@@ -217,8 +217,8 @@ async function main(): Promise<void> {
   // ── Budget set ──────────────────────────────────────────────────────
   if (opts.command === 'budget' && opts.subcommand === 'set') {
     if (!opts.budgetAmount || opts.budgetAmount <= 0) {
-      process.stderr.write('Usage: npx burnd budget set <amount_usd>\n');
-      process.stderr.write('Example: npx burnd budget set 50\n');
+      process.stderr.write('Usage: npx getburnd budget set <amount_usd>\n');
+      process.stderr.write('Example: npx getburnd budget set 50\n');
       process.exit(1);
     }
     const config = readConfig();
@@ -311,8 +311,8 @@ async function main(): Promise<void> {
     if (budget) {
       printBudget(budget);
     } else if (opts.command === 'budget') {
-      process.stdout.write(kleur.yellow('\n  No budget set. Run: npx burnd budget set <amount_usd>\n'));
-      process.stdout.write(kleur.dim('  Example: npx burnd budget set 50\n\n'));
+      process.stdout.write(kleur.yellow('\n  No budget set. Run: npx getburnd budget set <amount_usd>\n'));
+      process.stdout.write(kleur.dim('  Example: npx getburnd budget set 50\n\n'));
     }
   }
 

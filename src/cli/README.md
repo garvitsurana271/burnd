@@ -11,7 +11,7 @@ Built by [Garvit Surana](https://getburnd.vercel.app) — 16, Class 12 ISC, Guwa
 ## Install & run
 
 ```bash
-npx burnd
+npx getburnd
 ```
 
 That's it. It scans your session files and prints the top 3 leaks to your terminal with dollar values and fixes. Free, MIT, open source. **Nothing leaves your machine.**
@@ -19,7 +19,7 @@ That's it. It scans your session files and prints the top 3 leaks to your termin
 For the full web dashboard:
 
 ```bash
-npx burnd serve
+npx getburnd serve
 ```
 
 Then open `http://localhost:4711` in your browser. Insights, Overview with 60-day spend chart, Projects, Tools, Sessions — all 5 views, all from your local data.
@@ -45,8 +45,8 @@ Every insight has a dollar value, an effort estimate, and step-by-step fix instr
 
 ```
 Usage:
-  npx burnd [scan]                 Scan ~/.claude/projects/, print top leaks
-  npx burnd serve                  Start the local web dashboard at localhost:4711
+  npx getburnd [scan]                 Scan ~/.claude/projects/, print top leaks
+  npx getburnd serve                  Start the local web dashboard at localhost:4711
 
 Scan options:
   --top <n>                        Print top N insights (default: 3)

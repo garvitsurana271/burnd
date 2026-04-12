@@ -433,14 +433,14 @@ Here's the thing about all eight patterns: if you just read this book, nod along
 
 I've settled on a **15-minute weekly review** that I do every Sunday night. Here's what it looks like:
 
-**Step 1: Run `npx burnd` in the terminal.** This prints the top 3 leaks across all your sessions from the last week. Takes 5 seconds.
+**Step 1: Run `npx getburnd` in the terminal.** This prints the top 3 leaks across all your sessions from the last week. Takes 5 seconds.
 
 **Step 2: Look at each leak and decide what to do.** For each of the top 3:
 - If the leak is a one-off, note it and move on
 - If it's a pattern (happened multiple times), pick one of the fixes from this book and apply it this week
 - If it's a pattern you've already fixed, double-check that the fix actually stuck
 
-**Step 3: Check your per-project cost spread.** Open `npx burnd serve` and click to the Projects tab. Is there a new outlier? A project that's gotten more expensive compared to last week? Investigate.
+**Step 3: Check your per-project cost spread.** Open `npx getburnd serve` and click to the Projects tab. Is there a new outlier? A project that's gotten more expensive compared to last week? Investigate.
 
 **Step 4: Read one week of your recent session titles** (the auto-generated `aiTitle` fields) and ask yourself: were any of these sessions *unsuccessful*? As in, did you pay for them without getting usable output? Those are the thrash sessions — flag them for the next review.
 
@@ -461,7 +461,7 @@ Burnd is free and open-source. The CLI runs locally on your machine and reads yo
 **To run Burnd:**
 
 ```bash
-npx burnd
+npx getburnd
 ```
 
 That's it. It scans all your session files and prints the top 3 leaks to your terminal. The first run might take 10-30 seconds if you have a lot of session files; subsequent runs are cached for 30 seconds.
@@ -469,7 +469,7 @@ That's it. It scans all your session files and prints the top 3 leaks to your te
 **To run the dashboard:**
 
 ```bash
-npx burnd serve
+npx getburnd serve
 ```
 
 Then open `http://localhost:4711` in your browser. You'll see your all-time spend, a 60-day spend chart, a Projects tab with per-project cost breakdowns, a Tools tab with per-tool error rates, and a Sessions tab where you can drill into specific sessions.

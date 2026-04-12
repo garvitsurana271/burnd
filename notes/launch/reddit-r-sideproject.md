@@ -29,7 +29,7 @@ I built a tool called Burnd that parses those files locally and finds 8 patterns
 
 ## What it does
 
-`npx burnd` prints the top 3 leaks in your terminal with dollar values and fixes. `npx burnd serve` runs a local web dashboard at localhost:4711 with all 8 detectors, a 60-day spend chart, per-project breakdown, per-tool stats, etc.
+`npx getburnd` prints the top 3 leaks in your terminal with dollar values and fixes. `npx getburnd serve` runs a local web dashboard at localhost:4711 with all 8 detectors, a 60-day spend chart, per-project breakdown, per-tool stats, etc.
 
 The 8 leak patterns:
 
@@ -46,7 +46,7 @@ The 8 leak patterns:
 
 Three things:
 
-1. **The CLI + dashboard** — free, MIT, open source. No signup, no tracking, no cloud. Just `npx burnd` and you're in.
+1. **The CLI + dashboard** — free, MIT, open source. No signup, no tracking, no cloud. Just `npx getburnd` and you're in.
 2. **A companion ebook** — "Burning Tokens" — I wrote up every pattern in book form with real data. 7,400 words. ₹399 (about $4.50 USD) via UPI. First 50 copies at this price, then it goes up to ₹599.
 3. **Future SaaS tier** — $9/mo with cloud sync, weekly email reports, historical trends. Coming after I turn 18 (I can't legally set up Stripe/Gumroad/Lemon Squeezy yet, so the SaaS tier waits).
 
@@ -60,7 +60,7 @@ If you're outside India, email me (garvitsurana10@gmail.com) with subject "buy b
 
 - Landing: https://getburnd.vercel.app
 - GitHub (MIT): https://github.com/garvitsurana271/burnd
-- The dashboard: `npx burnd serve` → localhost:4711
+- The dashboard: `npx getburnd serve` → localhost:4711
 - Ebook: the landing page has the buy flow
 
 ## What I'd love feedback on

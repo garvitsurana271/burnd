@@ -44,7 +44,7 @@ export function ErrorState({ error, onRetry }: ErrorStateProps): JSX.Element {
               </div>
               <div className="rounded border border-axis-border bg-axis-surface p-3 font-mono text-xs text-axis-text">
                 <div className="text-axis-textMuted"># in a new terminal, from anywhere:</div>
-                <div className="mt-1">$ npx burnd serve</div>
+                <div className="mt-1">$ npx getburnd serve</div>
               </div>
               <p className="mt-2 text-[11px] text-axis-textMuted">
                 Then come back to this page and click the retry button below. Burnd serves the dashboard from a local HTTP server on your own machine — nothing runs in the cloud.

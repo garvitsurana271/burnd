@@ -11,7 +11,7 @@
 An Indian developer (25-35, probably in Bangalore/Hyderabad/Pune/Delhi) who:
 - Uses Claude Code regularly (Max plan at $100/mo or API at $50-200/mo)
 - Has noticed their Claude spend creeping up but has no visibility into why
-- Is technically fluent enough to run `npx burnd` without hand-holding
+- Is technically fluent enough to run `npx getburnd` without hand-holding
 - Checks r/developersIndia, Indian tech Twitter, and maybe HN
 
 This person doesn't need to be convinced that AI coding costs money. They already know. What they need is:
@@ -111,7 +111,7 @@ People share the "16yo spent $13k and built a tool" story. Nobody shares "new de
 ### BurndPro (₹149/month):
 1. Visitor sees BurndPro card on pricing page
 2. Same UPI flow as ebook but pays ₹149
-3. You generate their key: `npx burnd pro keygen their@email.com 2026-04`
+3. You generate their key: `npx getburnd pro keygen their@email.com 2026-04`
 4. Email them the key + activation instructions
 5. Next month: they pay again via UPI, you generate 2026-05 key
 6. If they stop paying, the key expires after 30 days + grace period
@@ -157,7 +157,7 @@ Alternative: open the .md file in Chrome (via a markdown viewer extension) → C
 
 ## What to do right now (before posting anything)
 
-1. **Check Gmail for npm OTP** — npm sent a 6-digit code. Give it to Claude to finish publishing `npx burnd`.
+1. **Check Gmail for npm OTP** — npm sent a 6-digit code. Give it to Claude to finish publishing `npx getburnd`.
 2. **Generate the ebook PDF** — you can't sell what you can't deliver.
 3. **Test the UPI flow yourself** — send ₹1 to madhusuranaa@okaxis from a different UPI app. Verify it lands. If the UPI handle is wrong, everything breaks.
 4. **Change your npm password** — you shared it in this conversation. Go to npmjs.com → Profile → Password → change it.

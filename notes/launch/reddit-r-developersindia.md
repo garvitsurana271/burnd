@@ -47,7 +47,7 @@ Total waste Burnd currently flags in my data: about $76. Real money, real fixes,
 ## How to run it
 
 ```
-$ npx burnd
+$ npx getburnd
 ```
 
 Done. Prints top 3 leaks to your terminal. Free, MIT, open source. Local-first by design: **nothing leaves your machine**. The CLI never uploads your code, prompts, tool outputs, or anything else.
@@ -55,7 +55,7 @@ Done. Prints top 3 leaks to your terminal. Free, MIT, open source. Local-first b
 For the full dashboard with 8 detectors, spend chart, per-project breakdown, etc:
 
 ```
-$ npx burnd serve
+$ npx getburnd serve
 # then open http://localhost:4711 in your browser
 ```
 
@@ -95,7 +95,7 @@ Three reasons:
 
 ## Honest asks
 
-- If you use Claude Code at all, please try `npx burnd` on your own data. Takes 30 seconds. Tell me what you find.
+- If you use Claude Code at all, please try `npx getburnd` on your own data. Takes 30 seconds. Tell me what you find.
 - If you find a bug, open a GitHub issue or DM me. I'll fix it same day.
 - If you buy the ebook and it's not worth ₹399, tell me honestly and I'll refund you. No questions.
 - If you want to boost this post, please do — the first hour matters a lot for Reddit reach.

@@ -193,7 +193,7 @@ function Hero(): JSX.Element {
                 <span className="ml-2 font-mono text-[10px] text-axis-textDim">~</span>
               </div>
               <div className="p-5 font-mono text-[12px] leading-relaxed">
-                <div className="text-axis-textDim">$ npx burnd</div>
+                <div className="text-axis-textDim">$ npx getburnd</div>
                 <div className="mt-4 text-amber-500 font-bold">
                   {'  '}burnd<span className="text-axis-textDim font-normal"> — find what's burning a hole in your AI coding budget</span>
                 </div>
@@ -243,7 +243,7 @@ function Hero(): JSX.Element {
 
 function InstallCommand(): JSX.Element {
   const [copied, setCopied] = useState(false);
-  const cmd = 'npx burnd';
+  const cmd = 'npx getburnd';
 
   function copy(): void {
     void navigator.clipboard.writeText(cmd).then(() => {
@@ -365,7 +365,7 @@ function DetectorGrid(): JSX.Element {
 function HowItWorks(): JSX.Element {
   const fade = useFadeIn();
   const steps = [
-    { icon: Terminal, title: 'Install', cmd: 'npx burnd', body: 'One command. No signup. No config. Works on Windows, macOS, Linux.' },
+    { icon: Terminal, title: 'Install', cmd: 'npx getburnd', body: 'One command. No signup. No config. Works on Windows, macOS, Linux.' },
     { icon: Search, title: 'Scan', cmd: '227 files · $13,631 total', body: 'Streams every session JSONL from ~/.claude/projects/. Under 30 seconds.' },
     { icon: TrendingDown, title: 'Fix', cmd: 'Top leak: $30.48 saved', body: 'Dollar values, effort estimates, step-by-step fixes. Apply the top 3 and watch your weekly spend drop.' },
   ];
@@ -633,7 +633,7 @@ function DashboardPreview(): JSX.Element {
           The dashboard runs on your machine
         </h2>
         <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-axis-textMuted">
-          Run <code className="rounded bg-axis-muted px-1.5 py-0.5 font-mono text-sm text-axis-accent">npx burnd serve</code> and open localhost:4711.
+          Run <code className="rounded bg-axis-muted px-1.5 py-0.5 font-mono text-sm text-axis-accent">npx getburnd serve</code> and open localhost:4711.
           No signup. No cloud. Just your data.
         </p>
 
@@ -687,7 +687,7 @@ function DashboardPreview(): JSX.Element {
           <div
             className="inline-flex flex-col items-center gap-2 rounded-md border border-axis-border bg-axis-surface/50 px-6 py-3 font-mono text-sm text-axis-textMuted"
           >
-            <span>Run <code className="rounded bg-axis-muted px-1.5 text-axis-accent">npx burnd serve</code> to see this on your own data</span>
+            <span>Run <code className="rounded bg-axis-muted px-1.5 text-axis-accent">npx getburnd serve</code> to see this on your own data</span>
             <span className="text-[10px] text-axis-textDim">localhost:4711 · your data never leaves your machine</span>
           </div>
           <div className="mt-4">
@@ -793,7 +793,7 @@ function PricingCards(): JSX.Element {
               ))}
             </ul>
             <div className="mt-auto pt-6">
-              <div className="rounded border border-axis-border bg-axis-bg px-3 py-2.5 text-center font-mono text-xs text-axis-textMuted">npx burnd</div>
+              <div className="rounded border border-axis-border bg-axis-bg px-3 py-2.5 text-center font-mono text-xs text-axis-textMuted">npx getburnd</div>
             </div>
           </div>
 

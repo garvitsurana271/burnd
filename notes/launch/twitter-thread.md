@@ -100,7 +100,7 @@ this is running on my own $13k — no cherry-picked demos
 ```
 (268 chars)
 
-**Attach: a screenshot of http://localhost:4711/app/insights showing real data. To capture: run `npx burnd serve`, open the browser, take a screenshot of the Insights page.**
+**Attach: a screenshot of http://localhost:4711/app/insights showing real data. To capture: run `npx getburnd serve`, open the browser, take a screenshot of the Insights page.**
 
 ---
 
@@ -124,7 +124,7 @@ i also wrote a book about it
 ```
 if you use claude code at all, it's worth checking your own data:
 
-$ npx burnd
+$ npx getburnd
 
 runs locally. takes 30 seconds. free and open source (MIT)
 

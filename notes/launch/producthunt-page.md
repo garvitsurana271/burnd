@@ -50,9 +50,9 @@ Alt options if any are saturated:
 - Caption: "The Insights page — every leak has a dollar value and a fix"
 
 **Image 2 — the terminal (1270×760 px):**
-- Screenshot of `npx burnd` running in a terminal with colored output
+- Screenshot of `npx getburnd` running in a terminal with colored output
 - Shows the top 3 leaks in the CLI format
-- Caption: "`npx burnd` — 30 seconds in your terminal to find where your money is going"
+- Caption: "`npx getburnd` — 30 seconds in your terminal to find where your money is going"
 
 **Image 3 — the spend chart (1270×760 px):**
 - Screenshot of the Overview page showing the 60-day spend chart with the $6,091 March 29 spike
@@ -95,7 +95,7 @@ Every insight has a dollar value and a tested fix from my own projects.
 
 **Three things Burnd IS:**
 
-1. **Free CLI + dashboard.** `npx burnd` runs in your terminal. `npx burnd serve` opens a local web dashboard. MIT licensed. Open source on GitHub.
+1. **Free CLI + dashboard.** `npx getburnd` runs in your terminal. `npx getburnd serve` opens a local web dashboard. MIT licensed. Open source on GitHub.
 2. **An ebook.** "Burning Tokens" — 7,400 words, 11 chapters, walks through every detector with real data from my own sessions. ₹399 (~$4.50) via UPI for Indian buyers, email me for international payment.
 3. **Local-first.** Everything runs on your machine. Zero data upload unless you explicitly opt in to future cloud sync (which doesn't exist yet). The anonymization spec is public and CI-tested.
 
@@ -107,7 +107,7 @@ Every insight has a dollar value and a tested fix from my own projects.
 
 I'm going to be in the comments all day answering everything. Technical questions, pricing questions, why-16-year-old questions, whatever.
 
-Honest ask: if you use Claude Code at all, please run `npx burnd` on your own data. Takes 30 seconds. Tell me what you find. If you find something Burnd missed, email me (garvitsurana10@gmail.com) or open an issue on GitHub — I want the detector list to grow.
+Honest ask: if you use Claude Code at all, please run `npx getburnd` on your own data. Takes 30 seconds. Tell me what you find. If you find something Burnd missed, email me (garvitsurana10@gmail.com) or open an issue on GitHub — I want the detector list to grow.
 
 Thank you for launching with me.
 

@@ -254,7 +254,7 @@ If the package name `burnd` is already taken on npm, the publish will fail. If i
 
 ```bash
 cd /tmp  # or any directory that is NOT src/cli
-npx burnd@latest --version
+npx getburnd@latest --version
 ```
 
 Should print the version. If it does, **the CLI is live on the public npm registry.** That's a real milestone.
@@ -298,12 +298,12 @@ You have a Vercel account already on `garvitsurana10@gmail.com`. **Create a NEW 
 
 **Time:** 5 minutes
 
-**Test 1: npx burnd from a clean directory**
+**Test 1: npx getburnd from a clean directory**
 
 ```bash
 cd /tmp  # or any dir other than src/cli
-npx burnd@latest --version
-npx burnd@latest --top 3
+npx getburnd@latest --version
+npx getburnd@latest --top 3
 ```
 
 **Expected:** version prints, top 3 leaks print.
@@ -314,7 +314,7 @@ Open `https://burnd.dev` in Chrome and Firefox (different browsers catch differe
 
 **Expected:**
 - Hero loads with "Cut your Claude Code spend by 20-40% in a week"
-- "Install command" button shows `$ npx burnd`
+- "Install command" button shows `$ npx getburnd`
 - Clicking "Buy via UPI" scrolls to the buy section
 - The buy section shows your real UPI handle
 - The "Open the form" link goes to your Google Form

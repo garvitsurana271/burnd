@@ -1,6 +1,6 @@
-// Terminal output formatting for the `npx burnd` "wow" moment.
+// Terminal output formatting for the `npx getburnd` "wow" moment.
 //
-// Goal: when the user runs `npx burnd` for the first time, they should see
+// Goal: when the user runs `npx getburnd` for the first time, they should see
 // a clean, dense, dollar-denominated list of leaks within ~5 seconds.
 // Per the design doc and the new positioning rule, every line of output
 // must lead with the *decision* (the dollars saved) not the *data*.

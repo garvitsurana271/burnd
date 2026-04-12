@@ -1,0 +1,50 @@
+- generic [ref=e495]:
+  - complementary [ref=e496]:
+    - link "burnd v0.0.1" [ref=e497] [cursor=pointer]:
+      - /url: /
+      - img [ref=e498]
+      - generic [ref=e500]: burnd
+      - generic [ref=e501]: v0.0.1
+    - navigation [ref=e502]:
+      - link "Insights leaks" [ref=e503] [cursor=pointer]:
+        - /url: /app/insights
+        - img [ref=e504]
+        - generic [ref=e506]: Insights
+        - generic [ref=e507]: leaks
+      - link "Overview" [ref=e508] [cursor=pointer]:
+        - /url: /app/overview
+        - img [ref=e509]
+        - generic [ref=e514]: Overview
+      - link "Projects" [ref=e515] [cursor=pointer]:
+        - /url: /app/projects
+        - img [ref=e516]
+        - generic [ref=e521]: Projects
+      - link "Tools" [ref=e522] [cursor=pointer]:
+        - /url: /app/tools
+        - img [ref=e523]
+        - generic [ref=e525]: Tools
+      - link "Sessions" [ref=e526] [cursor=pointer]:
+        - /url: /app/sessions
+        - img [ref=e527]
+        - generic [ref=e530]: Sessions
+    - generic [ref=e532]: loading...
+  - main [ref=e533]:
+    - generic [ref=e536]:
+      - img [ref=e538]
+      - generic [ref=e540]:
+        - heading "The dashboard couldn't reach burnd" [level=2] [ref=e541]
+        - paragraph [ref=e542]:
+          - text: The request to
+          - code [ref=e543]: /api/snapshot
+          - text: failed.
+        - generic [ref=e544]:
+          - generic [ref=e545]: Error
+          - text: Unexpected token '<', "<!doctype "... is not valid JSON
+        - generic [ref=e546]:
+          - button "Retry" [ref=e547] [cursor=pointer]:
+            - img [ref=e548]
+            - text: Retry
+          - link "Report a bug" [ref=e553] [cursor=pointer]:
+            - /url: https://github.com/garvitsurana271/burnd/issues
+            - img [ref=e554]
+            - text: Report a bug

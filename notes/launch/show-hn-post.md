@@ -51,7 +51,7 @@ Every insight has a dollar value and a concrete fix. The top insight in my own d
 
 A few things that might be interesting to HN specifically:
 
-- **Local-first by default.** The CLI runs entirely on your machine. It reads your session files, computes the leaks, and serves a dashboard from a localhost HTTP server (`npx burnd serve` → localhost:4711). Zero data leaves your machine. The eventual SaaS tier with cloud sync is opt-in.
+- **Local-first by default.** The CLI runs entirely on your machine. It reads your session files, computes the leaks, and serves a dashboard from a localhost HTTP server (`npx getburnd serve` → localhost:4711). Zero data leaves your machine. The eventual SaaS tier with cloud sync is opt-in.
 - **The anonymization spec is public.** Even when cloud sync ships later, the upload payload is defined field-by-field with explicit KEEP / HASH / DROP / AGGREGATE rules. CI tests assert no fake-secret markers leak. (notes/anonymization.md in the repo)
 - **Schema study is public too.** Claude Code's JSONL has 7 distinct record types, a new 2026 ephemeral cache tier system (5m + 1h), and a `<synthetic>` model placeholder that's a silent footgun for cost calculation. I wrote up everything I learned in notes/jsonl-format.md.
 - **Stack:** Node.js (zero runtime deps for the server), TypeScript, React 18, Vite, Tailwind, Recharts. 49 tests passing including a load-bearing privacy gate that asserts no fake credentials leak.

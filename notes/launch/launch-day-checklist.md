@@ -9,7 +9,7 @@
 - [ ] Landing page has the real Google Form URL (search for PLACEHOLDER in LandingPage.tsx)
 - [ ] Landing page has the real UPI ID (currently `madhusuranaa@okaxis` as default guess — verify this works)
 - [ ] burnd.dev resolves to the Vercel deployment
-- [ ] `npx burnd` installs and runs on a clean machine (test in WSL or a fresh terminal)
+- [ ] `npx getburnd` installs and runs on a clean machine (test in WSL or a fresh terminal)
 - [ ] Ebook PDF is generated and saved at `notes/ebook/burning-tokens.pdf` (open .html in browser → Ctrl+P → Save as PDF)
 - [ ] Screenshots for HN / PH / Twitter are taken and ready (see screenshot-shotlist.md)
 - [ ] Twitter bio is updated to mention burnd.dev
@@ -26,7 +26,7 @@ Nothing launch-related yet. Eat real food. Check that your laptop is charged. Do
 ### 09:00 — Final pre-flight
 
 - [ ] Open 5 browser tabs: HN submit page, Twitter, Reddit (r/developersIndia), Reddit (r/ClaudeAI), ProductHunt
-- [ ] Open a second browser window with: burnd.dev, `npx burnd serve` running locally for sanity, Gmail, the Google Form responses tab
+- [ ] Open a second browser window with: burnd.dev, `npx getburnd serve` running locally for sanity, Gmail, the Google Form responses tab
 - [ ] Have `notes/launch/` open in your editor so you can copy-paste post text
 - [ ] Have the ebook PDF ready to attach to emails
 
