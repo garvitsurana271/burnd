@@ -80,3 +80,29 @@ body {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
+
+/* Terminal animation — auto-playing typewriter in hero */
+@keyframes termCursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+@keyframes termLineFadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.term-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 13px;
+  background: #6366f1;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  animation: termCursorBlink 1s step-start infinite;
+}
+.term-line-enter {
+  animation: termLineFadeIn 0.15s ease-out forwards;
+}
+/* Mobile sticky CTA — safe-area aware */
+.mobile-cta-bar {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

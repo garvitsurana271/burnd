@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Flame,
   Terminal,
@@ -24,7 +24,7 @@ import {
 
 export function LandingPage(): JSX.Element {
   return (
-    <div className="noise-overlay min-h-screen bg-axis-bg text-axis-text">
+    <div className="noise-overlay min-h-screen bg-axis-bg text-axis-text pb-16 sm:pb-0">
       <Header />
       <Hero />
       <NumbersStrip />
@@ -36,6 +36,7 @@ export function LandingPage(): JSX.Element {
       <PricingCards />
       <TheStory />
       <Footer />
+      <MobileCtaBar />
     </div>
   );
 }
@@ -124,8 +125,59 @@ function Hero(): JSX.Element {
           background: 'radial-gradient(ellipse at center, rgba(245, 158, 11, 0.15), transparent 70%)',
         }}
       />
-      <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-16 md:pb-28 md:pt-24">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <div className="relative mx-auto max-w-7xl px-6 pb-12 pt-8 md:pb-28 md:pt-24">
+
+        {/* ── MOBILE LAYOUT (hidden on lg+) ────────────────────────────── */}
+        <div className="lg:hidden">
+          {/* Hook: headline + CTA — visible immediately above fold */}
+          <h1 className="font-serif text-[2.4rem] leading-[1.08] tracking-tight text-axis-text">
+            I spent{' '}
+            <span className="text-gradient-fire">$13,631</span>
+            {' '}on Claude Code.
+          </h1>
+          <p className="mt-2 font-serif text-[1.2rem] italic text-axis-textMuted">
+            Then I built the tool to find where it all went.
+          </p>
+          <div className="mt-5">
+            <InstallCommand />
+          </div>
+          <div className="mt-2 flex items-center gap-3 font-mono text-[10px] text-axis-textDim">
+            <span>free</span>
+            <span className="h-3 w-px bg-axis-border" />
+            <span>open source</span>
+            <span className="h-3 w-px bg-axis-border" />
+            <span>100% local</span>
+          </div>
+
+          {/* Terminal — immediately below CTA, no scroll needed */}
+          <div className="mt-6">
+            <TerminalAnimation />
+          </div>
+
+          {/* Full story — below fold, for engaged visitors */}
+          <div className="mt-8 border-t border-axis-border/40 pt-6">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-axis-accent/40 bg-axis-accent/10 font-mono text-[10px] font-bold text-axis-accent">
+                16
+              </div>
+              <div className="font-mono text-[10px] leading-tight text-axis-textMuted">
+                <span className="text-axis-text">Garvit Surana</span>
+                {' · '}Class 12 ISC · Guwahati, India
+              </div>
+            </div>
+            <p className="text-[14px] leading-relaxed text-axis-textMuted">
+              <strong className="text-axis-text">Burnd</strong> reads your local{' '}
+              <code className="rounded bg-axis-muted px-1 py-0.5 font-mono text-xs text-axis-accent">
+                ~/.claude/projects/*.jsonl
+              </code>{' '}
+              files and finds 8 patterns that waste tokens. Dollar values. Concrete fixes.
+              Nothing leaves your machine.
+            </p>
+          </div>
+        </div>
+
+        {/* ── DESKTOP LAYOUT (hidden below lg) ─────────────────────────── */}
+        <div className="hidden lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
           {/* LEFT — the story */}
           <div>
             <div className="mb-8 flex items-center gap-3">
@@ -139,13 +191,13 @@ function Hero(): JSX.Element {
               </div>
             </div>
 
-            <h1 className="font-serif text-[2.75rem] leading-[1.1] tracking-tight text-axis-text md:text-6xl lg:text-[4rem]">
+            <h1 className="font-serif text-6xl leading-[1.1] tracking-tight text-axis-text lg:text-[4rem]">
               I spent{' '}
               <span className="text-gradient-fire">$13,631</span>
               <br />
               on Claude Code.
             </h1>
-            <p className="mt-2 font-serif text-2xl italic text-axis-textMuted md:text-3xl">
+            <p className="mt-2 font-serif text-3xl italic text-axis-textMuted">
               Then I built the tool to find where it all went.
             </p>
 
@@ -158,7 +210,7 @@ function Hero(): JSX.Element {
               Nothing leaves your machine.
             </p>
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="mt-10 flex items-center gap-4">
               <InstallCommand />
               <a
                 href="https://github.com/garvitsurana271/burnd"
@@ -180,57 +232,13 @@ function Hero(): JSX.Element {
             </div>
           </div>
 
-          {/* RIGHT — terminal preview */}
-          <div className="relative">
-            <div className="absolute -inset-4 rounded-2xl bg-gradient-to-br from-axis-accent/5 to-amber-500/5 blur-2xl" />
-            <div className="relative overflow-hidden rounded-xl border border-axis-border bg-axis-surface shadow-2xl shadow-black/40">
-              <div className="flex items-center gap-2 border-b border-axis-border bg-axis-bg px-4 py-3">
-                <div className="flex gap-1.5">
-                  <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f56]" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-[#27c93f]" />
-                </div>
-                <span className="ml-2 font-mono text-[10px] text-axis-textDim">~</span>
-              </div>
-              <div className="p-5 font-mono text-[12px] leading-relaxed">
-                <div className="text-axis-textDim">$ npx getburnd</div>
-                <div className="mt-4 text-amber-500 font-bold">
-                  {'  '}burnd<span className="text-axis-textDim font-normal"> — find what's burning a hole in your AI coding budget</span>
-                </div>
-                <div className="mt-1 text-axis-textDim">  ─────────────────────────────────────────────────────────────</div>
-                <div className="mt-3">
-                  {'  '}Scanned: <span className="text-cyan-400">15</span> projects across <span className="text-cyan-400">227</span> sessions
-                </div>
-                <div>
-                  {'  '}All-time spend: <span className="font-bold text-emerald-400">$13,631.00</span>
-                </div>
-                <div>
-                  {'  '}Last 7 days:{' '}<span className="font-bold text-emerald-400">$843.27</span>
-                </div>
-                <div>
-                  {'  '}Potential savings: <span className="font-bold text-amber-400">$75.92</span>
-                </div>
-                <div className="mt-4 text-axis-textDim">  Top leaks (sorted by estimated savings):</div>
-                <div className="mt-3">
-                  {'  '}<span className="font-bold text-amber-400">1</span>. Project "ChangeLife" costs 3.2x more per session
-                </div>
-                <div>{'     '}<span className="font-bold text-emerald-400">$30.48</span>  <span className="text-axis-textDim">(~15 min to fix)</span></div>
-                <div className="mt-2">
-                  {'  '}<span className="font-bold text-amber-400">2</span>. Bash accounts for 80% of tool calls
-                </div>
-                <div>{'     '}<span className="font-bold text-emerald-400">$7.76</span>  <span className="text-axis-textDim">(~8 min to fix)</span></div>
-                <div className="mt-2">
-                  {'  '}<span className="font-bold text-amber-400">3</span>. Tool error storm — 30% of calls failed
-                </div>
-                <div>{'     '}<span className="font-bold text-emerald-400">$3.95</span>  <span className="text-axis-textDim">(~10 min to fix)</span></div>
-                <div className="mt-3 text-axis-textDim">  ─────────────────────────────────────────────────────────────</div>
-                <div className="animate-pulse">{'  '}█</div>
-              </div>
-            </div>
+          {/* RIGHT — terminal */}
+          <div>
+            <TerminalAnimation />
           </div>
         </div>
 
-        <div className="mt-16 flex justify-center">
+        <div className="mt-12 flex justify-center lg:mt-16">
           <a href="#detectors" className="group flex flex-col items-center gap-1 text-axis-textDim transition-colors hover:text-axis-textMuted">
             <span className="font-mono text-[10px] uppercase tracking-widest">scroll</span>
             <ArrowDown className="h-4 w-4 animate-bounce" />
@@ -266,6 +274,126 @@ function InstallCommand(): JSX.Element {
         <Copy className="h-4 w-4 text-axis-textDim transition-colors group-hover:text-amber-500" />
       )}
     </button>
+  );
+}
+
+// ===========================================================================
+// TerminalAnimation — auto-playing typewriter CLI demo
+// ===========================================================================
+
+interface TermLine {
+  text: string;
+  color: string;
+  delayMs: number;
+}
+
+const TERM_SCRIPT: TermLine[] = [
+  { text: '$ npx getburnd',                                                color: '#94a3b8', delayMs: 500 },
+  { text: '  burnd — find what\'s burning your Claude Code budget',        color: '#f59e0b', delayMs: 700 },
+  { text: '  ─────────────────────────────────────────────────────',       color: '#1e293b', delayMs: 200 },
+  { text: '  All-time spend:    $13,631.00',                               color: '#10b981', delayMs: 400 },
+  { text: '  Last 7 days:       $843.27',                                  color: '#10b981', delayMs: 250 },
+  { text: '  Potential savings: $75.92  ← plug these leaks',              color: '#f59e0b', delayMs: 500 },
+  { text: '  ─────────────────────────────────────────────────────',       color: '#1e293b', delayMs: 200 },
+  { text: '  Top leaks (sorted by estimated savings):',                    color: '#475569', delayMs: 400 },
+  { text: '  1. Project "ChangeLife" costs 3.2x more per session',        color: '#e2e8f0', delayMs: 500 },
+  { text: '     $30.48  (~15 min to fix)',                                  color: '#10b981', delayMs: 250 },
+  { text: '  2. Bash accounts for 80% of tool calls',                      color: '#e2e8f0', delayMs: 500 },
+  { text: '     $7.76   (~8 min to fix)',                                   color: '#10b981', delayMs: 250 },
+  { text: '  3. Tool error storm — 30% of calls failed',                   color: '#e2e8f0', delayMs: 500 },
+  { text: '     $3.95   (~10 min to fix)',                                  color: '#10b981', delayMs: 250 },
+];
+
+function TerminalAnimation(): JSX.Element {
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [done, setDone] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hasStarted = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting && !hasStarted.current) {
+          hasStarted.current = true;
+          let idx = 0;
+          function showNext(): void {
+            if (idx >= TERM_SCRIPT.length) { setDone(true); return; }
+            setVisibleCount(idx + 1);
+            const delay = TERM_SCRIPT[idx]!.delayMs;
+            idx++;
+            timerRef.current = setTimeout(showNext, delay);
+          }
+          timerRef.current = setTimeout(showNext, 300);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => {
+      observer.disconnect();
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <div className="absolute -inset-4 rounded-2xl bg-gradient-to-br from-axis-accent/5 to-amber-500/5 blur-2xl" />
+      <div className="relative overflow-hidden rounded-xl border border-axis-border bg-axis-surface shadow-2xl shadow-black/40">
+        {/* Window chrome */}
+        <div className="flex items-center gap-2 border-b border-axis-border bg-axis-bg px-4 py-3">
+          <div className="flex gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f56]" />
+            <div className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
+            <div className="h-2.5 w-2.5 rounded-full bg-[#27c93f]" />
+          </div>
+          <span className="ml-2 font-mono text-[10px] text-axis-textDim">~</span>
+        </div>
+        {/* Terminal content — fixed height prevents reflow */}
+        <div className="h-[340px] overflow-hidden p-5 font-mono text-[12px] leading-relaxed">
+          {TERM_SCRIPT.slice(0, visibleCount).map((line, i) => (
+            <div
+              key={i}
+              className="term-line-enter whitespace-pre"
+              style={{ color: line.color }}
+            >
+              {line.text}
+            </div>
+          ))}
+          {!done && <span className="term-cursor" />}
+          {done && (
+            <div className="mt-2 animate-pulse font-mono text-axis-textDim">{'  '}█</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===========================================================================
+// MobileCtaBar — sticky bottom CTA visible only on mobile
+// ===========================================================================
+
+function MobileCtaBar(): JSX.Element {
+  const [copied, setCopied] = useState(false);
+  function copy(): void {
+    void navigator.clipboard.writeText('npx getburnd').then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }
+  return (
+    <div className="mobile-cta-bar fixed bottom-0 left-0 right-0 z-40 border-t border-axis-border/60 bg-axis-bg/95 px-4 py-3 backdrop-blur-xl sm:hidden">
+      <button
+        type="button"
+        onClick={copy}
+        className="flex w-full items-center justify-center gap-2 rounded-md border border-amber-500/50 bg-amber-500/10 py-3 font-mono text-sm text-amber-400 active:bg-amber-500/20"
+      >
+        <Terminal className="h-4 w-4" />
+        <span>{copied ? 'copied! paste in terminal' : '$ npx getburnd — free, runs locally'}</span>
+        {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4 opacity-50" />}
+      </button>
+    </div>
   );
 }
 
