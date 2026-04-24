@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" width="220" height="48">
+  <defs>
+    <linearGradient id="fw" x1="24" y1="44" x2="24" y2="4" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="55%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Flame icon mark (48x48 canvas, centered at x=24) -->
+  <path d="
+    M 24 4
+    C 28 8, 36 14, 39 22
+    C 42 30, 41 37, 37 41
+    C 34 44, 29 46, 24 46
+    C 19 46, 14 44, 11 41
+    C 7 37, 6 30, 9 22
+    C 12 14, 20 8, 24 4
+    Z
+  " fill="url(#fw)"/>
+  <!-- Inner core -->
+  <path d="
+    M 24 16
+    C 27 19, 31 23, 32 28
+    C 33 33, 31 37, 28 40
+    C 26 42, 24.5 43, 24 43
+    C 23.5 43, 22 42, 20 40
+    C 17 37, 15 33, 16 28
+    C 17 23, 21 19, 24 16
+    Z
+  " fill="#fbbf24" opacity="0.45"/>
+
+  <!-- Wordmark: "burnd" in JetBrains Mono style, monospaced feel -->
+  <text
+    x="56"
+    y="33"
+    font-family="'JetBrains Mono', 'Fira Code', 'Courier New', monospace"
+    font-size="24"
+    font-weight="600"
+    letter-spacing="-0.5"
+    fill="#e4e4e7"
+  >burnd</text>
+</svg>

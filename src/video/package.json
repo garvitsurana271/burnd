@@ -1,0 +1,23 @@
+{
+  "name": "burnd-video",
+  "version": "0.1.0",
+  "description": "Remotion video: I spent $13,631 on Claude Code — where every dollar went",
+  "private": true,
+  "scripts": {
+    "start": "remotion studio src/index.ts",
+    "build": "remotion render src/index.ts BurndVideo out/burnd.mp4 --codec=h264",
+    "render:gif": "remotion render src/index.ts BurndVideo out/burnd.gif --frames=0-60",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "remotion": "^4.0.0",
+    "@remotion/cli": "^4.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0"
+  }
+}

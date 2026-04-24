@@ -1,0 +1,9 @@
+**/node_modules
+.git
+*.log
+notes/
+snap_*.yml
+.playwright-mcp/
+src/video/
+src/openclaw-plugin/
+audit-full-landing.png

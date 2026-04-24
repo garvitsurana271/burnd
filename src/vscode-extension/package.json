@@ -1,0 +1,94 @@
+{
+  "name": "burnd",
+  "displayName": "Burnd — Claude Code Cost Tracker",
+  "description": "Live cost tracking for Claude Code sessions. See your spend, token usage, and top leaks directly in VS Code.",
+  "version": "0.0.1",
+  "publisher": "garvitsurana",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "keywords": ["claude", "ai", "cost", "tokens", "claude-code"],
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/garvitsurana/burnd"
+  },
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "burnd.showDashboard",
+        "title": "Burnd: Open Cost Dashboard"
+      },
+      {
+        "command": "burnd.runCheck",
+        "title": "Burnd: Pre-flight Check"
+      },
+      {
+        "command": "burnd.runFix",
+        "title": "Burnd: Apply CLAUDE.md Patches"
+      },
+      {
+        "command": "burnd.refresh",
+        "title": "Burnd: Refresh Cost Data"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "burnd",
+          "title": "Burnd",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "burnd": [
+        {
+          "id": "burnd.overview",
+          "name": "Cost Overview"
+        },
+        {
+          "id": "burnd.insights",
+          "name": "Leaks & Insights"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Burnd",
+      "properties": {
+        "burnd.serverPort": {
+          "type": "number",
+          "default": 4711,
+          "description": "Port for the Burnd local server (burnd serve)"
+        },
+        "burnd.autoRefreshSeconds": {
+          "type": "number",
+          "default": 60,
+          "description": "How often to poll the Burnd server for new data (seconds)"
+        },
+        "burnd.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show current session cost in the VS Code status bar"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --minify",
+    "dev": "npm run build -- --watch",
+    "lint": "eslint src --ext .ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.4.0"
+  }
+}

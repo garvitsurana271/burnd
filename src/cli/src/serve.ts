@@ -10,7 +10,7 @@
 // Uses Node's built-in http + fs modules — zero runtime dependencies.
 
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { readFile, stat } from 'node:fs/promises';
+import { readFile, stat, readFile as readFileAsync, writeFile } from 'node:fs/promises';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
@@ -123,7 +123,8 @@ async function handleRequest(
   // CORS for local dev — the dashboard might be running on a different
   // port (Vite dev server) and need to fetch from this server.
   res.setHeader('access-control-allow-origin', '*');
-  res.setHeader('access-control-allow-methods', 'GET, OPTIONS');
+  res.setHeader('access-control-allow-methods', 'GET, POST, OPTIONS');
+  res.setHeader('access-control-allow-headers', 'content-type');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
@@ -143,6 +144,55 @@ async function handleRequest(
   }
   if (url === '/api/health') {
     sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  // Apply a CLAUDE.md patch — writes to the filesystem.
+  // Accepts either:
+  //   { claudeMdPath: string, patch: string }  — explicit path (from CLI)
+  //   { projectDir: string, patch: string }     — Claude-encoded dir (from web UI)
+  if (url === '/api/apply-patch' && req.method === 'POST') {
+    const body = await readBody(req);
+    let parsed: { claudeMdPath?: string; projectDir?: string; patch?: string } = {};
+    try { parsed = JSON.parse(body) as typeof parsed; } catch { /* ignore */ }
+
+    const { patch } = parsed;
+    let { claudeMdPath } = parsed;
+
+    // If no explicit path, try to resolve from encoded projectDir.
+    if (!claudeMdPath && parsed.projectDir) {
+      claudeMdPath = await resolveClaudeMdFromProjectDir(parsed.projectDir);
+    }
+
+    if (!claudeMdPath || !patch) {
+      sendJson(res, 400, { error: 'Missing claudeMdPath (or resolvable projectDir) and patch' });
+      return;
+    }
+
+    // Safety: only allow writing CLAUDE.md files (not arbitrary paths).
+    if (!claudeMdPath.endsWith('CLAUDE.md') && !claudeMdPath.endsWith('claude.md')) {
+      sendJson(res, 403, { error: 'Only CLAUDE.md files can be patched' });
+      return;
+    }
+
+    try {
+      let existing = '';
+      try { existing = await readFileAsync(claudeMdPath, 'utf-8'); } catch { /* new file */ }
+
+      // Skip if first line of patch already present.
+      const firstLine = patch.split('\n')[0] ?? '';
+      if (firstLine && existing.includes(firstLine)) {
+        sendJson(res, 200, { ok: true, message: 'Patch already applied', path: claudeMdPath });
+        return;
+      }
+
+      const separator = '\n\n# Added by burnd fix\n';
+      const newContent = existing.trimEnd() + separator + patch + '\n';
+      await writeFile(claudeMdPath, newContent, 'utf-8');
+      sendJson(res, 200, { ok: true, message: 'Patch applied', path: claudeMdPath });
+    } catch (err: unknown) {
+      sendJson(res, 500, { error: (err as Error).message ?? String(err) });
+    }
     return;
   }
 
@@ -201,6 +251,51 @@ async function serveStaticFile(
     'cache-control': 'no-cache',
   });
   res.end(body);
+}
+
+// Decode a Claude-encoded projectDir (e.g. "c--Users-Foo-Bar") to a
+// real filesystem path, then find CLAUDE.md in that directory tree.
+async function resolveClaudeMdFromProjectDir(projectDir: string): Promise<string | undefined> {
+  const candidates: string[] = [];
+
+  // Windows: drive letter + double-dash (e.g. c--Users-Foo-Bar)
+  const winMatch = projectDir.match(/^([a-zA-Z])--(.+)$/);
+  if (winMatch) {
+    const [, drive, rest] = winMatch;
+    candidates.push(`${drive!.toUpperCase()}:\\${rest!.replace(/-/g, '\\')}`);
+    candidates.push(`${drive!.toUpperCase()}:\\${rest!}`);
+  }
+
+  // Unix: leading dash (e.g. -Users-foo-bar)
+  if (projectDir.startsWith('-')) {
+    candidates.push(projectDir.replace(/-/g, '/'));
+  }
+
+  // For each candidate, try to find a CLAUDE.md in it or nearby parents.
+  for (const candidate of candidates) {
+    // Direct CLAUDE.md check.
+    const direct = join(candidate, 'CLAUDE.md');
+    try { await stat(direct); return direct; } catch { /* keep looking */ }
+
+    // Walk up two levels.
+    const parts = candidate.split(/[\\/]/);
+    for (let depth = 1; depth <= 2; depth++) {
+      const parent = parts.slice(0, -depth).join(sep);
+      if (!parent) break;
+      const p = join(parent, 'CLAUDE.md');
+      try { await stat(p); return p; } catch { /* keep looking */ }
+    }
+  }
+  return undefined;
+}
+
+function readBody(req: IncomingMessage): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    req.on('data', (chunk: Buffer) => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+    req.on('error', reject);
+  });
 }
 
 function sendJson(res: ServerResponse, status: number, body: unknown): void {

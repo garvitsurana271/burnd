@@ -46,6 +46,14 @@ export const retryStormDetector: Detector = {
           'If you see "rate_limit_error" frequently, slow down your usage or upgrade your Anthropic API tier.',
           'Subscribe to Anthropic\'s status page (status.anthropic.com) so you can pause work during outages.',
         ],
+        proFixSteps: [
+          `This session logged ${stats.apiErrorCount} API errors and ${stats.apiRetryCount} retries — $${wastedUsd.toFixed(2)} in partial-response tokens thrown away. Each retry regenerates tokens for an incomplete response.`,
+          `Diagnosis by error type: (a) "overloaded_error" = Anthropic under capacity — retry storms happen at peak hours (8–10 AM PST). Schedule heavy sessions for off-peak. (b) "rate_limit_error" = you're hitting requests-per-minute limits — shorten your sessions or add pauses. (c) "context_window" errors = session too long — break into smaller focused sessions.`,
+          `Immediate mitigation: when Claude Code starts retrying, interrupt (Ctrl+C) and start a fresh session with a summary of where you left off. A fresh session costs ~$0.01 to warm up vs $${(wastedUsd * 0.5).toFixed(2)}+ in retry waste.`,
+          `Add this to your workflow: if a session has been running for more than 2 hours and you start seeing errors, save your progress and open a new session. Long-running sessions accumulate context that increases error probability.`,
+          `If retry storms are recurring across sessions: check your Anthropic API dashboard for your current usage tier and request limits. Upgrading from Tier 1 ($100 spend) to Tier 2 ($500 spend) significantly increases rate limits.`,
+        ],
+        claudeMdPatch: null, // API retries are infrastructure issues — no CLAUDE.md directive applies.
       },
     ];
   },

@@ -32,8 +32,8 @@
   <line x1="80" y1="215" x2="1120" y2="215" stroke="#1e1e2e" stroke-width="1.5"/>
 
   <!-- Stat 1 -->
-  <text x="104" y="290" font-family="monospace" font-size="48" font-weight="700" fill="#f8f8ff">$13,631</text>
-  <text x="104" y="325" font-family="monospace" font-size="18" fill="#6b7280">spent in 6 months</text>
+  <text x="104" y="290" font-family="monospace" font-size="48" font-weight="700" fill="#f8f8ff">$14,502</text>
+  <text x="104" y="325" font-family="monospace" font-size="18" fill="#6b7280">spent in one month</text>
 
   <!-- Stat 2 -->
   <text x="460" y="290" font-family="monospace" font-size="48" font-weight="700" fill="#f8f8ff">8</text>

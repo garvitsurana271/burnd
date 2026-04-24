@@ -13,8 +13,9 @@
 
 import type { Insight } from './detectors/index.js';
 import type { SessionStats } from './session.js';
-import { runAllDetectors, runAllMultiSessionDetectors } from './detectors/index.js';
+import { runAllDetectors, runAllMultiSessionDetectors, computeUserBaseline } from './detectors/index.js';
 import { hashForUpload } from './anonymize.js';
+import { isProActive } from './license.js';
 
 export interface SnapshotSession {
   // Display fields — local-only, never uploaded.
@@ -73,6 +74,7 @@ export interface SnapshotMeta {
   sessionsScanned: number;
   recordsParsed: number;
   recordsSkipped: number;
+  isPro: boolean;
 }
 
 export interface SnapshotTotals {
@@ -123,8 +125,11 @@ export function buildSnapshot(
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Per-session insights + multi-session insights.
-  const perSessionInsights = allStats.flatMap(runAllDetectors);
+  // Per-session insights + multi-session insights. Baseline is computed
+  // once across all sessions so per-session detectors can reason about
+  // where each session falls in the user's own distribution.
+  const baseline = computeUserBaseline(allStats);
+  const perSessionInsights = allStats.flatMap((s) => runAllDetectors(s, baseline));
   const multiSessionInsights = runAllMultiSessionDetectors(allStats);
   const allInsights = [...perSessionInsights, ...multiSessionInsights];
 
@@ -267,6 +272,7 @@ export function buildSnapshot(
       sessionsScanned: allStats.length,
       recordsParsed: meta.recordsParsed,
       recordsSkipped: meta.recordsSkipped,
+      isPro: isProActive(),
     },
     totals,
     sessions: snapshotSessions,

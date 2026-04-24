@@ -63,6 +63,16 @@ export const toolOveruseDetector: Detector = {
           'Update your CLAUDE.md or initial prompt to nudge Claude toward the cheaper tool by default.',
           'Re-run the workflow next week and compare the cost in Burnd.',
         ],
+        proFixSteps: [
+          `${topTool} was called ${topCount} times — ${(share * 100).toFixed(0)}% of all ${totalCalls} tool calls in this session. Each unnecessary ${topTool} call sends extra tokens for shell overhead, stderr, and output parsing.`,
+          topTool === 'Bash'
+            ? `Bash replacements by use-case: file reads → Read tool (no shell overhead); file edits → Edit tool (sends only the diff); searching for files → Glob; searching file contents → Grep. Each of these costs 2–5× fewer tokens than the equivalent Bash command.`
+            : `Check the Sessions view for the exact ${topTool} calls. Group them by purpose — batch similar calls into single operations where possible to reduce round-trips.`,
+          `Add this to your CLAUDE.md: "Prefer Read over cat/head/tail. Prefer Edit over sed/awk. Prefer Glob over find. Prefer Grep over grep. Only use Bash for commands that have no dedicated tool equivalent."`,
+          `Estimated impact: replacing half the ${topTool} calls saves ~${(share * 50).toFixed(0)}% of per-call token overhead. On a session like this that's roughly $${savingsUsd.toFixed(2)} per run.`,
+          `After updating CLAUDE.md: compare the tool breakdown in Burnd for your next similar session. ${topTool}'s share should drop below 50%.`,
+        ],
+        claudeMdPatch: `Prefer Read over cat/head/tail. Prefer Edit over sed/awk. Prefer Glob over find/ls. Prefer Grep over grep/rg. Only use Bash for commands with no dedicated tool equivalent.`,
       },
     ];
   },

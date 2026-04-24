@@ -118,18 +118,51 @@ describe('repeated-read detector', () => {
 });
 
 describe('tired-coding detector', () => {
-  it('fires for late-night sessions', () => {
+  // v0.0.16: the detector now requires a UserBaseline computed from the
+  // user's full session history. It flags sessions that are BOTH outside
+  // the user's focus window AND above their P75 cost — a per-user rule,
+  // not a hardcoded UTC window.
+  const baseline = {
+    sessionCostP50: 2.0,
+    sessionCostP75: 3.0,
+    sessionCostP90: 4.5,
+    totalSpendUsd: 50,
+    sessionCount: 20,
+    localTimezone: 'UTC', // UTC so the test times below are treated as local
+    focusWindowStart: 9,
+    focusWindowEnd: 19,
+  };
+
+  it('fires for expensive sessions outside the focus window', () => {
     const stats = newEmptyStats('tired-001', '/tmp/t.jsonl', 'demo', false);
-    stats.startedAt = '2026-04-01T02:30:00.000Z'; // 2:30 AM UTC = late
-    stats.totalCostUsd = 5;
-    const insights = runAllDetectors(stats);
+    stats.startedAt = '2026-04-01T02:30:00.000Z'; // 2:30 local, outside 09-19
+    stats.totalCostUsd = 5; // > P75 of 3.0
+    const insights = runAllDetectors(stats, baseline);
     const tired = insights.filter((i) => i.detectorId === 'tired-coding');
     expect(tired.length).toBe(1);
   });
 
-  it('does not fire for daytime sessions', () => {
+  it('does not fire for sessions inside the focus window', () => {
     const stats = newEmptyStats('day-001', '/tmp/d.jsonl', 'demo', false);
-    stats.startedAt = '2026-04-01T14:00:00.000Z'; // 2 PM UTC = daytime
+    stats.startedAt = '2026-04-01T14:00:00.000Z'; // 14 local, inside 09-19
+    stats.totalCostUsd = 5;
+    const insights = runAllDetectors(stats, baseline);
+    const tired = insights.filter((i) => i.detectorId === 'tired-coding');
+    expect(tired.length).toBe(0);
+  });
+
+  it('does not fire for outside-window sessions below user P75', () => {
+    const stats = newEmptyStats('cheap-001', '/tmp/c.jsonl', 'demo', false);
+    stats.startedAt = '2026-04-01T02:30:00.000Z'; // outside window
+    stats.totalCostUsd = 1.5; // below P75 of 3.0 — normal cost, just late
+    const insights = runAllDetectors(stats, baseline);
+    const tired = insights.filter((i) => i.detectorId === 'tired-coding');
+    expect(tired.length).toBe(0);
+  });
+
+  it('degrades silently when no baseline provided', () => {
+    const stats = newEmptyStats('no-ctx-001', '/tmp/n.jsonl', 'demo', false);
+    stats.startedAt = '2026-04-01T02:30:00.000Z';
     stats.totalCostUsd = 5;
     const insights = runAllDetectors(stats);
     const tired = insights.filter((i) => i.detectorId === 'tired-coding');

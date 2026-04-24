@@ -49,7 +49,7 @@ export function ErrorState({ error, onRetry }: ErrorStateProps): JSX.Element {
                 <div className="mt-1">$ npx getburnd serve</div>
               </div>
               <p className="mt-2 text-[11px] text-axis-textMuted">
-                Then come back to this page and click the retry button below. Burnd serves the dashboard from a local HTTP server on your own machine — nothing runs in the cloud.
+                Then come back to this page and click the retry button below. Burnd serves the dashboard from a local HTTP server on your own machine. Nothing runs in the cloud.
               </p>
             </div>
           )}
