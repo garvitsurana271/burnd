@@ -1,10 +1,13 @@
 import { Act1Hero } from '../scenes/Act1Hero.js';
+import { Act2Terminal } from '../scenes/Act2Terminal.js';
+import { Act3Embers } from '../scenes/Act3Embers.js';
 
 export function LandingPage(): JSX.Element {
   return (
-    <div className="bg-[#09090f] text-white">
+    <div className="bg-[#09090f] text-[#F5E8D4] font-sans antialiased">
       <Act1Hero />
-      {/* Placeholder for scroll-room while subsequent acts are built */}
+      <Act2Terminal />
+      <Act3Embers />
       <div style={{ height: '100vh' }} />
     </div>
   );
