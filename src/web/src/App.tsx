@@ -3,6 +3,8 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout.js';
 import { LandingPage } from './pages/LandingPage.js';
 import { SharePage } from './pages/SharePage.js';
+import { ProofPage } from './pages/ProofPage.js';
+import { CalculatorPage } from './pages/CalculatorPage.js';
 import { fetchSnapshot, type SnapshotView } from './lib/snapshot.js';
 
 // Dashboard pages are only needed on /app routes — lazy-load so landing page
@@ -49,6 +51,8 @@ export function App(): JSX.Element {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/share" element={<SharePage />} />
+        <Route path="/proof" element={<ProofPage />} />
+        <Route path="/calculator" element={<CalculatorPage />} />
         {/* Unknown public routes fall back to the landing page too. */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
