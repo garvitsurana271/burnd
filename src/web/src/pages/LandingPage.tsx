@@ -1,26 +1,29 @@
+import { lazy, Suspense } from 'react';
 import { useDeviceCapabilities } from '../lib/useDeviceCapabilities.js';
 import { Act1Hero } from '../scenes/Act1Hero.js';
-import { Act2Terminal } from '../scenes/Act2Terminal.js';
-import { Act3Embers } from '../scenes/Act3Embers.js';
-import { Act4Dashboard } from '../scenes/Act4Dashboard.js';
-import { Act5Pricing } from '../scenes/Act5Pricing.js';
-import { Act6Ignition } from '../scenes/Act6Ignition.js';
 import { MobileLanding } from '../motion-fallback/MobileLanding.js';
+
+const Act2Terminal = lazy(() => import('../scenes/Act2Terminal.js').then(m => ({ default: m.Act2Terminal })));
+const Act3Embers = lazy(() => import('../scenes/Act3Embers.js').then(m => ({ default: m.Act3Embers })));
+const Act4Dashboard = lazy(() => import('../scenes/Act4Dashboard.js').then(m => ({ default: m.Act4Dashboard })));
+const Act5Pricing = lazy(() => import('../scenes/Act5Pricing.js').then(m => ({ default: m.Act5Pricing })));
+const Act6Ignition = lazy(() => import('../scenes/Act6Ignition.js').then(m => ({ default: m.Act6Ignition })));
 
 export function LandingPage(): JSX.Element {
   const caps = useDeviceCapabilities();
   if (!caps.shouldRender3D) {
     return <MobileLanding />;
   }
-
   return (
     <div className="bg-[#09090f] text-[#F5E8D4] font-sans antialiased">
       <Act1Hero />
-      <Act2Terminal />
-      <Act3Embers />
-      <Act4Dashboard />
-      <Act5Pricing />
-      <Act6Ignition />
+      <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
+        <Act2Terminal />
+        <Act3Embers />
+        <Act4Dashboard />
+        <Act5Pricing />
+        <Act6Ignition />
+      </Suspense>
     </div>
   );
 }

@@ -20,5 +20,16 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three'],
+          r3f: ['@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
+          motion: ['motion'],
+          // recharts intentionally omitted — it has a circular dep with r3f when forced into a
+          // shared chunk. Vite/Rollup naturally co-locates it with the app route chunks that use it.
+        },
+      },
+    },
   },
 });
