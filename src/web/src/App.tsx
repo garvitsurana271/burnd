@@ -2,6 +2,8 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout.js';
 import { LandingPage } from './pages/LandingPage.js';
+import { SharePage } from './pages/SharePage.js';
+import { FlameTest } from './pages/FlameTest.js';
 import { fetchSnapshot, type SnapshotView } from './lib/snapshot.js';
 
 // Dashboard pages are only needed on /app routes — lazy-load so landing page
@@ -47,6 +49,8 @@ export function App(): JSX.Element {
     return (
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/share" element={<SharePage />} />
+        <Route path="/flame-test" element={<FlameTest />} />
         {/* Unknown public routes fall back to the landing page too. */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
