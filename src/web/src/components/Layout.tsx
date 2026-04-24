@@ -78,7 +78,7 @@ export function Layout({
             burnd
           </span>
           <span className="ml-auto rounded border border-[#F5E8D4]/10 px-1.5 py-0.5 font-mono text-[10px] text-[#F5E8D4]/35">
-            v{snapshot?.meta.burndVersion ?? '0.0.1'}
+            v{snapshot?.meta.burndVersion ?? '0.0.16'}
           </span>
         </NavLink>
 
