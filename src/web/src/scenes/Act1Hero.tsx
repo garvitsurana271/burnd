@@ -135,7 +135,7 @@ export function Act1Hero(): JSX.Element {
           style={{ opacity: headlineOpacity }}
         >
           <div className="w-full max-w-[1400px] mx-auto px-[clamp(1.5rem,4vw,3rem)]">
-            <div className="max-w-[20ch]">
+            <div className="max-w-[24ch]">
               <div className="mb-6 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-amber-400/80">
                 <span className="h-px w-8 bg-amber-400/60" />
                 <span>Filed 2026-03-31</span>
