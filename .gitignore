@@ -57,6 +57,10 @@ notes/domain-verification.md
 *.png
 *.jpg
 
+# But DO track intentional production assets
+!src/web/public/og.png
+!src/web/public/*.jpg
+
 # Generated ebook artifacts (deliver manually, don't commit)
 notes/ebook/*.pdf
 notes/ebook/*.html

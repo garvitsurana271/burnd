@@ -2,57 +2,67 @@
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#09090f"/>
-      <stop offset="100%" stop-color="#111118"/>
+      <stop offset="100%" stop-color="#0c0c16"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="400" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#6366f1"/>
-      <stop offset="100%" stop-color="#818cf8"/>
+    <linearGradient id="flame" x1="0" y1="630" x2="0" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#c2410c" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
     </linearGradient>
+    <linearGradient id="rule" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.6"/>
+      <stop offset="40%" stop-color="#F5E8D4" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#F5E8D4" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="flameGlow" cx="950" cy="520" r="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.4"/>
+      <stop offset="70%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 
-  <!-- Background -->
   <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#flameGlow)"/>
 
-  <!-- Subtle grid lines -->
-  <line x1="0" y1="210" x2="1200" y2="210" stroke="#1e1e2e" stroke-width="1"/>
-  <line x1="0" y1="420" x2="1200" y2="420" stroke="#1e1e2e" stroke-width="1"/>
-  <line x1="400" y1="0" x2="400" y2="630" stroke="#1e1e2e" stroke-width="1"/>
-  <line x1="800" y1="0" x2="800" y2="630" stroke="#1e1e2e" stroke-width="1"/>
+  <!-- Flame -->
+  <g transform="translate(820 220) scale(1.3)" opacity="0.9">
+    <path
+      d="M110 290 Q55 220 80 160 Q110 95 100 25 Q130 85 160 140 Q200 220 110 290 Z"
+      fill="url(#flame)"
+    />
+    <path
+      d="M110 275 Q85 235 95 195 Q105 155 100 115 Q115 150 135 180 Q155 225 110 275 Z"
+      fill="#fbbf24"
+      opacity="0.65"
+    />
+  </g>
 
-  <!-- Accent bar -->
-  <rect x="80" y="80" width="6" height="80" fill="url(#accent)" rx="3"/>
+  <!-- Top eyebrow -->
+  <g transform="translate(80 90)">
+    <rect x="0" y="12" width="44" height="1.4" fill="#f59e0b" opacity="0.75"/>
+    <text x="58" y="19" font-family="'JetBrains Mono', monospace" font-size="15" font-weight="500" fill="#f59e0b" opacity="0.9" letter-spacing="3.4">INCIDENT REPORT &#183; 0001</text>
+  </g>
 
-  <!-- Brand -->
-  <text x="104" y="130" font-family="monospace" font-size="52" font-weight="700" fill="#f8f8ff" letter-spacing="-1">burnd</text>
+  <!-- Hero headline — 3 lines, larger but fits -->
+  <g transform="translate(80 200)">
+    <text font-family="'Instrument Serif', Georgia, serif" font-size="96" fill="#F5E8D4" letter-spacing="-2">
+      <tspan x="0" y="80"><tspan font-style="italic">Your</tspan> Claude Code</tspan>
+      <tspan x="0" y="190"><tspan font-style="italic">bill</tspan> is bigger</tspan>
+      <tspan x="0" y="300" font-style="italic" fill="#f59e0b">than you think.</tspan>
+    </text>
+  </g>
 
-  <!-- Tagline -->
-  <text x="104" y="175" font-family="monospace" font-size="22" fill="#6366f1">find what's burning your Claude Code budget</text>
+  <!-- Hairline -->
+  <rect x="80" y="540" width="1040" height="1" fill="url(#rule)"/>
 
-  <!-- Divider -->
-  <line x1="80" y1="215" x2="1120" y2="215" stroke="#1e1e2e" stroke-width="1.5"/>
-
-  <!-- Stat 1 -->
-  <text x="104" y="290" font-family="monospace" font-size="48" font-weight="700" fill="#f8f8ff">$14,502</text>
-  <text x="104" y="325" font-family="monospace" font-size="18" fill="#6b7280">spent in one month</text>
-
-  <!-- Stat 2 -->
-  <text x="460" y="290" font-family="monospace" font-size="48" font-weight="700" fill="#f8f8ff">8</text>
-  <text x="460" y="325" font-family="monospace" font-size="18" fill="#6b7280">leak detectors</text>
-
-  <!-- Stat 3 -->
-  <text x="700" y="290" font-family="monospace" font-size="48" font-weight="700" fill="#6366f1">$76</text>
-  <text x="700" y="325" font-family="monospace" font-size="18" fill="#6b7280">waste found instantly</text>
-
-  <!-- CLI command box -->
-  <rect x="80" y="390" width="700" height="72" rx="8" fill="#0d0d14" stroke="#1e1e2e" stroke-width="1.5"/>
-  <text x="110" y="435" font-family="monospace" font-size="26" fill="#6366f1">$</text>
-  <text x="140" y="435" font-family="monospace" font-size="26" fill="#f8f8ff">npx getburnd</text>
-
-  <!-- Free badge -->
-  <rect x="820" y="395" width="140" height="34" rx="17" fill="#6366f1" opacity="0.15" stroke="#6366f1" stroke-width="1"/>
-  <text x="890" y="417" font-family="monospace" font-size="15" fill="#6366f1" text-anchor="middle">free · MIT</text>
-
-  <!-- Footer -->
-  <text x="104" y="565" font-family="monospace" font-size="18" fill="#4b5563">getburnd.vercel.app</text>
-  <text x="1096" y="565" font-family="monospace" font-size="18" fill="#4b5563" text-anchor="end">nothing leaves your machine</text>
+  <!-- Bottom meta row -->
+  <g transform="translate(80 580)">
+    <text font-family="'JetBrains Mono', monospace" font-size="15" font-weight="500" fill="#F5E8D4" opacity="0.6" letter-spacing="3.2">
+      <tspan x="0">$14,502 &#183; one month &#183; one developer</tspan>
+    </text>
+  </g>
+  <g transform="translate(1120 580)">
+    <text font-family="'JetBrains Mono', monospace" font-size="15" font-weight="500" fill="#f59e0b" opacity="0.9" letter-spacing="3.2" text-anchor="end">
+      <tspan x="0">npx getburnd</tspan>
+    </text>
+  </g>
 </svg>
