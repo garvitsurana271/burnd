@@ -79,6 +79,14 @@ export const projectCostOutlierDetector = {
           'Look at the most expensive session in this project (Burnd\'s Sessions view will surface it) and identify the cost spike.',
           'Apply patterns from your cheaper projects (shorter sessions, more focused prompts, less context).',
         ],
+        proFixSteps: [
+          `"${shortProjectName(projectDir)}" median: $${projectMedian.toFixed(2)}/session vs your overall median of $${overallMedian.toFixed(2)}/session — ${(projectMedian / overallMedian).toFixed(1)}× more expensive across ${projectSessions.length} sessions, totalling $${totalProjectCost.toFixed(2)}.`,
+          `The most expensive session in this project cost $${anchorSession.totalCostUsd.toFixed(2)}. Open it in the Sessions view, sort by tool cost, and identify whether the spike came from a single operation (massive file read, long build output, context overload) or was spread evenly.`,
+          `Common reasons a project is 3x+ more expensive than your average: (a) CLAUDE.md is too large — it loads on every session. Trim it. (b) The codebase is large and Claude reads the whole tree — add a .claudeignore for node_modules/dist/build. (c) Tests generate massive output that gets fed back as context.`,
+          `Check this project's CLAUDE.md: if it's over 500 lines, cut it to the essentials. Every line of CLAUDE.md is loaded as context on every session start. A 1000-line CLAUDE.md can easily add $0.05–0.10 per session.`,
+          `Target: bring "${shortProjectName(projectDir)}" sessions to 2× your median or below. That would save $${(savingsUsd * 0.5).toFixed(2)} over the next ${projectSessions.length} sessions.`,
+        ],
+        claudeMdPatch: `# Keep this file concise — every line loads as context on every session.\n# Target: under 200 lines. Trim examples, remove stale rules, cut anything\n# the model doesn't need on every single turn.`,
       });
     }
     return insights;

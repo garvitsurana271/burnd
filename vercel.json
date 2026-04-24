@@ -5,6 +5,8 @@
   "outputDirectory": "src/web/dist",
   "framework": null,
   "rewrites": [
+    { "source": "/_vercel/(.*)", "destination": "/_vercel/$1" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

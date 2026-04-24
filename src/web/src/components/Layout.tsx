@@ -10,6 +10,7 @@ import {
   RefreshCw,
   Menu,
   X,
+  Zap,
 } from 'lucide-react';
 import type { SnapshotView } from '../lib/snapshot.js';
 import { formatUsd, formatRelativeTime } from '../lib/format.js';
@@ -134,6 +135,26 @@ export function Layout({
               <div className="mt-2 font-mono text-[10px] text-axis-textDim">
                 generated {formatRelativeTime(snapshot.meta.generatedAt)}
               </div>
+
+              {/* Pro upgrade banner / status */}
+              {snapshot.meta.isPro ? (
+                <div className="mt-4 flex items-center gap-2 rounded-md border border-axis-accent/40 bg-axis-accentSoft/40 px-3 py-2">
+                  <Zap className="h-3.5 w-3.5 shrink-0 text-axis-accent" />
+                  <span className="font-mono text-[11px] font-semibold text-axis-accent">
+                    BurndPro Active
+                  </span>
+                </div>
+              ) : (
+                <a
+                  href="https://getburnd.vercel.app/#pricing"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-md border border-axis-accent/50 bg-axis-accentSoft/30 px-2 py-2 font-mono text-[11px] font-semibold text-axis-accent transition-colors hover:bg-axis-accentSoft hover:border-axis-accent"
+                >
+                  <Zap className="h-3 w-3" />
+                  Upgrade to BurndPro
+                </a>
+              )}
             </>
           ) : (
             <div className="font-mono text-axis-textMuted">loading...</div>

@@ -1,15 +1,22 @@
-import { useState } from 'react';
-import { ChevronDown, Clock, DollarSign, Target } from 'lucide-react';
+import { useState, Fragment } from 'react';
+import { ChevronDown, Clock, DollarSign, Target, Zap, Lock, TrendingDown, Copy, Check, Terminal } from 'lucide-react';
 import type { InsightView, SnapshotView } from '../lib/snapshot.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { Card } from '../components/Card.js';
 import { formatUsd, shortProjectName } from '../lib/format.js';
+
+interface DetectorRollup {
+  sessionCount: number;       // how many sessions this detector fired on (all-time)
+  totalSavingsUsd: number;    // sum of savingsEstimateUsd across all sessions
+  last30DaysSavingsUsd: number; // subset — last 30 days only (placeholder, same as total for now)
+}
 
 interface InsightsPageProps {
   snapshot: SnapshotView;
 }
 
 const DETECTOR_LABELS: Record<string, string> = {
+  'model-substitution': 'Opus → Sonnet swap',
   'long-bash-output': 'Long Bash output',
   'repeated-read': 'Repeated reads',
   thrash: 'Tool error storm',
@@ -24,9 +31,15 @@ export function InsightsPage({ snapshot }: InsightsPageProps): JSX.Element {
   const [filterDetector, setFilterDetector] = useState<string | null>(null);
 
   const allInsights = snapshot.insights;
+
+  // When no filter is active, interleave detector types so a single noisy
+  // detector (e.g. model-substitution) can't crowd out every other insight.
+  // Within each detector bucket, insights are already sorted by savings desc.
+  // When a filter is active, show all matching insights in savings order.
   const filteredInsights = filterDetector
     ? allInsights.filter((i) => i.detectorId === filterDetector)
-    : allInsights;
+    : diversitySort(allInsights);
+
   const totalSavings = filteredInsights.reduce((acc, i) => acc + i.savingsEstimateUsd, 0);
 
   // Detector counts for the filter chips.
@@ -36,6 +49,24 @@ export function InsightsPage({ snapshot }: InsightsPageProps): JSX.Element {
       insight.detectorId,
       (detectorCounts.get(insight.detectorId) ?? 0) + 1,
     );
+  }
+
+  // "If fixed" simulator: aggregate all-time savings per detector across every session.
+  // This shows free users exactly how much they would have saved if they'd fixed a leak
+  // on day 1 — making the Pro ROI concrete before they've paid anything.
+  const detectorRollup = new Map<string, DetectorRollup>();
+  for (const insight of allInsights) {
+    const existing = detectorRollup.get(insight.detectorId) ?? {
+      sessionCount: 0,
+      totalSavingsUsd: 0,
+      last30DaysSavingsUsd: 0,
+    };
+    existing.sessionCount += 1;
+    existing.totalSavingsUsd += insight.savingsEstimateUsd;
+    // We don't have per-insight timestamps on the client, so last30Days ≈ total for now.
+    // (A future CLI change can add `detectedAt` to insights to make this precise.)
+    existing.last30DaysSavingsUsd += insight.savingsEstimateUsd;
+    detectorRollup.set(insight.detectorId, existing);
   }
 
   return (
@@ -127,7 +158,38 @@ export function InsightsPage({ snapshot }: InsightsPageProps): JSX.Element {
           </Card>
         ) : (
           filteredInsights.map((insight, idx) => (
-            <InsightCard key={insight.id} insight={insight} rank={idx + 1} />
+            <Fragment key={insight.id}>
+              <InsightCard
+                insight={insight}
+                rank={idx + 1}
+                isPro={snapshot.meta.isPro}
+                rollup={detectorRollup.get(insight.detectorId)}
+              />
+              {/* Mid-list upgrade banner — shown after the 3rd insight for free users */}
+              {idx === 2 && !snapshot.meta.isPro && !filterDetector && (
+                <div className="flex items-center gap-4 rounded-lg border border-axis-accent/40 bg-gradient-to-r from-axis-accentSoft to-axis-surface px-5 py-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-axis-accent/20">
+                    <Zap className="h-4 w-4 text-axis-accent" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-mono text-[11px] uppercase tracking-wider text-axis-accent">
+                      BurndPro
+                    </div>
+                    <div className="mt-0.5 font-sans text-sm font-semibold text-axis-text">
+                      Every leak above has a deeper fix. Pro unlocks session-specific diagnostics, exact commands, and follow-up checks.
+                    </div>
+                  </div>
+                  <a
+                    href="https://getburnd.vercel.app/#pricing"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="shrink-0 rounded-md bg-axis-accent px-4 py-2 font-mono text-[12px] font-semibold text-white transition-opacity hover:opacity-80"
+                  >
+                    Upgrade →
+                  </a>
+                </div>
+              )}
+            </Fragment>
           ))
         )}
       </div>
@@ -135,8 +197,121 @@ export function InsightsPage({ snapshot }: InsightsPageProps): JSX.Element {
   );
 }
 
-function InsightCard({ insight, rank }: { insight: InsightView; rank: number }): JSX.Element {
-  const [expanded, setExpanded] = useState(rank <= 3); // Top 3 expanded by default.
+// Round-robin across detector buckets so one noisy detector never fills the
+// whole list. Within each bucket, insights are sorted by savings desc.
+function diversitySort(insights: InsightView[]): InsightView[] {
+  const byDetector = new Map<string, InsightView[]>();
+  for (const insight of insights) {
+    const bucket = byDetector.get(insight.detectorId) ?? [];
+    bucket.push(insight);
+    byDetector.set(insight.detectorId, bucket);
+  }
+  // Sort buckets: highest top-savings detector leads each round.
+  const buckets = [...byDetector.values()].sort(
+    (a, b) => (b[0]?.savingsEstimateUsd ?? 0) - (a[0]?.savingsEstimateUsd ?? 0),
+  );
+  const result: InsightView[] = [];
+  let round = 0;
+  while (result.length < insights.length) {
+    let added = 0;
+    for (const bucket of buckets) {
+      const item = bucket[round];
+      if (item) { result.push(item); added++; }
+    }
+    if (added === 0) break;
+    round++;
+  }
+  return result;
+}
+
+function ApplyPatchButton({ projectDir, patch }: { projectDir: string; patch: string }): JSX.Element {
+  const [state, setState] = useState<'idle' | 'loading' | 'ok' | 'err'>('idle');
+  const [errMsg, setErrMsg] = useState('');
+
+  const handleApply = async () => {
+    setState('loading');
+    try {
+      const res = await fetch('/api/apply-patch', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ projectDir, patch }),
+      });
+      const json = await res.json() as { ok?: boolean; error?: string; message?: string };
+      if (json.ok) {
+        setState('ok');
+        setTimeout(() => setState('idle'), 3000);
+      } else {
+        setErrMsg(json.error ?? 'Unknown error');
+        setState('err');
+        setTimeout(() => setState('idle'), 4000);
+      }
+    } catch (e) {
+      setErrMsg('Network error — is burnd serve running?');
+      setState('err');
+      setTimeout(() => setState('idle'), 4000);
+    }
+  };
+
+  if (state === 'ok') {
+    return (
+      <span className="flex items-center gap-1 rounded px-2 py-1 font-mono text-[10px] text-axis-success">
+        <Check className="h-3 w-3" /> Applied!
+      </span>
+    );
+  }
+  if (state === 'err') {
+    return (
+      <span className="flex items-center gap-1 rounded px-2 py-1 font-mono text-[10px] text-red-400">
+        <Terminal className="h-3 w-3" /> {errMsg.slice(0, 40)}
+      </span>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => void handleApply()}
+      disabled={state === 'loading'}
+      className="flex items-center gap-1 rounded border border-green-700/40 bg-green-950/30 px-2 py-1 font-mono text-[10px] text-green-400 transition-colors hover:border-green-600/60 hover:bg-green-950/50 disabled:opacity-50"
+      title="Auto-apply this patch to your project's CLAUDE.md"
+    >
+      <Terminal className="h-3 w-3" />
+      {state === 'loading' ? 'applying…' : 'Apply to CLAUDE.md'}
+    </button>
+  );
+}
+
+function CopyButton({ text }: { text: string }): JSX.Element {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className="flex items-center gap-1 rounded px-2 py-1 font-mono text-[10px] text-axis-textMuted transition-colors hover:bg-axis-muted hover:text-axis-text"
+      title="Copy to clipboard"
+    >
+      {copied ? <Check className="h-3 w-3 text-axis-success" /> : <Copy className="h-3 w-3" />}
+      {copied ? 'copied!' : 'copy'}
+    </button>
+  );
+}
+
+function InsightCard({
+  insight,
+  rank,
+  isPro,
+  rollup,
+}: {
+  insight: InsightView;
+  rank: number;
+  isPro: boolean;
+  rollup: DetectorRollup | undefined;
+}): JSX.Element {
+  const [expanded, setExpanded] = useState(rank <= 3);
 
   return (
     <Card className="animate-slide-up">
@@ -155,6 +330,11 @@ function InsightCard({ insight, rank }: { insight: InsightView; rank: number }):
             <span className="rounded bg-axis-warningSoft px-1.5 py-0.5 text-axis-warning">
               save {formatUsd(insight.savingsEstimateUsd)}
             </span>
+            {rollup && rollup.sessionCount > 1 && (
+              <span className="rounded bg-red-950/60 px-1.5 py-0.5 text-red-400">
+                {rollup.sessionCount} sessions affected
+              </span>
+            )}
             <span className="rounded bg-axis-muted px-1.5 py-0.5 text-axis-textMuted">
               ~{insight.effortMinutes} min
             </span>
@@ -171,6 +351,8 @@ function InsightCard({ insight, rank }: { insight: InsightView; rank: number }):
       {expanded && (
         <div className="mt-4 border-t border-axis-border pt-4">
           <p className="text-sm leading-relaxed text-axis-textMuted">{insight.description}</p>
+
+          {/* Basic fix steps — visible to all users */}
           <div className="mt-4">
             <div className="font-mono text-[10px] uppercase tracking-wider text-axis-textDim">
               How to fix
@@ -184,6 +366,114 @@ function InsightCard({ insight, rank }: { insight: InsightView; rank: number }):
               ))}
             </ol>
           </div>
+
+          {/* "If fixed" simulator — visible to ALL users, free and Pro.
+              Shows historical damage from this leak pattern to make the
+              cost of inaction concrete. For free users, it's the upsell hook. */}
+          {rollup && rollup.sessionCount > 1 && (
+            <div className="mt-5 rounded-md border border-red-900/40 bg-red-950/20 p-4">
+              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-red-400">
+                <TrendingDown className="h-3 w-3" />
+                If fixed on day 1 — what you would have saved
+              </div>
+              <div className="mt-3 flex items-end gap-6">
+                <div>
+                  <div className="font-mono text-2xl font-semibold tracking-tight text-red-300">
+                    {formatUsd(rollup.totalSavingsUsd)}
+                  </div>
+                  <div className="mt-0.5 font-mono text-[11px] text-red-400/70">
+                    across {rollup.sessionCount} affected sessions
+                  </div>
+                </div>
+                <div className="mb-0.5 font-mono text-[11px] text-axis-textDim leading-relaxed">
+                  This leak pattern fired {rollup.sessionCount} times in your history.
+                  {!isPro && (
+                    <> Fix it now with the session-specific steps below.</>
+                  )}
+                </div>
+              </div>
+              {!isPro && (
+                <a
+                  href="https://getburnd.vercel.app/#pricing" target="_blank" rel="noreferrer"
+                  className="mt-3 inline-flex items-center gap-1.5 rounded bg-axis-accent px-3 py-1.5 font-mono text-[11px] font-semibold text-white transition-opacity hover:opacity-80"
+                >
+                  <Zap className="h-3 w-3" />
+                  Get the exact fix — Upgrade to Pro
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* Pro deep-analysis section */}
+          {isPro && insight.proFixSteps.length > 0 ? (
+            <div className="mt-5 rounded-md border border-axis-accent/30 bg-axis-accentSoft/30 p-4">
+              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-axis-accent">
+                <Zap className="h-3 w-3" />
+                Pro — Session-specific deep analysis
+              </div>
+              <ol className="mt-3 flex flex-col gap-2 text-sm text-axis-text">
+                {insight.proFixSteps.map((step, i) => (
+                  <li key={i} className="flex gap-3">
+                    <span className="mt-0.5 font-mono text-axis-accent/60">{i + 1}.</span>
+                    <span className="leading-relaxed">{step}</span>
+                  </li>
+                ))}
+              </ol>
+
+              {/* CLAUDE.md Auto-Patcher — the killer Pro feature */}
+              {insight.claudeMdPatch && (
+                <div className="mt-4 rounded-md border border-green-800/40 bg-green-950/30">
+                  <div className="flex items-center justify-between border-b border-green-800/30 px-3 py-2">
+                    <div className="font-mono text-[10px] uppercase tracking-wider text-green-400">
+                      CLAUDE.md patch
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CopyButton text={insight.claudeMdPatch} />
+                      <ApplyPatchButton projectDir={insight.projectDir} patch={insight.claudeMdPatch} />
+                    </div>
+                  </div>
+                  <pre className="overflow-x-auto px-3 py-3 font-mono text-[12px] leading-relaxed text-green-300">
+                    {insight.claudeMdPatch}
+                  </pre>
+                </div>
+              )}
+            </div>
+          ) : !isPro && insight.proFixSteps.length > 0 ? (
+            <div className="mt-5 overflow-hidden rounded-md border border-axis-border">
+              {/* Blurred preview of pro content */}
+              <div className="relative px-4 pt-4 pb-2">
+                <div className="pointer-events-none select-none blur-sm">
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-axis-accent">
+                    Pro — Session-specific deep analysis
+                  </div>
+                  <ol className="mt-2 flex flex-col gap-1.5 text-sm text-axis-text opacity-70">
+                    {insight.proFixSteps.slice(0, 2).map((step, i) => (
+                      <li key={i} className="flex gap-3">
+                        <span className="font-mono">{i + 1}.</span>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-axis-surface/60 backdrop-blur-[1px]">
+                  <Lock className="h-4 w-4 text-axis-textMuted" />
+                  <span className="font-mono text-[11px] text-axis-textMuted">BurndPro only</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between border-t border-axis-border bg-axis-bg px-4 py-3">
+                <span className="font-sans text-xs text-axis-textMuted">
+                  Get exact commands, token breakdowns & follow-up checks for this specific session.
+                </span>
+                <a
+                  href="https://getburnd.vercel.app/#pricing" target="_blank" rel="noreferrer"
+                  className="ml-4 shrink-0 rounded bg-axis-accent px-3 py-1.5 font-mono text-[11px] font-semibold text-white transition-opacity hover:opacity-80"
+                >
+                  <Zap className="mr-1 inline h-3 w-3" />
+                  Upgrade
+                </a>
+              </div>
+            </div>
+          ) : null}
         </div>
       )}
     </Card>

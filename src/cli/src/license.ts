@@ -1,4 +1,4 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, randomUUID } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
@@ -11,6 +11,30 @@ export interface BurndConfig {
   weeklyBudgetUsd?: number;
   currency?: 'USD' | 'INR';
   exchangeRate?: number;
+  // Alert webhook — POST when any session exceeds alertThresholdUsd.
+  webhookUrl?: string;
+  alertThresholdUsd?: number;
+  // Resend API key for email digest.
+  resendApiKey?: string;
+  digestEmail?: string;
+  // Run counter + email capture state (free tier retention).
+  runCount?: number;
+  emailSkipCount?: number;
+  emailLastSkipRun?: number;
+  // Anonymous install ID for deduplicating real installs from CI/bot downloads.
+  // Generated once on first scan, never regenerated. Contains zero PII.
+  installId?: string;
+}
+
+/** Returns a persistent random UUID for this machine's Burnd install.
+ *  Generates + stores it on first call. Never regenerates. */
+export function getInstallId(): string {
+  const config = readConfig();
+  if (config.installId) return config.installId;
+  const id = randomUUID();
+  config.installId = id;
+  writeConfig(config);
+  return id;
 }
 
 function configDir(): string {
@@ -75,6 +99,11 @@ export function validateLicense(config: BurndConfig): LicenseStatus {
   const current = currentMonthStr();
   const prev = prevMonthStr();
 
+  // Lifetime key — never expires.
+  if (key === generateKey(email, 'lifetime')) {
+    return { active: true, email, expiresMonth: 'lifetime' };
+  }
+  // Monthly key — valid for current month + one month grace period.
   if (key === generateKey(email, current)) {
     return { active: true, email, expiresMonth: current };
   }

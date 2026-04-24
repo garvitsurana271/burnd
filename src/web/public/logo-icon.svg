@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Outer flame gradient: amber base → indigo tip -->
+    <linearGradient id="flameOuter" x1="256" y1="415" x2="256" y2="88" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="45%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <!-- Inner core gradient: bright amber → light indigo -->
+    <linearGradient id="flameInner" x1="256" y1="380" x2="256" y2="185" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#a5b4fc" stop-opacity="0.5"/>
+    </linearGradient>
+    <!-- Glow filter -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background: dark rounded square -->
+  <rect width="512" height="512" rx="96" fill="#09090f"/>
+  <!-- Subtle background glow -->
+  <ellipse cx="256" cy="340" rx="140" ry="80" fill="#6366f1" opacity="0.06"/>
+
+  <!-- Outer flame body -->
+  <path d="
+    M 256 88
+    C 278 110, 325 145, 348 200
+    C 372 258, 368 318, 340 362
+    C 318 396, 288 415, 256 415
+    C 224 415, 194 396, 172 362
+    C 144 318, 140 258, 164 200
+    C 187 145, 234 110, 256 88
+    Z
+  " fill="url(#flameOuter)" filter="url(#glow)"/>
+
+  <!-- Left wisp -->
+  <path d="
+    M 185 310
+    C 172 280, 175 245, 192 225
+    C 200 240, 198 265, 205 285
+    C 210 270, 218 255, 225 245
+    C 228 270, 220 295, 210 318
+    C 202 316, 193 314, 185 310
+    Z
+  " fill="#fbbf24" opacity="0.35"/>
+
+  <!-- Inner flame core -->
+  <path d="
+    M 256 185
+    C 270 202, 295 225, 302 258
+    C 310 292, 300 328, 278 352
+    C 268 363, 258 370, 256 370
+    C 254 370, 244 363, 234 352
+    C 212 328, 202 292, 210 258
+    C 217 225, 242 202, 256 185
+    Z
+  " fill="url(#flameInner)" opacity="0.7"/>
+
+  <!-- Bright tip highlight -->
+  <ellipse cx="256" cy="128" rx="18" ry="28" fill="#818cf8" opacity="0.5"/>
+</svg>

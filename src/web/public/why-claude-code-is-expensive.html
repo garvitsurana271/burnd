@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Why Claude Code Sessions Get Expensive (And How to Find the Leaks)</title>
+  <meta name="description" content="Claude Code billing can spiral fast. Here are the 8 patterns that quietly drain your budget — and the free tool that finds them in 30 seconds." />
+  <meta name="keywords" content="claude code expensive, reduce claude code costs, claude code billing, claude code budget, claude code cost analysis, anthropic claude code" />
+  <link rel="canonical" href="https://getburnd.vercel.app/why-claude-code-is-expensive" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Why Claude Code Sessions Get Expensive" />
+  <meta property="og:description" content="The 8 patterns that quietly drain your Claude Code budget — and how to find them in 30 seconds." />
+  <meta property="og:url" content="https://getburnd.vercel.app/why-claude-code-is-expensive" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Why Claude Code Sessions Get Expensive" />
+  <meta name="twitter:description" content="The 8 patterns that quietly drain your Claude Code budget — and how to find them in 30 seconds." />
+
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #09090f;
+    color: #F5E8D4;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    padding: 96px 24px;
+    max-width: 680px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: rgba(245, 158, 11, 0.85);
+    margin-bottom: 24px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: rgba(245, 158, 11, 0.6);
+  }
+
+  h1 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-weight: normal;
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: #F5E8D4;
+    margin-bottom: 0.4em;
+  }
+  h1 em { color: #f59e0b; font-style: italic; }
+
+  h2 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-weight: normal;
+    font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: #F5E8D4;
+    margin-top: 3em;
+    padding-top: 1.5em;
+    border-top: 1px solid rgba(245, 158, 11, 0.18);
+  }
+  h2 em { color: #f59e0b; font-style: italic; }
+
+  h3 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-weight: normal;
+    font-size: 1.4rem;
+    color: #F5E8D4;
+    margin-top: 2em;
+  }
+
+  p {
+    color: rgba(245, 232, 212, 0.78);
+    margin-top: 1.1em;
+  }
+  p.lede {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.35rem;
+    font-style: italic;
+    color: rgba(245, 232, 212, 0.92);
+    margin-top: 2em;
+  }
+
+  strong { color: #F5E8D4; font-weight: 600; }
+  em.amount, strong.amount { color: #f59e0b; }
+
+  code {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88em;
+  }
+
+  a {
+    color: #f59e0b;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.35);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  a:hover {
+    color: #fbbf24;
+    border-bottom-color: rgba(245, 158, 11, 0.9);
+  }
+
+  ul, ol { margin: 1em 0 1em 1.4em; }
+  li { margin-top: 0.5em; color: rgba(245, 232, 212, 0.78); }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #f59e0b;
+    color: #09090f;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin-top: 2.5em;
+    border: none;
+    box-shadow: 0 0 50px rgba(245, 158, 11, 0.28);
+  }
+  .cta::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #09090f;
+  }
+
+  blockquote {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 1.35rem;
+    color: rgba(245, 232, 212, 0.9);
+    border-left: 2px solid rgba(245, 158, 11, 0.5);
+    padding-left: 1.2em;
+    margin: 2em 0;
+  }
+
+  .meta {
+    display: flex;
+    gap: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: rgba(245, 232, 212, 0.4);
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(245, 232, 212, 0.1);
+  }
+
+  hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(to right, rgba(245, 158, 11, 0.6), rgba(245, 232, 212, 0.15), transparent);
+    margin: 4em 0;
+  }
+
+  ::selection {
+    background: rgba(245, 158, 11, 0.35);
+    color: #F5E8D4;
+  }
+</style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Why Claude Code Sessions Get Expensive (And How to Find the Leaks)",
+    "description": "The 8 patterns that quietly drain your Claude Code budget — and how to find them in 30 seconds.",
+    "author": { "@type": "Person", "name": "Garvit Surana" },
+    "publisher": { "@type": "Organization", "name": "Burnd", "url": "https://getburnd.vercel.app" },
+    "url": "https://getburnd.vercel.app/why-claude-code-is-expensive"
+  }
+  </script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="https://getburnd.vercel.app">← burnd — Claude Code cost control</a>
+  </header>
+
+  <article>
+    <h1>Why Claude Code Sessions Get Expensive (And How to Find the Leaks)</h1>
+    <div class="meta">By Garvit Surana · April 2026 · 8 min read</div>
+
+    <p>
+      I spent <strong>$14,502 on Claude Code</strong> in a single month before I finally sat down and figured out where it was all going. I'm 16. That's real money. And the worst part? Most of it was avoidable.
+    </p>
+    <p>
+      After parsing thousands of my own session JSONL files, I found 8 recurring patterns that explain almost all runaway Claude Code bills. None of them are obvious. None of them show up in the Anthropic dashboard. And most of them can be fixed in under 15 minutes once you know they exist.
+    </p>
+    <p>
+      This is what I found.
+    </p>
+
+    <div class="callout">
+      <p>
+        <strong>TL;DR:</strong> Run <code>npx getburnd</code> to scan your own sessions. It's free, open-source, reads local files only, and shows you exactly which of these 8 patterns are costing you money — with dollar values.
+      </p>
+    </div>
+
+    <h2>How Claude Code billing actually works</h2>
+    <p>
+      Claude Code bills per token — input tokens and output tokens — using the pricing of whatever model you're running (Sonnet, Opus, Haiku). Every message you send, every file Claude reads, every tool result that comes back, every line of code in the response: all tokens.
+    </p>
+    <p>
+      The key thing most people miss: <strong>context is re-sent on every turn.</strong> If you have a 50,000-token conversation context and ask one follow-up question, that's 50,000 input tokens just to give Claude the context for a 20-word answer.
+    </p>
+    <p>
+      This is why long sessions get expensive fast. And it's why anything that inflates the context window — bash output, repeated file reads, error storms — has a compounding effect on your bill.
+    </p>
+    <p>
+      Claude does have a <strong>prompt cache</strong> that can dramatically reduce input costs when the same prefix is reused. But the cache only persists for a few minutes, and several common patterns bust it entirely — including one that surprises almost everyone.
+    </p>
+
+    <h2>The 8 patterns that drain your budget</h2>
+
+    <ul class="leak-list">
+      <li>
+        <span class="leak-num">1</span>
+        <div class="leak-body">
+          <div class="leak-title">Long bash output flooding the context</div>
+          <p class="leak-desc">Running <code>npm test</code>, <code>cargo build</code>, or any command that dumps thousands of lines into the terminal. Claude reads all of it. A test suite with 200 failed tests can dump 50,000+ tokens in one shot. The fix is simple: pipe to <code>tail -50</code> or <code>grep -E "error|fail"</code>.</p>
+          <div class="leak-cost">Typical cost: $3–15 per affected session</div>
+        </div>
+      </li>
+      <li>
+        <span class="leak-num">2</span>
+        <div class="leak-body">
+          <div class="leak-title">Reading the same file 3+ times in one session</div>
+          <p class="leak-desc">Claude forgets. It reads a file, gets distracted by a tool call chain, then reads the same file again 10 turns later. If that file is 500 lines, you're paying for it multiple times. Add <code>Do not re-read files you've already read in this session</code> to your CLAUDE.md.</p>
+          <div class="leak-cost">Typical cost: $2–8 per affected session</div>
+        </div>
+      </li>
+      <li>
+        <span class="leak-num">3</span>
+        <div class="leak-body">
+          <div class="leak-title">Tool error storms — retrying failed commands</div>
+          <p class="leak-desc">When a bash command fails, Claude sometimes retries it 5–10 times with slight variations. Each retry is a full round-trip: the previous output stays in context, the new attempt goes in, the error comes back. You're paying for every single failed attempt.</p>
+          <div class="leak-cost">Typical cost: $2–10 per affected session</div>
+        </div>
+      </li>
+      <li>
+        <span class="leak-num">4</span>
+        <div class="leak-body">
+          <div class="leak-title">Tool overuse — Bash doing 80%+ of all tool calls</div>
+          <p class="leak-desc">Claude Code has dedicated tools for reading files, searching code, listing directories. When everything goes through Bash (<code>cat file.ts</code>, <code>ls -la</code>, <code>grep -r</code>), you get worse results AND more tokens. The dedicated tools are more efficient and give structured output.</p>
+          <div class="leak-cost">Typical cost: $5–15/month in accumulated waste</div>
+        </div>
+      </li>
+      <li>
+        <span class="leak-num">5</span>
+        <div class="leak-body">
+          <div class="leak-title">Late-night sessions costing 2.5x more</div>
+          <p class="leak-desc">This one surprised me. Sessions started between midnight and 5am consistently run more expensive — not because of rate differences, but because tired prompting leads to vague tasks, more back-and-forth, more thrashing. The same feature takes 2–3x more turns at 2am than it does the next morning.</p>
+          <div class="leak-cost">Typical cost: 2–3x multiplier on session cost</div>
+        </div>
+      </li>
+      <li>
+        <span class="leak-num">6</span>
+        <div class="leak-body">
+          <div class="leak-title">Switching models mid-session kills the cache</div>
+          <p class="leak-desc">This is the one that surprises everyone. Claude Code has a prompt cache that stores your context prefix to avoid re-billing input tokens. When you switch from Opus to Sonnet (or vice versa) mid-session, the cache is invalidated. Claude has to re-read your entire context from scratch. Sometimes switching to a "cheaper" model makes the session cost more overall.</p>
+          <div class="leak-cost">Typical cost: $5–30 in a single switch event</div>
+        </div>
+      </li>
+      <li>
+        <span class="leak-num">7</span>
+        <div class="leak-body">
+          <div class="leak-title">Skills / agents firing on everything</div>
+          <p class="leak-desc">If you have a skill or sub-agent with a broad trigger condition, it can activate on nearly every message and add significant overhead. One skill consuming 40%+ of all tool calls is a clear signal it's over-triggering. Tighten the trigger conditions in the skill's SKILL.md.</p>
+          <div class="leak-cost">Typical cost: 20–40% of total session cost</div>
+        </div>
+      </li>
+      <li>
+        <span class="leak-num">8</span>
+        <div class="leak-body">
+          <div class="leak-title">One project costing 3x more per session than everything else</div>
+          <p class="leak-desc">Most developers have one project that runs disproportionately expensive. Usually it's a project with a large codebase, a noisy test suite, or a pattern of long exploratory sessions. If you can identify it, you can fix it specifically rather than optimizing everything blindly.</p>
+          <div class="leak-cost">Typical cost: $20–50/month concentrated in one project</div>
+        </div>
+      </li>
+    </ul>
+
+    <h2>How to find which ones are affecting you</h2>
+    <p>
+      Claude Code stores every session as a JSONL file at <code>~/.claude/projects/*/</code>. Each file is a complete record of every message, every tool call, every input and output token count. The data is all there — it's just not surfaced anywhere.
+    </p>
+    <p>
+      I built <a href="https://getburnd.vercel.app">Burnd</a> to parse these files and run all 8 detectors automatically. It takes about 30 seconds, runs entirely on your machine, and produces a ranked list of which leaks are costing you money with exact dollar estimates.
+    </p>
+
+    <pre>$ npx getburnd
+
+  burnd — find what's burning a hole in your AI coding budget
+  ─────────────────────────────────────────────────────────────
+
+  Scanned: 227 session files across 227 sessions
+  30-day spend:      $14,502.00
+  Last 7 days:       $843.27
+  Potential savings: $75.92  ← plug these leaks
+
+  Top leaks (sorted by estimated savings):
+
+  1. Project "ChangeLife" costs 3.2x more per session
+     $30.48  (~15 min to fix)
+
+  2. Bash accounts for 80% of tool calls
+     $7.76   (~8 min to fix)
+
+  3. Tool error storm — 30% of calls failed
+     $3.95   (~10 min to fix)</pre>
+
+    <p>
+      Every leak comes with a dollar estimate and a concrete fix step. The CLAUDE.md patches can be applied in one click if you run <code>npx getburnd serve</code> and use the local dashboard.
+    </p>
+
+    <h2>The quick wins (fix these first)</h2>
+    <p>
+      If you want to reduce your Claude Code bill this week without installing anything, start with these:
+    </p>
+    <p>
+      <strong>Add this to your CLAUDE.md:</strong>
+    </p>
+    <pre># Cost control
+- Pipe noisy commands: use `npm test 2>&1 | tail -50` not bare `npm test`
+- Never re-read a file you've already read in this session
+- Use Read tool for files, Grep for search — not `cat` and `grep` via Bash
+- If a command fails twice, stop and tell me — don't retry indefinitely
+- Keep model consistent for the whole session (don't switch mid-task)</pre>
+    <p>
+      These five rules, added to your CLAUDE.md right now, will likely reduce your per-session cost by 20–40% on the next session.
+    </p>
+
+    <div class="cta">
+      <div class="cta-title">Find your specific leaks in 30 seconds</div>
+      <div class="cta-install">$ npx getburnd</div>
+      <p>Free · open source · reads local files only · no signup · no cloud</p>
+      <p style="margin-top: 0.75rem;">
+        <a href="https://getburnd.vercel.app" style="color: var(--accent);">getburnd.vercel.app</a>
+        &nbsp;·&nbsp;
+        <a href="https://github.com/garvitsurana271/burnd" style="color: var(--accent);">GitHub (MIT)</a>
+      </p>
+    </div>
+
+    <h2>Why I built this</h2>
+    <p>
+      I'm Garvit Surana. I'm 16, in Class 12 in Guwahati, India. I've been using Claude Code since it launched and I spent $14,502 on it before I had any real visibility into what was happening. The cost showed up in my billing dashboard as a big number with no breakdown.
+    </p>
+    <p>
+      None of these 8 patterns are documented anywhere. I found them by parsing thousands of JSONL files, looking for correlations between session structure and cost. The model-switching cache invalidation in particular took me a while to confirm — it's not mentioned in Anthropic's documentation but it's real and expensive.
+    </p>
+    <p>
+      Burnd is the tool I wish had existed when I started. It's free, it runs locally, and it shows you your actual numbers not estimates.
+    </p>
+  </article>
+
+  <footer>
+    <p>© 2026 Garvit Surana · <a href="https://getburnd.vercel.app">getburnd.vercel.app</a> · <a href="https://github.com/garvitsurana271/burnd">GitHub</a> · MIT licensed</p>
+  </footer>
+</div>
+</body>
+</html>

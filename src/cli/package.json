@@ -1,7 +1,7 @@
 {
   "name": "getburnd",
-  "version": "0.0.2",
-  "description": "Find what's burning a hole in your AI coding budget. Local-first cost-control tool for Claude Code power users.",
+  "version": "0.0.16",
+  "description": "Find what's burning a hole in your Claude Code budget. Local-first CLI that reads ~/.claude/projects/*.jsonl, detects 8 cost-leak patterns (retry storms, model overuse, repeated reads, etc.), and shows dollar values + fixes. Demo: https://youtu.be/izctEOJBids",
   "keywords": [
     "claude",
     "claude-code",
@@ -36,6 +36,13 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./lib": {
+      "import": "./dist/lib.js",
+      "types": "./dist/lib.d.ts"
+    }
+  },
   "files": [
     "dist",
     "README.md",

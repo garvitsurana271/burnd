@@ -57,6 +57,14 @@ export const thrashDetector: Detector = {
           'Fix the underlying issue and re-run the workflow.',
           'If the agent kept trying obviously failing commands, add a CLAUDE.md hint telling it when to give up early.',
         ],
+        proFixSteps: [
+          `This session had ${totalErrors} errors across ${totalCalls} tool calls — a ${(errorRate * 100).toFixed(0)}% failure rate. At $${stats.totalCostUsd.toFixed(2)} total, an estimated $${wastedCostUsd.toFixed(2)} went to retrying failing work.`,
+          `Open the Sessions view, find session ${stats.sessionId.slice(0, 8)}…, and sort the tool list by error count. The tool with the most errors is almost always the single root cause.`,
+          `Common patterns at this failure rate: (a) Bash path errors — the agent assumed a file existed and kept retrying. (b) Permission denied — a directory or file the agent needed wasn't accessible. (c) Flaky test suite — the agent kept re-running failing tests hoping they'd pass.`,
+          `Add this to your CLAUDE.md to prevent future thrash: "If the same Bash command fails 3 times in a row with the same error, STOP and explain the error to me rather than retrying. Do not loop on failures."`,
+          `After fixing the root cause: re-run the same workflow and check the new session's error rate in Burnd. Target: below 5% error rate for normal coding sessions.`,
+        ],
+        claudeMdPatch: `If the same Bash command fails 3 times in a row with the same error, STOP and explain the error rather than retrying. Do not loop on failures.`,
       },
     ];
   },

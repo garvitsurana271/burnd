@@ -1,0 +1,10 @@
+{
+  "id": "burnd",
+  "name": "Burnd — OpenClaw Cost Analyzer",
+  "version": "0.1.0",
+  "description": "Find what's burning your OpenClaw budget. Burnd reads your local ~/.openclaw session files and shows exactly where your API spend is leaking — by model, by provider, by session — with dollar values and concrete fix steps.",
+  "author": "Garvit Surana",
+  "homepage": "https://getburnd.vercel.app",
+  "icon": "https://getburnd.vercel.app/logo-icon.svg",
+  "skills": ["./skills"]
+}
