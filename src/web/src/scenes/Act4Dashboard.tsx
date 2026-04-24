@@ -55,7 +55,7 @@ export function Act4Dashboard(): JSX.Element {
           {/* Ambient glow behind the card */}
           <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl blur-[80px] bg-indigo-500/10" />
 
-          <div className="overflow-hidden rounded-2xl border border-[#F5E8D4]/10 bg-black/80 shadow-[0_60px_160px_rgba(99,102,241,0.15)] backdrop-blur-md">
+          <div className="overflow-hidden rounded-2xl border border-[#F5E8D4]/10 bg-[#09090f] shadow-[0_60px_160px_rgba(99,102,241,0.15)]">
             {/* Chrome bar */}
             <div className="flex items-center gap-2 border-b border-[#F5E8D4]/10 px-5 py-3">
               <div className="h-2.5 w-2.5 rounded-full bg-red-500/80" />

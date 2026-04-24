@@ -37,7 +37,7 @@ export function CalculatorPage(): JSX.Element {
           Not perfect, but directionally honest.
         </p>
 
-        <div className="mt-16 rounded-2xl border border-[#F5E8D4]/10 bg-black/60 p-8 backdrop-blur-md">
+        <div className="mt-16 rounded-2xl border border-[#F5E8D4]/10 bg-[#0d0d15] p-8">
           <label className="block font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/40">
             Your monthly Claude Code spend
           </label>

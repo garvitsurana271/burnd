@@ -60,7 +60,7 @@ export function Act5Pricing(): JSX.Element {
         {/* Pricing cards */}
         <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Monthly */}
-          <div className="rounded-2xl border border-[#F5E8D4]/10 bg-black/60 p-8 backdrop-blur-md">
+          <div className="rounded-2xl border border-[#F5E8D4]/10 bg-[#0d0d15] p-8">
             <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/40">
               Pro Monthly
             </div>
@@ -88,7 +88,7 @@ export function Act5Pricing(): JSX.Element {
 
           {/* Lifetime */}
           <motion.div
-            className="relative rounded-2xl border-2 border-amber-400/40 bg-black/80 p-8 backdrop-blur-md"
+            className="relative rounded-2xl border-2 border-amber-400/40 bg-[#0d0d15] p-8"
             style={{ boxShadow: glowShadow }}
           >
             {/* Best value pill */}

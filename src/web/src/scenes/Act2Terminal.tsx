@@ -88,7 +88,7 @@ export function Act2Terminal(): JSX.Element {
         {/* Terminal card */}
         <motion.div
           ref={terminalRef}
-          className="rounded-2xl border border-[#F5E8D4]/10 bg-black/70 backdrop-blur-lg p-8 shadow-[0_40px_120px_rgba(245,158,11,0.08)]"
+          className="rounded-2xl border border-[#F5E8D4]/10 bg-[#09090f]/95 p-8 shadow-[0_40px_120px_rgba(245,158,11,0.08)]"
           initial={{ opacity: 0, y: 24 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
