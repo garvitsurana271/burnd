@@ -1,6 +1,5 @@
 import { useRef, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { ScreenQuad } from '@react-three/drei';
 import * as THREE from 'three';
 import { flameFragmentShader } from './shaders/flame.js';
 
@@ -8,8 +7,9 @@ interface FlameShaderProps {
   intensity: number;
 }
 
-// Vertex shader for ScreenQuad: bypasses camera, fills NDC.
-const screenVertexShader = /* glsl */ `
+// Fullscreen vertex shader: bypasses camera, outputs clip-space directly.
+// The 2x2 plane with positions at (-1..1, -1..1) maps directly to NDC.
+const fullscreenVertexShader = /* glsl */ `
   varying vec2 vUv;
   void main() {
     vUv = uv;
@@ -45,15 +45,17 @@ export function FlameShader({ intensity }: FlameShaderProps): JSX.Element {
   });
 
   return (
-    <ScreenQuad>
+    <mesh frustumCulled={false}>
+      <planeGeometry args={[2, 2]} />
       <shaderMaterial
         ref={materialRef}
-        vertexShader={screenVertexShader}
+        vertexShader={fullscreenVertexShader}
         fragmentShader={flameFragmentShader}
         uniforms={uniforms}
         transparent
         depthWrite={false}
+        depthTest={false}
       />
-    </ScreenQuad>
+    </mesh>
   );
 }
