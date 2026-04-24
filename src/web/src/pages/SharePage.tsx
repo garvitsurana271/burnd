@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Flame, Terminal, ArrowRight, AlertTriangle, Copy, Check, Twitter } from 'lucide-react';
+import { motion } from 'motion/react';
+import { AlertTriangle, Copy, Check, Twitter } from 'lucide-react';
 
 interface SharePayload {
   v: 1;
@@ -41,9 +42,9 @@ function CopyButton({ text }: { text: string }): JSX.Element {
     <button
       type="button"
       onClick={copy}
-      className="flex items-center gap-1.5 rounded-md border border-axis-border bg-axis-surface/60 px-3 py-1.5 font-mono text-[11px] text-axis-textDim transition-all hover:border-axis-accent/40 hover:text-axis-accent"
+      className="flex items-center gap-1.5 rounded-full border border-[#F5E8D4]/15 bg-white/[0.03] px-3 py-1.5 font-mono text-[11px] text-[#F5E8D4]/55 transition hover:border-[#F5E8D4]/30 hover:text-[#F5E8D4]"
     >
-      {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+      {copied ? <Check className="h-3 w-3 text-amber-400" /> : <Copy className="h-3 w-3" />}
       {copied ? 'copied!' : 'copy link'}
     </button>
   );
@@ -64,12 +65,12 @@ export function SharePage(): JSX.Element {
 
   if (invalid) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-axis-bg px-6">
+      <div className="flex min-h-screen items-center justify-center bg-[#09090f] px-6">
         <div className="text-center">
-          <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" />
-          <p className="mt-4 font-mono text-axis-textMuted">Invalid or expired share link.</p>
-          <a href="/" className="mt-4 inline-block font-mono text-sm text-axis-accent hover:underline">
-            Go to getburnd.vercel.app →
+          <AlertTriangle className="mx-auto h-10 w-10 text-amber-400" />
+          <p className="mt-4 font-mono text-[#F5E8D4]/50">Invalid or expired share link.</p>
+          <a href="/" className="mt-4 inline-block font-mono text-sm text-amber-400 hover:text-amber-300 transition">
+            Go to getburnd.vercel.app &rarr;
           </a>
         </div>
       </div>
@@ -78,8 +79,8 @@ export function SharePage(): JSX.Element {
 
   if (!data) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-axis-bg">
-        <div className="h-4 w-4 animate-spin rounded-full border-2 border-axis-accent border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-[#09090f]">
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
       </div>
     );
   }
@@ -93,95 +94,69 @@ export function SharePage(): JSX.Element {
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
 
   return (
-    <div className="noise-overlay min-h-screen bg-axis-bg text-axis-text">
-      {/* Header */}
-      <header className="border-b border-axis-border/50 bg-axis-bg/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-4xl items-center gap-2 px-6 py-3">
-          <a href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <Flame className="h-5 w-5 text-amber-500" />
-            <span className="font-mono text-sm font-bold tracking-tight">burnd</span>
-          </a>
-          <span className="ml-2 font-mono text-[11px] text-axis-textDim">/ shared report</span>
-          <div className="ml-auto flex items-center gap-2">
-            <CopyButton text={shareUrl} />
-            <a
-              href={twitterUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1.5 rounded-md border border-axis-accent/30 bg-axis-accent/8 px-3 py-1.5 font-mono text-[11px] text-axis-accent transition-all hover:bg-axis-accent/15"
-            >
-              <Twitter className="h-3 w-3" />
-              tweet this
-            </a>
-          </div>
+    <div className="min-h-screen bg-[#09090f] text-[#F5E8D4] font-sans antialiased px-[clamp(1.5rem,4vw,3rem)] py-[15vh]">
+      <div className="mx-auto max-w-2xl">
+        {/* Eyebrow */}
+        <div className="mb-8 flex items-center gap-3">
+          <span className="h-px w-8 bg-amber-400/60" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-amber-400/80">
+            Exhibit &middot; your leak receipt
+          </span>
         </div>
-      </header>
 
-      <main className="mx-auto max-w-2xl px-6 py-12">
-        {/* Loss framing — the hook */}
+        {/* Headline */}
+        <h1 className="font-serif text-[#F5E8D4] text-[clamp(2.5rem,6vw,4.5rem)] font-normal leading-[0.95] tracking-[-0.02em]">
+          Your leak <span className="italic text-amber-400">receipt.</span>
+        </h1>
+
+        {/* Monthly burn framing */}
         {monthlyBurn > 0 && (
-          <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/5 px-5 py-4 text-center">
-            <p className="font-mono text-[13px] text-axis-textDim">
-              That's{' '}
-              <span className="font-bold text-red-400">${monthlyBurn.toFixed(0)}/month</span>
-              {' '}in preventable Claude waste — on repeat, every month.
+          <div className="mt-8 rounded-xl border border-amber-400/20 bg-amber-400/5 px-5 py-4">
+            <p className="font-mono text-[13px] text-[#F5E8D4]/65">
+              That&apos;s{' '}
+              <span className="font-bold text-amber-400 tabular-nums">${monthlyBurn.toFixed(0)}/month</span>
+              {' '}in preventable Claude waste, on repeat, every month.
             </p>
           </div>
         )}
 
-        {/* Card — this is what gets screenshotted */}
-        <div
-          className="relative overflow-hidden rounded-2xl border"
-          style={{
-            background: 'linear-gradient(135deg, #0c0c1a 0%, #111118 50%, #0e0e1f 100%)',
-            borderColor: 'rgba(99,102,241,0.3)',
-            boxShadow: '0 0 60px rgba(99,102,241,0.12), 0 20px 60px rgba(0,0,0,0.5)',
-          }}
+        {/* Main receipt card */}
+        <motion.div
+          className="mt-14"
+          whileHover={{ rotateY: 3 }}
+          style={{ transformStyle: 'preserve-3d', perspective: '1400px' }}
+          transition={{ type: 'spring', stiffness: 200, damping: 18 }}
         >
-          {/* Scanline */}
-          <div
-            className="pro-scanline pointer-events-none absolute left-0 right-0 h-px"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.6) 50%, transparent)' }}
-          />
-          {/* Grid overlay */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-40"
-            style={{
-              backgroundImage: 'linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)',
-              backgroundSize: '40px 40px',
-            }}
-          />
-
-          <div className="relative p-8 md:p-10">
-            {/* Label */}
+          <div className="rounded-2xl border border-amber-400/25 bg-black/80 p-8 shadow-[0_60px_160px_rgba(245,158,11,0.1)]">
+            {/* Card header */}
             <div className="mb-6 flex items-center justify-between">
-              <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-axis-accent/70">
-                <Flame className="h-3.5 w-3.5 text-amber-500" />
-                Claude Code spend report · burnd
+              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-amber-400/70">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                Claude Code spend &middot; burnd
               </div>
-              <div className="font-mono text-[10px] text-axis-textDim">{data.g}</div>
+              <div className="font-mono text-[10px] text-[#F5E8D4]/30">{data.g}</div>
             </div>
 
-            {/* Main numbers row */}
+            {/* Main numbers */}
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              <div className="col-span-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
-                <div className="font-mono text-[10px] uppercase tracking-wider text-amber-500/60">All-time spend</div>
-                <div className="mt-1.5 font-mono text-4xl font-bold tracking-tight text-amber-400 md:text-5xl">
+              <div className="col-span-2 rounded-xl border border-amber-400/20 bg-amber-400/5 p-5">
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-amber-400/60">All-time spend</div>
+                <div className="mt-1.5 font-mono text-4xl font-bold tabular-nums text-amber-400 md:text-5xl">
                   {fmt(data.t)}
                 </div>
-                <div className="mt-1 font-mono text-[11px] text-amber-500/50">{data.n} sessions scanned</div>
+                <div className="mt-1 font-mono text-[11px] text-amber-400/45">{data.n} sessions scanned</div>
               </div>
 
-              <div className="rounded-xl border border-axis-border bg-axis-surface/60 p-5">
-                <div className="font-mono text-[10px] uppercase tracking-wider text-axis-textDim">Last 7 days</div>
-                <div className="mt-1.5 font-mono text-2xl font-bold text-axis-text">{fmt(data.w)}</div>
+              <div className="rounded-xl border border-[#F5E8D4]/10 bg-[#09090f]/60 p-5">
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/35">Last 7 days</div>
+                <div className="mt-1.5 font-mono text-2xl font-bold tabular-nums text-[#F5E8D4]">{fmt(data.w)}</div>
               </div>
 
-              <div className="rounded-xl border border-red-500/25 bg-red-500/5 p-5">
-                <div className="font-mono text-[10px] uppercase tracking-wider text-red-400/60">Fixable waste</div>
-                <div className="mt-1.5 font-mono text-2xl font-bold text-red-400">{fmt(data.s)}</div>
+              <div className="rounded-xl border border-red-400/20 bg-red-400/5 p-5">
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-red-400/60">Fixable waste</div>
+                <div className="mt-1.5 font-mono text-2xl font-bold tabular-nums text-red-400">{fmt(data.s)}</div>
                 {savingsRoi > 0 && (
-                  <div className="mt-1 font-mono text-[10px] text-red-500/50">{savingsRoi}% of spend</div>
+                  <div className="mt-1 font-mono text-[10px] text-red-400/45">{savingsRoi}% of spend</div>
                 )}
               </div>
             </div>
@@ -189,19 +164,20 @@ export function SharePage(): JSX.Element {
             {/* Top leaks */}
             {data.l.length > 0 && (
               <div className="mt-6">
-                <div className="mb-3 font-mono text-[10px] uppercase tracking-wider text-axis-textDim">Top cost leaks</div>
+                <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/35">Top cost leaks</div>
                 <div className="flex flex-col gap-2">
                   {data.l.map((leak, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between rounded-lg px-4 py-2.5"
-                      style={{ background: 'rgba(9,9,15,0.6)', border: '1px solid rgba(99,102,241,0.1)' }}
+                      className="flex items-center justify-between rounded-lg border border-[#F5E8D4]/8 bg-[#09090f]/60 px-4 py-2.5"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="font-mono text-[11px] text-axis-textDim">{i + 1}.</span>
-                        <span className="font-mono text-[12px] text-axis-text">{leak.title}</span>
+                        <span className="font-mono text-[10px] text-[#F5E8D4]/30">{i + 1}.</span>
+                        <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-400">
+                          {leak.title}
+                        </span>
                       </div>
-                      <span className="font-mono text-[12px] font-semibold text-red-400">
+                      <span className="font-mono text-sm font-bold tabular-nums text-amber-400">
                         {fmt(leak.save)} wasted
                       </span>
                     </div>
@@ -210,27 +186,27 @@ export function SharePage(): JSX.Element {
               </div>
             )}
 
-            {/* Footer */}
-            <div className="mt-6 border-t border-axis-border/40 pt-5 text-center">
-              <p className="font-mono text-[11px] text-axis-textDim">
+            {/* Card footer */}
+            <div className="mt-6 border-t border-[#F5E8D4]/8 pt-5 text-center">
+              <p className="font-mono text-[11px] text-[#F5E8D4]/30">
                 Generated by{' '}
-                <span className="text-axis-accent">npx getburnd</span>
+                <span className="text-amber-400">npx getburnd</span>
                 {' · '}reads local files only, nothing uploaded
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Share strip */}
-        <div className="mt-4 flex items-center justify-between rounded-xl border border-axis-border bg-axis-surface/30 px-4 py-3">
-          <span className="truncate font-mono text-[11px] text-axis-textDim">{shareUrl}</span>
+        <div className="mt-4 flex items-center justify-between rounded-xl border border-[#F5E8D4]/8 bg-[#09090f]/40 px-4 py-3">
+          <span className="truncate font-mono text-[11px] text-[#F5E8D4]/30">{shareUrl}</span>
           <div className="ml-3 flex flex-shrink-0 items-center gap-2">
             <CopyButton text={shareUrl} />
             <a
               href={twitterUrl}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1.5 rounded-md border border-axis-accent/30 bg-axis-accent/8 px-3 py-1.5 font-mono text-[11px] text-axis-accent transition-all hover:bg-axis-accent/15"
+              className="flex items-center gap-1.5 rounded-full border border-indigo-400/30 bg-indigo-400/8 px-3 py-1.5 font-mono text-[11px] text-indigo-400 transition hover:bg-indigo-400/15"
             >
               <Twitter className="h-3 w-3" />
               tweet
@@ -238,29 +214,17 @@ export function SharePage(): JSX.Element {
           </div>
         </div>
 
-        {/* CTA below the card */}
-        <div className="mt-8 flex flex-col items-center gap-4 text-center">
-          <p className="font-mono text-sm text-axis-textMuted">
-            Find where <em>your</em> Claude Code budget is leaking.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <div className="flex items-center gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-5 py-3 font-mono text-sm text-axis-text">
-              <Terminal className="h-4 w-4 text-amber-500" />
-              npx getburnd
-            </div>
-            <a
-              href="/#pricing"
-              className="flex items-center gap-2 rounded-md border border-axis-accent/50 bg-axis-accent/10 px-5 py-3 font-mono text-sm text-axis-accent transition-all hover:bg-axis-accent/20"
-            >
-              Get BurndPro
-              <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-          <p className="font-mono text-[11px] text-axis-textDim">
-            Free · open source · 100% local · no signup
-          </p>
+        {/* CTA */}
+        <div className="mt-12 flex items-center justify-center">
+          <a
+            href="/"
+            className="inline-flex items-center gap-3 rounded-full border border-[#F5E8D4]/15 bg-white/[0.03] px-6 py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-[#F5E8D4]/80 transition hover:border-[#F5E8D4]/30 hover:text-[#F5E8D4]"
+          >
+            <span className="h-1 w-1 rounded-full bg-amber-400/60" />
+            Run your own scan &middot; npx getburnd
+          </a>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
