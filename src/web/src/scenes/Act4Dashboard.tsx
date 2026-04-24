@@ -39,7 +39,7 @@ export function Act4Dashboard(): JSX.Element {
 
         {/* Supporting body */}
         <p className="mt-6 max-w-[48ch] text-[15px] leading-relaxed text-[#F5E8D4]/65">
-          Burnd tracks every session locally. Every fix you apply shows up as saved spend, with the receipt in raw jsonl — no cloud sync, no data leaving your machine.
+          Burnd tracks every session locally. Every fix you apply shows up as saved spend, with the receipt in raw jsonl. No cloud sync. No data leaving your machine.
         </p>
 
         {/* 3D-tilted dashboard card */}
