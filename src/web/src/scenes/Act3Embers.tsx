@@ -66,7 +66,7 @@ export function Act3Embers(): JSX.Element {
         {/* 3D ember ring with detector cards overlaid */}
         <div className="relative mt-16 min-h-[60vh]">
           {/* 3D canvas: atmosphere layer */}
-          <div className="absolute inset-0 -z-0">
+          <div aria-hidden="true" className="absolute inset-0 -z-0">
             <Canvas camera={{ position: [0, 0, 6], fov: 55 }}>
               <ambientLight intensity={0.2} />
               <pointLight position={[0, 0, 5]} intensity={1.8} color="#f59e0b" />

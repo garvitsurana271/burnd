@@ -67,7 +67,7 @@ export function Act1Hero(): JSX.Element {
     <section ref={sectionRef} className="relative h-[300vh]">
       <div className="sticky top-0 h-screen w-screen overflow-hidden bg-[#09090f] font-sans">
         {/* Flame canvas */}
-        <div className="absolute inset-0">
+        <div aria-hidden="true" className="absolute inset-0">
           <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 1] }} dpr={[1, 2]}>
             <FlameVideo intensity={intensityVal} />
             <EffectComposer>
