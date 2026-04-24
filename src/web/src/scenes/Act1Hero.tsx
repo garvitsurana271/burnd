@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'motion/react';
@@ -33,11 +33,22 @@ export function Act1Hero(): JSX.Element {
   const tickerValue = useTransform(scrollYProgress, STOP_PROGRESSES, STOP_VALUES);
   const tickerText = useTransform(tickerValue, (v) => `$${Math.round(v).toLocaleString()}`);
 
-  // Ticker escape animation: stays small in top-right until 0.62, then scales out toward center
-  // while translating left and down. By 0.88 it fills viewport center.
-  const tickerScale = useTransform(scrollYProgress, [0, 0.62, 0.88], [1, 1, 7.5]);
-  const tickerX = useTransform(scrollYProgress, [0.62, 0.88], ['0vw', '-calc(50vw - 10rem)' as unknown as string]);
-  const tickerY = useTransform(scrollYProgress, [0.62, 0.88], ['0vh', 'calc(48vh - 2rem)' as unknown as string]);
+  // Viewport dimensions for computing ticker escape translate in pixels
+  const [vp, setVp] = useState({ w: 1920, h: 1080 });
+  useEffect(() => {
+    const update = (): void => setVp({ w: window.innerWidth, h: window.innerHeight });
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  // Ticker escape: stays small top-right until 0.62, then translates toward viewport center
+  // while scaling up. By 0.88 it dominates the viewport center.
+  // Ticker's pivot is top-right, so translate left (negative x) and down (positive y) to reach center.
+  // Offset accounts for approximate ticker width + right padding.
+  const tickerScale = useTransform(scrollYProgress, [0, 0.62, 0.88], [1, 1, 9]);
+  const tickerX = useTransform(scrollYProgress, [0.62, 0.88], [0, -(vp.w / 2 - 120)]);
+  const tickerY = useTransform(scrollYProgress, [0.62, 0.88], [0, vp.h / 2 - 60]);
   // Pulse on the ticker body through its whole lifetime (breathing)
   const tickerColor = useTransform(
     scrollYProgress,
