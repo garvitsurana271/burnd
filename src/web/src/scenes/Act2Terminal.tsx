@@ -147,7 +147,7 @@ export function Act2Terminal(): JSX.Element {
               <motion.div
                 key={i}
                 style={{ opacity: leakOpacities[i] }}
-                className="flex flex-wrap items-baseline gap-0"
+                className="leading-relaxed"
               >
                 {segments.map((seg, j) => (
                   <span key={j} className={seg.cls}>
