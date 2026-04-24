@@ -1,11 +1,21 @@
 import { useRef, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import { ScreenQuad } from '@react-three/drei';
 import * as THREE from 'three';
-import { flameVertexShader, flameFragmentShader } from './shaders/flame.js';
+import { flameFragmentShader } from './shaders/flame.js';
 
 interface FlameShaderProps {
   intensity: number;
 }
+
+// Vertex shader for ScreenQuad: bypasses camera, fills NDC.
+const screenVertexShader = /* glsl */ `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = vec4(position.xy, 0.0, 1.0);
+  }
+`;
 
 export function FlameShader({ intensity }: FlameShaderProps): JSX.Element {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
@@ -35,16 +45,15 @@ export function FlameShader({ intensity }: FlameShaderProps): JSX.Element {
   });
 
   return (
-    <mesh>
-      <planeGeometry args={[2, 2]} />
+    <ScreenQuad>
       <shaderMaterial
         ref={materialRef}
-        vertexShader={flameVertexShader}
+        vertexShader={screenVertexShader}
         fragmentShader={flameFragmentShader}
         uniforms={uniforms}
         transparent
         depthWrite={false}
       />
-    </mesh>
+    </ScreenQuad>
   );
 }
