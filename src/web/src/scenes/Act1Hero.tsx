@@ -1,11 +1,17 @@
 import { useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'motion/react';
 import { FlameVideo } from '../3d/FlameVideo.js';
 
-const ESCALATING = ['$127', '$845', '$3,210', '$9,800'];
-const FINAL = '$14,502';
+// Incident-report aesthetic: the story is a financial disaster post-mortem, not a SaaS pitch.
+// One dev, one month, one Claude Code account. Bill: $14,502.
+// The ticker lives in the top-right corner like a Bloomberg feed, ticks up as the user scrolls,
+// then "escapes" its corner and dominates the viewport at the climax.
+
+// Seven interpolation stops so the ticker visibly steps through notable values.
+const STOP_PROGRESSES = [0.0, 0.15, 0.23, 0.31, 0.39, 0.47, 0.58];
+const STOP_VALUES = [0, 127, 845, 3210, 9800, 13800, 14502];
 
 export function Act1Hero(): JSX.Element {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -14,35 +20,43 @@ export function Act1Hero(): JSX.Element {
     offset: ['start start', 'end start'],
   });
 
-  // Motion values that drive the 3D scene. Bridge to state where R3F needs numbers.
-  const intensity = useTransform(scrollYProgress, [0, 1], [0.25, 1.0]);
-  const bloomAmount = useTransform(scrollYProgress, [0, 1], [0.6, 2.2]);
+  // Flame + bloom driven by scroll.
+  const intensity = useTransform(scrollYProgress, [0, 1], [0.3, 1.0]);
+  const bloomAmount = useTransform(scrollYProgress, [0, 1], [0.6, 2.0]);
 
-  const [intensityVal, setIntensityVal] = useState(0.25);
+  const [intensityVal, setIntensityVal] = useState(0.3);
   const [bloomVal, setBloomVal] = useState(0.6);
   useMotionValueEvent(intensity, 'change', (v) => setIntensityVal(v));
   useMotionValueEvent(bloomAmount, 'change', (v) => setBloomVal(v));
 
-  // CSS scale on the canvas wrapper: start a touch pulled-in (1.3), settle to 1
-  const canvasScale = useTransform(scrollYProgress, [0, 1], [1.15, 1.0]);
+  // Smooth count-up for the ticker value.
+  const tickerValue = useTransform(scrollYProgress, STOP_PROGRESSES, STOP_VALUES);
+  const tickerText = useTransform(tickerValue, (v) => `$${Math.round(v).toLocaleString()}`);
 
-  // Escalating numbers. Each appears for ~7% of scroll, exits before next.
-  const n0 = useTransform(scrollYProgress, [0.15, 0.19, 0.22, 0.25], [0, 1, 1, 0]);
-  const n1 = useTransform(scrollYProgress, [0.25, 0.29, 0.32, 0.35], [0, 1, 1, 0]);
-  const n2 = useTransform(scrollYProgress, [0.35, 0.39, 0.42, 0.45], [0, 1, 1, 0]);
-  const n3 = useTransform(scrollYProgress, [0.45, 0.49, 0.52, 0.55], [0, 1, 1, 0]);
-  const finalOpacity = useTransform(scrollYProgress, [0.55, 0.72], [0, 1]);
-  const subtitleSharpen = useTransform(scrollYProgress, [0.72, 0.92], [0.5, 1]);
+  // Ticker escape animation: stays small in top-right until 0.62, then scales out toward center
+  // while translating left and down. By 0.88 it fills viewport center.
+  const tickerScale = useTransform(scrollYProgress, [0, 0.62, 0.88], [1, 1, 7.5]);
+  const tickerX = useTransform(scrollYProgress, [0.62, 0.88], ['0vw', '-calc(50vw - 10rem)' as unknown as string]);
+  const tickerY = useTransform(scrollYProgress, [0.62, 0.88], ['0vh', 'calc(48vh - 2rem)' as unknown as string]);
+  // Pulse on the ticker body through its whole lifetime (breathing)
+  const tickerColor = useTransform(
+    scrollYProgress,
+    [0, 0.58, 0.7, 1],
+    ['rgba(245, 158, 11, 0.85)', 'rgba(245, 158, 11, 1)', 'rgba(251, 191, 36, 1)', 'rgba(251, 191, 36, 1)'],
+  );
 
-  // Ghosted watermark fades out once scroll begins so it doesn't compete with the numbers.
-  const ghostOpacity = useTransform(scrollYProgress, [0, 0.12], [0.08, 0]);
+  // Headline + metadata fade out as the ticker takes over.
+  const bodyOpacity = useTransform(scrollYProgress, [0, 0.1, 0.6, 0.75], [0, 1, 1, 0]);
+  const headlineOpacity = useTransform(scrollYProgress, [0, 0.1, 0.5, 0.7], [1, 1, 1, 0]);
+
+  // Overall viewport darkening as the ticker dominates.
+  const overlayDark = useTransform(scrollYProgress, [0.55, 0.88], [0, 0.55]);
 
   return (
-    <section ref={sectionRef} className="relative h-[250vh]">
-      {/* Pinned viewport */}
-      <div className="sticky top-0 h-screen w-screen overflow-hidden bg-[#09090f]">
-        {/* 3D flame layer */}
-        <motion.div className="absolute inset-0" style={{ scale: canvasScale }}>
+    <section ref={sectionRef} className="relative h-[300vh]">
+      <div className="sticky top-0 h-screen w-screen overflow-hidden bg-[#09090f] font-sans">
+        {/* Flame canvas */}
+        <div className="absolute inset-0">
           <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 1] }} dpr={[1, 2]}>
             <FlameVideo intensity={intensityVal} />
             <EffectComposer>
@@ -52,75 +66,119 @@ export function Act1Hero(): JSX.Element {
                 luminanceSmoothing={0.9}
                 mipmapBlur
               />
+              <Vignette offset={0.15} darkness={0.75} />
             </EffectComposer>
           </Canvas>
-        </motion.div>
+        </div>
 
-        {/* Ghosted $14,502 watermark (behind flame but visible at t=0) */}
+        {/* Grain overlay (noise texture) */}
+        <div
+          className="pointer-events-none absolute inset-0 z-10 opacity-[0.05] mix-blend-overlay"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          }}
+        />
+
+        {/* Scroll-driven dark overlay that takes over as $14,502 dominates */}
         <motion.div
-          className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
-          style={{ opacity: ghostOpacity }}
+          className="pointer-events-none absolute inset-0 z-20 bg-black"
+          style={{ opacity: overlayDark }}
+        />
+
+        {/* Top eyebrow band */}
+        <motion.div
+          className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-[clamp(1rem,4vw,3rem)] py-6 font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/50"
+          style={{ opacity: bodyOpacity }}
         >
-          <span className="font-mono text-[18vw] font-bold text-white select-none">{FINAL}</span>
+          <div className="flex items-center gap-4">
+            <span className="text-[#F5E8D4]/80">Burnd</span>
+            <span className="h-px w-8 bg-[#F5E8D4]/20" />
+            <span>Incident report &middot; 0001</span>
+          </div>
+          <div className="hidden md:flex items-center gap-4">
+            <span>One developer</span>
+            <span className="text-[#F5E8D4]/20">&middot;</span>
+            <span>One month</span>
+            <span className="text-[#F5E8D4]/20">&middot;</span>
+            <span>Claude Code API</span>
+          </div>
         </motion.div>
 
-        {/* Always-visible overlay (clarity-first rule) */}
-        <div className="relative z-10 flex h-full flex-col items-start justify-center px-[6vw]">
-          <h1 className="max-w-[13ch] text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[0.95] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.7)]">
-            Your Claude Code bill
-            <br />
-            is bigger than you think.
-          </h1>
-          <motion.p
-            className="mt-6 max-w-[42ch] text-[clamp(1rem,1.5vw,1.25rem)] text-white/75 drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)]"
-            style={{ opacity: subtitleSharpen }}
+        {/* Live ticker — starts top-right as corner counter, then escapes center */}
+        <motion.div
+          className="absolute top-[3.5rem] right-[clamp(1rem,4vw,3rem)] z-40 flex items-center gap-3 origin-top-right"
+          style={{
+            scale: tickerScale,
+            x: tickerX,
+            y: tickerY,
+          }}
+        >
+          {/* LIVE dot */}
+          <motion.span
+            className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400"
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/55">Live</span>
+          <motion.span
+            className="font-mono text-[1.25rem] font-semibold tabular-nums leading-none"
+            style={{ color: tickerColor }}
           >
-            Run <code className="rounded bg-white/10 px-2 py-0.5 font-mono text-amber-400">npx getburnd</code> to find the leaks.
-            <br />
-            Free. Local. MIT.
-          </motion.p>
-          <button
-            type="button"
-            onClick={() => navigator.clipboard.writeText('npx getburnd')}
-            className="mt-10 rounded-lg bg-amber-500 px-8 py-4 text-lg font-semibold text-[#09090f] shadow-[0_0_60px_rgba(245,158,11,0.5)] transition-transform hover:scale-105 active:scale-100"
-          >
-            Copy &nbsp;<span className="font-mono">npx getburnd</span>
-          </button>
-        </div>
+            {tickerText}
+          </motion.span>
+        </motion.div>
 
-        {/* Escalating numbers erupt center-screen */}
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
-          <motion.span
-            className="font-mono text-[clamp(3rem,8vw,8rem)] font-bold text-white/90 drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]"
-            style={{ opacity: n0 }}
-          >
-            {ESCALATING[0]}
-          </motion.span>
-          <motion.span
-            className="absolute font-mono text-[clamp(3.5rem,9vw,9rem)] font-bold text-white/95 drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]"
-            style={{ opacity: n1 }}
-          >
-            {ESCALATING[1]}
-          </motion.span>
-          <motion.span
-            className="absolute font-mono text-[clamp(4rem,10vw,10rem)] font-bold text-amber-200 drop-shadow-[0_4px_32px_rgba(245,158,11,0.4)]"
-            style={{ opacity: n2 }}
-          >
-            {ESCALATING[2]}
-          </motion.span>
-          <motion.span
-            className="absolute font-mono text-[clamp(4.5rem,11vw,11rem)] font-bold text-amber-300 drop-shadow-[0_4px_40px_rgba(245,158,11,0.5)]"
-            style={{ opacity: n3 }}
-          >
-            {ESCALATING[3]}
-          </motion.span>
-          <motion.span
-            className="absolute font-mono text-[clamp(5rem,14vw,14rem)] font-bold tracking-tight text-amber-400 drop-shadow-[0_0_80px_rgba(245,158,11,0.7)]"
-            style={{ opacity: finalOpacity }}
-          >
-            {FINAL}
-          </motion.span>
-        </div>
+        {/* Headline zone (left-aligned, asymmetric) */}
+        <motion.div
+          className="absolute inset-0 z-30 flex items-center"
+          style={{ opacity: headlineOpacity }}
+        >
+          <div className="w-full max-w-[1400px] mx-auto px-[clamp(1.5rem,4vw,3rem)]">
+            <div className="max-w-[20ch]">
+              <div className="mb-6 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-amber-400/80">
+                <span className="h-px w-8 bg-amber-400/60" />
+                <span>Filed 2026-03-31</span>
+              </div>
+              <h1 className="font-serif text-[#F5E8D4] text-[clamp(3rem,8vw,7.5rem)] font-normal leading-[0.92] tracking-[-0.02em]">
+                <span className="italic text-[#F5E8D4]/95">Your </span>
+                <span>Claude Code </span>
+                <span className="italic text-[#F5E8D4]/95">bill </span>
+                <br />
+                <span>is bigger </span>
+                <span className="italic text-amber-400">than you think.</span>
+              </h1>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Bottom metadata strip */}
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 z-30 px-[clamp(1rem,4vw,3rem)] pb-8"
+          style={{ opacity: bodyOpacity }}
+        >
+          {/* Hairline rule */}
+          <div className="h-px w-full bg-gradient-to-r from-amber-400/60 via-[#F5E8D4]/15 to-transparent" />
+
+          <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <p className="max-w-[42ch] text-[15px] leading-relaxed text-[#F5E8D4]/65">
+              A free local CLI that reads your <span className="font-mono text-amber-400/90">.claude/projects/*.jsonl</span> session files and surfaces the cost leaks nobody else sees.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => navigator.clipboard.writeText('npx getburnd')}
+              className="group inline-flex items-center gap-3 self-start md:self-auto"
+            >
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-amber-400/75 transition group-hover:text-amber-300">Run</span>
+              <span className="flex items-center gap-2 font-mono text-base text-[#F5E8D4] transition group-hover:text-amber-200">
+                <span className="text-amber-400">&rarr;</span>
+                npx getburnd
+              </span>
+              <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/35 transition group-hover:text-[#F5E8D4]/70">click to copy</span>
+            </button>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
