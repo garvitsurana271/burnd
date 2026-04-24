@@ -30,7 +30,7 @@ export const flameFragmentShader = /* glsl */ `
   float fbm(vec2 p) {
     float v = 0.0;
     float a = 0.5;
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 3; i++) {
       v += a * noise(p);
       p = p * 2.02 + vec2(13.7, 5.3);
       a *= 0.5;

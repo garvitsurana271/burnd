@@ -1,39 +1,39 @@
 import { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
-import { motion, useScroll, useTransform, useMotionValueEvent } from 'motion/react';
+import { motion, useScroll, useTransform, useMotionValueEvent, useInView } from 'motion/react';
 import { FlameVideo } from '../3d/FlameVideo.js';
 
-// Incident-report aesthetic: the story is a financial disaster post-mortem, not a SaaS pitch.
-// One dev, one month, one Claude Code account. Bill: $14,502.
-// The ticker lives in the top-right corner like a Bloomberg feed, ticks up as the user scrolls,
-// then "escapes" its corner and dominates the viewport at the climax.
+// Perf-conscious redesign (2026-04-24 b):
+// - Section height dropped from 300vh to 180vh so the scroll feels snappy.
+// - Canvas unmounts the moment the section leaves viewport (frees GPU for Act 2+).
+// - Postprocessing (Bloom/Vignette) removed — too expensive on mid-range hardware.
+// - Grain overlay removed (mix-blend-overlay was causing jank).
+// - DPR capped at 1.5 so retina doesn't quadruple pixel cost.
+// - Flame shader octave count reduced in flame.ts (3 instead of 6).
+// - Lenis smooth scroll disabled project-wide; native scroll responds instantly.
 
-// Seven interpolation stops so the ticker visibly steps through notable values.
-const STOP_PROGRESSES = [0.0, 0.15, 0.23, 0.31, 0.39, 0.47, 0.58];
-const STOP_VALUES = [0, 127, 845, 3210, 9800, 13800, 14502];
+const STOP_PROGRESSES = [0.0, 0.08, 0.18, 0.28, 0.38, 0.47, 0.55];
+const STOP_VALUES = [127, 845, 3210, 9800, 13800, 14200, 14502];
 
 export function Act1Hero(): JSX.Element {
   const sectionRef = useRef<HTMLDivElement>(null);
+  // isInView guards the Canvas mount — when user scrolls past, we unmount R3F
+  // so the GPU isn't doing work while Acts 2-6 try to render.
+  const isInView = useInView(sectionRef, { amount: 0.01 });
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
   });
 
-  // Flame + bloom driven by scroll.
-  const intensity = useTransform(scrollYProgress, [0, 1], [0.3, 1.0]);
-  const bloomAmount = useTransform(scrollYProgress, [0, 1], [0.6, 2.0]);
-
-  const [intensityVal, setIntensityVal] = useState(0.3);
-  const [bloomVal, setBloomVal] = useState(0.6);
+  const intensity = useTransform(scrollYProgress, [0, 1], [0.4, 1.0]);
+  const [intensityVal, setIntensityVal] = useState(0.4);
   useMotionValueEvent(intensity, 'change', (v) => setIntensityVal(v));
-  useMotionValueEvent(bloomAmount, 'change', (v) => setBloomVal(v));
 
-  // Smooth count-up for the ticker value.
+  // Smooth count-up for the ticker.
   const tickerValue = useTransform(scrollYProgress, STOP_PROGRESSES, STOP_VALUES);
   const tickerText = useTransform(tickerValue, (v) => `$${Math.round(v).toLocaleString()}`);
 
-  // Viewport dimensions for computing ticker escape translate in pixels
   const [vp, setVp] = useState({ w: 1920, h: 1080 });
   useEffect(() => {
     const update = (): void => setVp({ w: window.innerWidth, h: window.innerHeight });
@@ -42,62 +42,37 @@ export function Act1Hero(): JSX.Element {
     return () => window.removeEventListener('resize', update);
   }, []);
 
-  // Ticker escape: stays small top-right until 0.62, then translates toward viewport center
-  // while scaling up. By 0.88 it dominates the viewport center.
-  // Ticker's pivot is top-right, so translate left (negative x) and down (positive y) to reach center.
-  // Offset accounts for approximate ticker width + right padding.
-  const tickerScale = useTransform(scrollYProgress, [0, 0.62, 0.88], [1, 1, 9]);
-  const tickerX = useTransform(scrollYProgress, [0.62, 0.88], [0, -(vp.w / 2 - 120)]);
-  const tickerY = useTransform(scrollYProgress, [0.62, 0.88], [0, vp.h / 2 - 60]);
-  // Pulse on the ticker body through its whole lifetime (breathing)
+  // Ticker escape: idle in corner until 0.6, then translates center and scales.
+  const tickerScale = useTransform(scrollYProgress, [0, 0.6, 0.88], [1, 1, 8]);
+  const tickerX = useTransform(scrollYProgress, [0.6, 0.88], [0, -(vp.w / 2 - 120)]);
+  const tickerY = useTransform(scrollYProgress, [0.6, 0.88], [0, vp.h / 2 - 60]);
   const tickerColor = useTransform(
     scrollYProgress,
-    [0, 0.58, 0.7, 1],
-    ['rgba(245, 158, 11, 0.85)', 'rgba(245, 158, 11, 1)', 'rgba(251, 191, 36, 1)', 'rgba(251, 191, 36, 1)'],
+    [0, 0.55, 0.7, 1],
+    ['rgba(245, 158, 11, 0.95)', 'rgba(245, 158, 11, 1)', 'rgba(251, 191, 36, 1)', 'rgba(251, 191, 36, 1)'],
   );
 
-  // Headline + metadata fade out as the ticker takes over.
-  const bodyOpacity = useTransform(scrollYProgress, [0, 0.1, 0.6, 0.75], [0, 1, 1, 0]);
-  const headlineOpacity = useTransform(scrollYProgress, [0, 0.1, 0.5, 0.7], [1, 1, 1, 0]);
-
-  // Overall viewport darkening as the ticker dominates.
+  const bodyOpacity = useTransform(scrollYProgress, [0, 0.05, 0.6, 0.75], [1, 1, 1, 0]);
+  const headlineOpacity = useTransform(scrollYProgress, [0, 0.5, 0.7], [1, 1, 0]);
   const overlayDark = useTransform(scrollYProgress, [0.55, 0.88], [0, 0.55]);
 
   return (
-    <section ref={sectionRef} className="relative h-[300vh]">
+    <section ref={sectionRef} className="relative h-[180vh]">
       <div className="sticky top-0 h-screen w-screen overflow-hidden bg-[#09090f] font-sans">
-        {/* Flame canvas */}
+        {/* Flame canvas (only mounted while section is in view) */}
         <div aria-hidden="true" className="absolute inset-0">
-          <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 1] }} dpr={[1, 2]}>
-            <FlameVideo intensity={intensityVal} />
-            <EffectComposer>
-              <Bloom
-                intensity={bloomVal}
-                luminanceThreshold={0.2}
-                luminanceSmoothing={0.9}
-                mipmapBlur
-              />
-              <Vignette offset={0.15} darkness={0.75} />
-            </EffectComposer>
-          </Canvas>
+          {isInView && (
+            <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 1] }} dpr={[1, 1.5]}>
+              <FlameVideo intensity={intensityVal} />
+            </Canvas>
+          )}
         </div>
 
-        {/* Grain overlay (noise texture) */}
-        <div
-          className="pointer-events-none absolute inset-0 z-10 opacity-[0.05] mix-blend-overlay"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          }}
-        />
-
-        {/* Scroll-driven dark overlay that takes over as $14,502 dominates */}
         <motion.div
           className="pointer-events-none absolute inset-0 z-20 bg-black"
           style={{ opacity: overlayDark }}
         />
 
-        {/* Top eyebrow band */}
         <motion.div
           className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-[clamp(1rem,4vw,3rem)] py-6 font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/50"
           style={{ opacity: bodyOpacity }}
@@ -116,7 +91,6 @@ export function Act1Hero(): JSX.Element {
           </div>
         </motion.div>
 
-        {/* Live ticker — starts top-right as corner counter, then escapes center */}
         <motion.div
           className="absolute top-[3.5rem] right-[clamp(1rem,4vw,3rem)] z-40 flex items-center gap-3 origin-top-right"
           style={{
@@ -125,7 +99,6 @@ export function Act1Hero(): JSX.Element {
             y: tickerY,
           }}
         >
-          {/* LIVE dot */}
           <motion.span
             className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400"
             animate={{ opacity: [1, 0.3, 1] }}
@@ -140,7 +113,6 @@ export function Act1Hero(): JSX.Element {
           </motion.span>
         </motion.div>
 
-        {/* Headline zone (left-aligned, asymmetric) */}
         <motion.div
           className="absolute inset-0 z-30 flex items-center"
           style={{ opacity: headlineOpacity }}
@@ -163,12 +135,10 @@ export function Act1Hero(): JSX.Element {
           </div>
         </motion.div>
 
-        {/* Bottom metadata strip */}
         <motion.div
           className="absolute bottom-0 left-0 right-0 z-30 px-[clamp(1rem,4vw,3rem)] pb-8"
           style={{ opacity: bodyOpacity }}
         >
-          {/* Hairline rule */}
           <div className="h-px w-full bg-gradient-to-r from-amber-400/60 via-[#F5E8D4]/15 to-transparent" />
 
           <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { motion, useScroll, useTransform, useMotionValueEvent } from 'motion/react';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { motion, useScroll, useTransform, useMotionValueEvent, useInView } from 'motion/react';
 import { EmberSphere } from '../3d/EmberSphere.js';
 
 interface Detector {
@@ -36,6 +35,8 @@ const RING_POSITIONS: Array<[number, number, number]> = [
 
 export function Act3Embers(): JSX.Element {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sectionRef, { amount: 0.05 });
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
@@ -48,7 +49,6 @@ export function Act3Embers(): JSX.Element {
   return (
     <section ref={sectionRef} className="relative py-[20vh] px-[clamp(1.5rem,4vw,3rem)]">
       <div className="mx-auto max-w-[1400px]">
-        {/* Eyebrow */}
         <div className="mb-8 flex items-center gap-3">
           <span className="h-px w-8 bg-amber-400/60" />
           <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-amber-400/80">
@@ -56,32 +56,29 @@ export function Act3Embers(): JSX.Element {
           </span>
         </div>
 
-        {/* Italic serif heading */}
         <h2 className="font-serif text-[#F5E8D4] text-[clamp(2.5rem,6vw,5.5rem)] font-normal leading-[0.95] tracking-[-0.01em] max-w-[20ch]">
           Eight ways <span className="italic">your bill</span> leaks.
           <br />
           <span className="italic text-amber-400">One detector each.</span>
         </h2>
 
-        {/* 3D ember ring with detector cards overlaid */}
         <div className="relative mt-16 min-h-[60vh]">
-          {/* 3D canvas: atmosphere layer */}
-          <div aria-hidden="true" className="absolute inset-0 -z-0">
-            <Canvas camera={{ position: [0, 0, 6], fov: 55 }}>
-              <ambientLight intensity={0.2} />
-              <pointLight position={[0, 0, 5]} intensity={1.8} color="#f59e0b" />
-              <group rotation={[0, rotVal, 0]}>
-                {RING_POSITIONS.map((pos, i) => (
-                  <EmberSphere key={i} position={pos} intensity={0.5 + (i % 3) * 0.2} />
-                ))}
-              </group>
-              <EffectComposer>
-                <Bloom intensity={0.5} luminanceThreshold={0.3} luminanceSmoothing={0.8} mipmapBlur />
-              </EffectComposer>
-            </Canvas>
+          {/* 3D ember ring: mount only while section is in view to free GPU otherwise */}
+          <div aria-hidden="true" className="absolute inset-0 -z-0 opacity-60">
+            {isInView && (
+              <Canvas camera={{ position: [0, 0, 6], fov: 55 }} dpr={[1, 1.5]}>
+                <ambientLight intensity={0.3} />
+                <pointLight position={[0, 0, 5]} intensity={1.4} color="#f59e0b" />
+                <group rotation={[0, rotVal, 0]}>
+                  {RING_POSITIONS.map((pos, i) => (
+                    <EmberSphere key={i} position={pos} intensity={0.5 + (i % 3) * 0.2} />
+                  ))}
+                </group>
+              </Canvas>
+            )}
           </div>
 
-          {/* Cards grid: substance-first, always visible */}
+          {/* Cards grid: substance-first, always visible. bg-black/70 replaces backdrop-blur (GPU-expensive) */}
           <div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {DETECTORS.map((d, i) => (
               <motion.article
@@ -89,8 +86,8 @@ export function Act3Embers(): JSX.Element {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.5, delay: i * 0.07 }}
-                className="group relative rounded-xl border border-[#F5E8D4]/10 bg-black/60 p-5 backdrop-blur-md transition-all hover:border-amber-400/40 hover:-translate-y-1"
+                transition={{ duration: 0.4, delay: i * 0.05 }}
+                className="group relative rounded-xl border border-[#F5E8D4]/10 bg-black/70 p-5 transition-colors hover:border-amber-400/40"
               >
                 <div className="mb-3 flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-amber-400/60 transition group-hover:bg-amber-400" />
