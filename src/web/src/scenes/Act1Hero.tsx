@@ -1,12 +1,26 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { motion, useScroll, useTransform, useMotionValueEvent, useInView } from 'motion/react';
+import { motion, useScroll, useTransform, useMotionValueEvent, useInView, useMotionValue, useSpring } from 'motion/react';
 import { FlameVideo } from '../3d/FlameVideo.js';
 
-// "Cinematic Cold Open" — v6, 2026-04-25
-// Layered animations: page-load stagger reveal + continuous breath + scroll-driven parallax.
-// Every element is visible at t=0 but animates IN dramatically. No crossfades that can break.
-// The $14,502 is the headline — huge, animated, the focal point of the entire frame.
+// "Cinematic Cold Open" — v7, 2026-04-25 ULTRA
+// Layers added beyond v6:
+//   1. Drifting ember particles (16 spans, CSS-only float-up loop with random delays)
+//   2. Scanline sweep across $14,502 every ~5 seconds (vertical amber line)
+//   3. Heat haze shimmer on $14,502 (sin-wave skewX)
+//   4. Magnetic CTA — pill button leans toward cursor within its bounds
+//   5. Cursor-tracked vignette — radial darkness center follows the mouse
+//   6. Bottom-edge amber sweep beam every ~6 seconds
+// Plus everything from v6: stagger reveal, breath, scroll parallax, glow pulse, etc.
+
+const EMBERS = Array.from({ length: 16 }, (_, i) => ({
+  id: i,
+  left: Math.random() * 100,
+  size: 2 + Math.random() * 3,
+  duration: 7 + Math.random() * 8,
+  delay: Math.random() * 10,
+  drift: -10 + Math.random() * 20,
+}));
 
 export function Act1Hero(): JSX.Element {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -20,7 +34,7 @@ export function Act1Hero(): JSX.Element {
   const [intensityVal, setIntensityVal] = useState(0.55);
   useMotionValueEvent(intensity, 'change', (v) => setIntensityVal(v));
 
-  // Scroll-driven parallax on the bill amount + headline (gentle, all in single direction).
+  // Scroll-driven parallax + glow
   const billY = useTransform(scrollYProgress, [0, 1], [0, -80]);
   const billScale = useTransform(scrollYProgress, [0, 1], [1, 1.04]);
   const billGlow = useTransform(
@@ -29,6 +43,28 @@ export function Act1Hero(): JSX.Element {
     ['0 0 60px rgba(245,158,11,0.35)', '0 0 100px rgba(245,158,11,0.55)'],
   );
   const headlineY = useTransform(scrollYProgress, [0, 1], [0, -40]);
+
+  // Cursor-tracked vignette
+  const cursorX = useMotionValue(50);
+  const cursorY = useMotionValue(40);
+  const smoothCursorX = useSpring(cursorX, { stiffness: 60, damping: 20 });
+  const smoothCursorY = useSpring(cursorY, { stiffness: 60, damping: 20 });
+  const vignetteBg = useTransform(
+    [smoothCursorX, smoothCursorY],
+    ([x, y]: number[]) =>
+      `radial-gradient(ellipse 75% 75% at ${x}% ${y}%, transparent 0%, rgba(9,9,15,0.45) 60%, rgba(9,9,15,0.92) 100%)`,
+  );
+
+  useEffect(() => {
+    function onMove(e: MouseEvent): void {
+      const rect = sectionRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      cursorX.set(((e.clientX - rect.left) / rect.width) * 100);
+      cursorY.set(((e.clientY - rect.top) / rect.height) * 100);
+    }
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, [cursorX, cursorY]);
 
   return (
     <section ref={sectionRef} className="relative h-screen">
@@ -42,24 +78,55 @@ export function Act1Hero(): JSX.Element {
           )}
         </div>
 
-        {/* Radial vignette */}
-        <div
+        {/* Drifting ember particles — atmospheric */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
+          {EMBERS.map((e) => (
+            <span
+              key={e.id}
+              className="absolute rounded-full bg-amber-400"
+              style={{
+                left: `${e.left}%`,
+                bottom: '-10px',
+                width: `${e.size}px`,
+                height: `${e.size}px`,
+                opacity: 0,
+                animation: `emberRise ${e.duration}s ${e.delay}s ease-in infinite`,
+                ['--drift' as string]: `${e.drift}vw`,
+                boxShadow: '0 0 8px rgba(245,158,11,0.7)',
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Cursor-tracked vignette (replaces the static one) */}
+        <motion.div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-10"
-          style={{
-            background:
-              'radial-gradient(ellipse 75% 75% at 60% 40%, transparent 0%, rgba(9,9,15,0.45) 60%, rgba(9,9,15,0.92) 100%)',
-          }}
+          style={{ background: vignetteBg }}
         />
 
-        {/* TOP-LEFT brand mark — fade in fast on load, then static */}
+        {/* Bottom edge sweeping beam */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-0 left-0 right-0 z-[11] h-px overflow-hidden"
+        >
+          <span className="block h-full w-1/3 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-60" style={{ animation: 'sweepBeam 6s linear infinite' }} />
+        </div>
+
+        {/* TOP-LEFT brand mark */}
         <motion.div
           className="absolute top-[clamp(1.5rem,3vw,2rem)] left-[clamp(1.5rem,4vw,3rem)] z-30 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-[#F5E8D4]/55"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
         >
-          <span className="text-[#F5E8D4]">Burnd</span>
+          <motion.span
+            className="text-[#F5E8D4]"
+            animate={{ opacity: [1, 1, 0.6, 1, 1] }}
+            transition={{ duration: 4, times: [0, 0.45, 0.5, 0.55, 1], repeat: Infinity, repeatDelay: 6 }}
+          >
+            Burnd
+          </motion.span>
           <motion.span
             className="h-px bg-[#F5E8D4]/25"
             initial={{ width: 0 }}
@@ -75,7 +142,7 @@ export function Act1Hero(): JSX.Element {
           </motion.span>
         </motion.div>
 
-        {/* TOP-RIGHT meta */}
+        {/* TOP-RIGHT meta with live dot */}
         <motion.div
           className="hidden md:flex absolute top-[clamp(1.5rem,3vw,2rem)] right-[clamp(1.5rem,4vw,3rem)] z-30 items-center gap-4 font-mono text-[10px] uppercase tracking-[0.24em] text-[#F5E8D4]/45"
           initial={{ opacity: 0, y: -8 }}
@@ -99,7 +166,7 @@ export function Act1Hero(): JSX.Element {
           className="absolute bottom-[clamp(2rem,8vh,6rem)] left-[clamp(1.5rem,4vw,3rem)] right-[clamp(1.5rem,4vw,3rem)] z-30"
           style={{ y: headlineY }}
         >
-          {/* Eyebrow with drawing line */}
+          {/* Eyebrow */}
           <motion.div
             className="mb-6 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-amber-400/85"
             initial={{ opacity: 0 }}
@@ -115,9 +182,9 @@ export function Act1Hero(): JSX.Element {
             <span>Filed 2026-03-31 &middot; the bill</span>
           </motion.div>
 
-          {/* THE NUMBER — big, animated entrance + continuous breath + scroll parallax */}
+          {/* THE NUMBER — SLAMS in, breathes, scroll-parallax, scanline sweep, heat haze */}
           <motion.div
-            className="mb-8 font-mono font-bold tabular-nums tracking-[-0.04em] text-amber-400 text-[clamp(4.5rem,15vw,13rem)] leading-[0.9]"
+            className="relative mb-8 inline-block font-mono font-bold tabular-nums tracking-[-0.04em] text-amber-400 text-[clamp(4.5rem,15vw,13rem)] leading-[0.9]"
             initial={{ opacity: 0, scale: 1.15, y: 32, filter: 'blur(12px)' }}
             animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 1.0, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
@@ -128,9 +195,20 @@ export function Act1Hero(): JSX.Element {
             }}
           >
             <BillBreath />
+            {/* Scanline sweep across the number */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 overflow-hidden"
+              style={{ mixBlendMode: 'overlay' }}
+            >
+              <span
+                className="absolute left-0 right-0 h-[14%] bg-gradient-to-b from-transparent via-amber-200/60 to-transparent"
+                style={{ animation: 'scanlineSweep 5s linear infinite', animationDelay: '2.5s' }}
+              />
+            </span>
           </motion.div>
 
-          {/* Italic serif headline — word-by-word stagger */}
+          {/* Italic serif headline — word stagger */}
           <h1 className="font-serif text-[#F5E8D4] text-[clamp(1.5rem,3.6vw,3rem)] font-normal italic leading-[1.1] tracking-[-0.01em] max-w-[26ch]">
             <StaggeredWords
               words={['Your', 'Claude', 'Code', 'bill', 'is', 'bigger', 'than', 'you', 'think.']}
@@ -138,28 +216,14 @@ export function Act1Hero(): JSX.Element {
             />
           </h1>
 
-          {/* CTA row */}
+          {/* CTA row — magnetic */}
           <motion.div
             className="mt-9 flex flex-wrap items-center gap-6"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 2.45, ease: 'easeOut' }}
           >
-            <button
-              type="button"
-              onClick={() => navigator.clipboard.writeText('npx getburnd')}
-              className="group inline-flex items-center gap-3 rounded-full border border-amber-400/40 bg-white/[0.04] px-6 py-3 font-mono text-sm text-amber-300 transition-all hover:border-amber-300 hover:bg-amber-400/10 hover:text-amber-200"
-            >
-              <motion.span
-                className="h-1.5 w-1.5 rounded-full bg-amber-400"
-                animate={{
-                  boxShadow: ['0 0 6px rgba(245,158,11,0.6)', '0 0 16px rgba(245,158,11,0.95)', '0 0 6px rgba(245,158,11,0.6)'],
-                }}
-                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-              />
-              npx getburnd
-              <span className="text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/40 transition-colors group-hover:text-[#F5E8D4]/70">copy</span>
-            </button>
+            <MagneticButton />
 
             <a href="/proof" className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#F5E8D4]/55 transition hover:text-[#F5E8D4]">
               See the invoice &rarr;
@@ -167,7 +231,7 @@ export function Act1Hero(): JSX.Element {
           </motion.div>
         </motion.div>
 
-        {/* Scroll cue — looping pulse */}
+        {/* Scroll cue */}
         <motion.div
           aria-hidden="true"
           className="pointer-events-none absolute bottom-6 right-[clamp(1.5rem,4vw,3rem)] z-30 flex flex-col items-center gap-2"
@@ -183,11 +247,48 @@ export function Act1Hero(): JSX.Element {
           />
         </motion.div>
       </div>
+
+      {/* Keyframes for the CSS-only loops */}
+      <style>{`
+        @keyframes emberRise {
+          0% {
+            transform: translate(0, 0);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.85;
+          }
+          85% {
+            opacity: 0.6;
+          }
+          100% {
+            transform: translate(var(--drift, 0), -110vh);
+            opacity: 0;
+          }
+        }
+        @keyframes sweepBeam {
+          0% { transform: translateX(-100%); }
+          50% { transform: translateX(400%); }
+          100% { transform: translateX(400%); }
+        }
+        @keyframes scanlineSweep {
+          0% { top: -20%; opacity: 0; }
+          10% { opacity: 0.9; }
+          90% { opacity: 0.9; }
+          100% { top: 110%; opacity: 0; }
+        }
+        @keyframes heatHaze {
+          0%, 100% { transform: skewX(0deg) translateY(0); }
+          25% { transform: skewX(0.4deg) translateY(-1px); }
+          50% { transform: skewX(0deg) translateY(0); }
+          75% { transform: skewX(-0.4deg) translateY(1px); }
+        }
+      `}</style>
     </section>
   );
 }
 
-// Continuous "breath" effect on the bill amount — subtle rise and fall like firelight.
+// Continuous breath + heat haze — subtle wobble like firelight on metal.
 function BillBreath(): JSX.Element {
   return (
     <motion.span
@@ -197,13 +298,14 @@ function BillBreath(): JSX.Element {
         scale: [1, 1.005, 1],
       }}
       transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      style={{ animation: 'heatHaze 7s ease-in-out infinite' }}
     >
       $14,502
     </motion.span>
   );
 }
 
-// Word-by-word reveal for the italic serif headline.
+// Word-by-word stagger reveal.
 function StaggeredWords({ words, baseDelay }: { words: string[]; baseDelay: number }): JSX.Element {
   return (
     <>
@@ -220,9 +322,54 @@ function StaggeredWords({ words, baseDelay }: { words: string[]; baseDelay: numb
           }}
         >
           {w}
-          {i < words.length - 1 ? ' ' : ''}
+          {i < words.length - 1 ? ' ' : ''}
         </motion.span>
       ))}
     </>
+  );
+}
+
+// Magnetic button — pill leans subtly toward the cursor when hovered.
+function MagneticButton(): JSX.Element {
+  const ref = useRef<HTMLButtonElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 200, damping: 18 });
+  const sy = useSpring(y, { stiffness: 200, damping: 18 });
+
+  function handleMove(e: React.MouseEvent<HTMLButtonElement>): void {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    const dx = e.clientX - (rect.left + rect.width / 2);
+    const dy = e.clientY - (rect.top + rect.height / 2);
+    x.set(dx * 0.25);
+    y.set(dy * 0.25);
+  }
+
+  function handleLeave(): void {
+    x.set(0);
+    y.set(0);
+  }
+
+  return (
+    <motion.button
+      ref={ref}
+      type="button"
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      onClick={() => navigator.clipboard.writeText('npx getburnd')}
+      className="group inline-flex items-center gap-3 rounded-full border border-amber-400/40 bg-white/[0.04] px-6 py-3 font-mono text-sm text-amber-300 transition-colors hover:border-amber-300 hover:bg-amber-400/10 hover:text-amber-200"
+      style={{ x: sx, y: sy }}
+    >
+      <motion.span
+        className="h-1.5 w-1.5 rounded-full bg-amber-400"
+        animate={{
+          boxShadow: ['0 0 6px rgba(245,158,11,0.6)', '0 0 16px rgba(245,158,11,0.95)', '0 0 6px rgba(245,158,11,0.6)'],
+        }}
+        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      npx getburnd
+      <span className="text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/40 transition-colors group-hover:text-[#F5E8D4]/70">copy</span>
+    </motion.button>
   );
 }
