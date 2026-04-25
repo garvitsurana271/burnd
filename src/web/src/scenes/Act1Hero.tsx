@@ -3,11 +3,11 @@ import { Canvas } from '@react-three/fiber';
 import { motion, useScroll, useTransform, useMotionValueEvent, useInView } from 'motion/react';
 import { FlameVideo } from '../3d/FlameVideo.js';
 
-// "Cinematic Cold Open" — v4, 2026-04-24 evening
-// The corner-ticker counting mechanic was unsatisfying — too much scroll for too
-// little reward. Replaced with a single film-cut style reveal: hero stays static,
-// then at scroll 0.55 the cinematic CUTS to the bill amount as the dominant frame.
-// Section shortened from 180vh to 130vh so the scroll feels punchy, not draggy.
+// "Cinematic Cold Open" — v5, 2026-04-25
+// All animations stripped from the hero. The $14,502 is the headline.
+// One frame, one image, one number. No scroll-driven crossfades that can break.
+// Section is now a single screen height — no sticky range, no transitions.
+// Gentle scroll-driven flame intensity is the only motion.
 
 export function Act1Hero(): JSX.Element {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -17,35 +17,13 @@ export function Act1Hero(): JSX.Element {
     target: sectionRef,
     offset: ['start start', 'end start'],
   });
-
-  // Flame breathes harder as we scroll into the cut.
-  const intensity = useTransform(scrollYProgress, [0, 0.5, 1], [0.5, 0.7, 1.0]);
-  const [intensityVal, setIntensityVal] = useState(0.5);
+  const intensity = useTransform(scrollYProgress, [0, 1], [0.55, 0.85]);
+  const [intensityVal, setIntensityVal] = useState(0.55);
   useMotionValueEvent(intensity, 'change', (v) => setIntensityVal(v));
 
-  // Scroll cue fades the moment user starts.
-  const cueOpacity = useTransform(scrollYProgress, [0, 0.05, 0.12], [1, 0.5, 0]);
-
-  // Hero card — visible from t=0 until the reveal "cut" at 0.55.
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.45, 0.58], [1, 1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 0.55], [0, -24]);
-
-  // Reveal — the bill amount and one-line context "cut" in at 0.55.
-  const revealOpacity = useTransform(scrollYProgress, [0.5, 0.62, 0.85, 1], [0, 1, 1, 0.7]);
-  const revealScale = useTransform(scrollYProgress, [0.5, 0.62], [0.94, 1]);
-
-  // Brand mark sticks around the entire hero.
-  const brandOpacity = useTransform(scrollYProgress, [0, 0.85, 1], [1, 1, 0]);
-
-  // Hard darkening that punches into the cut frame.
-  const overlayDark = useTransform(scrollYProgress, [0.45, 0.62], [0, 0.6]);
-
-  // Subtle "viewport closing" cinema bars during the cut.
-  const barHeight = useTransform(scrollYProgress, [0.45, 0.62], ['0%', '8%']);
-
   return (
-    <section ref={sectionRef} className="relative h-[130vh]">
-      <div className="sticky top-0 h-screen w-screen overflow-hidden bg-[#09090f] font-sans">
+    <section ref={sectionRef} className="relative h-screen">
+      <div className="relative h-full w-full overflow-hidden bg-[#09090f] font-sans">
         {/* Flame video atmosphere */}
         <div aria-hidden="true" className="absolute inset-0">
           {isInView && (
@@ -55,95 +33,73 @@ export function Act1Hero(): JSX.Element {
           )}
         </div>
 
-        {/* Radial vignette focusing the flame core */}
+        {/* Radial vignette focusing flame core, lifting the bottom-left content */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-10"
           style={{
             background:
-              'radial-gradient(ellipse 75% 75% at 50% 45%, transparent 0%, rgba(9,9,15,0.4) 60%, rgba(9,9,15,0.9) 100%)',
+              'radial-gradient(ellipse 75% 75% at 60% 40%, transparent 0%, rgba(9,9,15,0.45) 60%, rgba(9,9,15,0.92) 100%)',
           }}
         />
 
-        {/* Hard overlay darkens the world as the cut lands */}
-        <motion.div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-20 bg-black"
-          style={{ opacity: overlayDark }}
-        />
-
-        {/* Cinema bars — top + bottom black bars that close in during the cut */}
-        <motion.div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-0 left-0 right-0 z-30 bg-[#09090f]"
-          style={{ height: barHeight }}
-        />
-        <motion.div
-          aria-hidden="true"
-          className="pointer-events-none absolute bottom-0 left-0 right-0 z-30 bg-[#09090f]"
-          style={{ height: barHeight }}
-        />
-
         {/* Top-left brand mark */}
-        <motion.div
-          className="absolute top-[clamp(1.5rem,3vw,2rem)] left-[clamp(1.5rem,4vw,3rem)] z-40 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-[#F5E8D4]/55"
-          style={{ opacity: brandOpacity }}
-        >
+        <div className="absolute top-[clamp(1.5rem,3vw,2rem)] left-[clamp(1.5rem,4vw,3rem)] z-30 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-[#F5E8D4]/55">
           <span className="text-[#F5E8D4]">Burnd</span>
           <span className="h-px w-6 bg-[#F5E8D4]/25" />
           <span>Incident 0001</span>
-        </motion.div>
+        </div>
 
-        {/* HERO CARD — visible until the cut */}
-        <motion.div
-          className="absolute bottom-[clamp(2rem,7vh,5rem)] left-[clamp(1.5rem,4vw,3rem)] right-[clamp(1.5rem,4vw,3rem)] z-30"
-          style={{ opacity: heroOpacity, y: heroY }}
-        >
-          <div className="mb-5 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-amber-400/80">
-            <span className="h-px w-8 bg-amber-400/60" />
-            <span>Filed 2026-03-31 &middot; one developer &middot; one month</span>
+        {/* Top-right meta */}
+        <div className="hidden md:flex absolute top-[clamp(1.5rem,3vw,2rem)] right-[clamp(1.5rem,4vw,3rem)] z-30 items-center gap-4 font-mono text-[10px] uppercase tracking-[0.24em] text-[#F5E8D4]/45">
+          <span>One developer</span>
+          <span className="text-[#F5E8D4]/20">&middot;</span>
+          <span>One month</span>
+          <span className="text-[#F5E8D4]/20">&middot;</span>
+          <span>Claude Code</span>
+        </div>
+
+        {/* Hero content — bottom-left anchor, all visible at t=0 */}
+        <div className="absolute bottom-[clamp(2rem,8vh,6rem)] left-[clamp(1.5rem,4vw,3rem)] right-[clamp(1.5rem,4vw,3rem)] z-30">
+          <div className="mb-6 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-amber-400/85">
+            <span className="h-px w-8 bg-amber-400/70" />
+            <span>Filed 2026-03-31 &middot; the bill</span>
           </div>
 
-          <h1 className="font-serif text-[#F5E8D4] text-[clamp(3rem,8.5vw,8rem)] font-normal leading-[0.92] tracking-[-0.025em] max-w-[20ch]">
-            <span>Your Claude Code </span>
-            <span className="italic">bill</span>{' '}
-            <br className="hidden sm:block" />
-            <span className="italic text-amber-400">is bigger than you think.</span>
-          </h1>
-        </motion.div>
-
-        {/* THE CUT — single dominant frame replaces the hero */}
-        <motion.div
-          className="absolute inset-0 z-30 flex flex-col items-center justify-center px-8"
-          style={{ opacity: revealOpacity, scale: revealScale }}
-        >
-          <div className="mb-5 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-amber-400/80">
-            <span className="h-px w-8 bg-amber-400/60" />
-            <span>The bill</span>
-            <span className="h-px w-8 bg-amber-400/60" />
-          </div>
-
-          <div className="font-mono text-[clamp(5rem,18vw,16rem)] font-bold tracking-[-0.04em] text-amber-400 tabular-nums leading-none drop-shadow-[0_0_60px_rgba(245,158,11,0.4)]">
+          <div className="mb-8 font-mono font-bold tabular-nums tracking-[-0.04em] text-amber-400 text-[clamp(4.5rem,15vw,13rem)] leading-[0.9] drop-shadow-[0_0_60px_rgba(245,158,11,0.35)]">
             $14,502
           </div>
 
-          <p className="mt-8 max-w-[36ch] text-center font-serif text-[clamp(1.1rem,1.6vw,1.5rem)] italic leading-snug text-[#F5E8D4]/80">
-            One month. One developer. One Claude Code account. No idea where the money went.
-          </p>
-        </motion.div>
+          <h1 className="font-serif text-[#F5E8D4] text-[clamp(1.5rem,3.6vw,3rem)] font-normal italic leading-[1.1] tracking-[-0.01em] max-w-[26ch]">
+            Your Claude Code bill is bigger than you think.
+          </h1>
+
+          <div className="mt-8 flex items-center gap-6">
+            <button
+              type="button"
+              onClick={() => navigator.clipboard.writeText('npx getburnd')}
+              className="group inline-flex items-center gap-3 rounded-full border border-amber-400/40 bg-white/[0.04] px-6 py-3 font-mono text-sm text-amber-300 transition-all hover:border-amber-300 hover:bg-amber-400/10 hover:text-amber-200"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+              npx getburnd
+              <span className="text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/40 transition-colors group-hover:text-[#F5E8D4]/70">copy</span>
+            </button>
+
+            <a href="/proof" className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#F5E8D4]/55 transition hover:text-[#F5E8D4]">
+              See the invoice &rarr;
+            </a>
+          </div>
+        </div>
 
         {/* Scroll cue */}
         <motion.div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-6 left-1/2 z-40 -translate-x-1/2 flex flex-col items-center gap-2"
-          style={{ opacity: cueOpacity }}
+          className="pointer-events-none absolute bottom-6 right-[clamp(1.5rem,4vw,3rem)] z-30 flex flex-col items-center gap-2"
+          animate={{ opacity: [0.3, 0.85, 0.3] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#F5E8D4]/40">Scroll</span>
-          <motion.span
-            className="block h-6 w-px bg-gradient-to-b from-amber-400/60 to-transparent"
-            animate={{ scaleY: [1, 0.3, 1], transformOrigin: 'top' }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          />
+          <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#F5E8D4]/55">Scroll</span>
+          <span className="block h-6 w-px bg-gradient-to-b from-amber-400/60 to-transparent" />
         </motion.div>
       </div>
     </section>
