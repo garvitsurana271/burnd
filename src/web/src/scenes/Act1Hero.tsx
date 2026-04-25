@@ -305,25 +305,27 @@ function BillBreath(): JSX.Element {
   );
 }
 
-// Word-by-word stagger reveal.
+// Word-by-word stagger reveal. Spaces live OUTSIDE the inline-block spans
+// (otherwise display:inline-block strips them and words run together).
 function StaggeredWords({ words, baseDelay }: { words: string[]; baseDelay: number }): JSX.Element {
   return (
     <>
       {words.map((w, i) => (
-        <motion.span
-          key={`${i}-${w}`}
-          className="inline-block"
-          initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{
-            duration: 0.7,
-            delay: baseDelay + i * 0.08,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-        >
-          {w}
+        <span key={`${i}-${w}`}>
+          <motion.span
+            className="inline-block"
+            initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{
+              duration: 0.7,
+              delay: baseDelay + i * 0.08,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
+            {w}
+          </motion.span>
           {i < words.length - 1 ? ' ' : ''}
-        </motion.span>
+        </span>
       ))}
     </>
   );
