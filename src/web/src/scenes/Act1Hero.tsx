@@ -1,16 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { motion, useScroll, useTransform, useMotionValueEvent, useInView } from 'motion/react';
 import { FlameVideo } from '../3d/FlameVideo.js';
 
-// "Cinematic Cold Open" — v3, 2026-04-24
-// One image, one title card. Full-bleed flame as atmosphere. Headline bottom-left.
-// Corner brand mark top-left. NOTHING else visible at t=0. Ticker and CTA fade
-// in after the smallest nudge of scroll so the reveal feels intentional.
-// Duotone: amber flame + cream headline on near-black. No indigo (reserved for Act 3+).
-
-const STOP_PROGRESSES = [0.0, 0.08, 0.18, 0.28, 0.38, 0.47, 0.55];
-const STOP_VALUES = [127, 845, 3210, 9800, 13800, 14200, 14502];
+// "Cinematic Cold Open" — v4, 2026-04-24 evening
+// The corner-ticker counting mechanic was unsatisfying — too much scroll for too
+// little reward. Replaced with a single film-cut style reveal: hero stays static,
+// then at scroll 0.55 the cinematic CUTS to the bill amount as the dominant frame.
+// Section shortened from 180vh to 130vh so the scroll feels punchy, not draggy.
 
 export function Act1Hero(): JSX.Element {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -21,46 +18,35 @@ export function Act1Hero(): JSX.Element {
     offset: ['start start', 'end start'],
   });
 
-  const intensity = useTransform(scrollYProgress, [0, 1], [0.45, 1.0]);
-  const [intensityVal, setIntensityVal] = useState(0.45);
+  // Flame breathes harder as we scroll into the cut.
+  const intensity = useTransform(scrollYProgress, [0, 0.5, 1], [0.5, 0.7, 1.0]);
+  const [intensityVal, setIntensityVal] = useState(0.5);
   useMotionValueEvent(intensity, 'change', (v) => setIntensityVal(v));
 
-  // Ticker value — counts up with scroll.
-  const tickerValue = useTransform(scrollYProgress, STOP_PROGRESSES, STOP_VALUES);
-  const tickerText = useTransform(tickerValue, (v) => `$${Math.round(v).toLocaleString()}`);
+  // Scroll cue fades the moment user starts.
+  const cueOpacity = useTransform(scrollYProgress, [0, 0.05, 0.12], [1, 0.5, 0]);
 
-  // Ticker visibility: hidden at t=0, fades in at 0.02 (the tiniest scroll cue)
-  const tickerOpacity = useTransform(scrollYProgress, [0, 0.02, 0.06], [0, 1, 1]);
-  const cueOpacity = useTransform(scrollYProgress, [0, 0.03, 0.08], [1, 0.7, 0]);
+  // Hero card — visible from t=0 until the reveal "cut" at 0.55.
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.45, 0.58], [1, 1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 0.55], [0, -24]);
 
-  // Viewport for ticker escape translate.
-  const [vp, setVp] = useState({ w: 1920, h: 1080 });
-  useEffect(() => {
-    const update = (): void => setVp({ w: window.innerWidth, h: window.innerHeight });
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, []);
+  // Reveal — the bill amount and one-line context "cut" in at 0.55.
+  const revealOpacity = useTransform(scrollYProgress, [0.5, 0.62, 0.85, 1], [0, 1, 1, 0.7]);
+  const revealScale = useTransform(scrollYProgress, [0.5, 0.62], [0.94, 1]);
 
-  // Ticker escape: idles top-right until 0.6, then scales + translates to center.
-  const tickerScale = useTransform(scrollYProgress, [0, 0.6, 0.88], [1, 1, 8]);
-  const tickerX = useTransform(scrollYProgress, [0.6, 0.88], [0, -(vp.w / 2 - 120)]);
-  const tickerY = useTransform(scrollYProgress, [0.6, 0.88], [0, vp.h / 2 - 60]);
-  const tickerColor = useTransform(
-    scrollYProgress,
-    [0, 0.55, 0.7, 1],
-    ['rgba(245, 158, 11, 0.95)', 'rgba(245, 158, 11, 1)', 'rgba(251, 191, 36, 1)', 'rgba(251, 191, 36, 1)'],
-  );
+  // Brand mark sticks around the entire hero.
+  const brandOpacity = useTransform(scrollYProgress, [0, 0.85, 1], [1, 1, 0]);
 
-  // Headline stays visible until the ticker starts escaping — then fades.
-  const headlineOpacity = useTransform(scrollYProgress, [0, 0.55, 0.72], [1, 1, 0]);
-  const brandOpacity = useTransform(scrollYProgress, [0, 0.55, 0.7], [1, 1, 0]);
-  const overlayDark = useTransform(scrollYProgress, [0.55, 0.88], [0, 0.55]);
+  // Hard darkening that punches into the cut frame.
+  const overlayDark = useTransform(scrollYProgress, [0.45, 0.62], [0, 0.6]);
+
+  // Subtle "viewport closing" cinema bars during the cut.
+  const barHeight = useTransform(scrollYProgress, [0.45, 0.62], ['0%', '8%']);
 
   return (
-    <section ref={sectionRef} className="relative h-[180vh]">
+    <section ref={sectionRef} className="relative h-[130vh]">
       <div className="sticky top-0 h-screen w-screen overflow-hidden bg-[#09090f] font-sans">
-        {/* Flame canvas (mount-on-view) */}
+        {/* Flame video atmosphere */}
         <div aria-hidden="true" className="absolute inset-0">
           {isInView && (
             <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 1] }} dpr={[1, 1.5]}>
@@ -69,26 +55,38 @@ export function Act1Hero(): JSX.Element {
           )}
         </div>
 
-        {/* Radial vignette to focus the eye on the flame core + lift the bottom-left headline */}
+        {/* Radial vignette focusing the flame core */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-10"
           style={{
             background:
-              'radial-gradient(ellipse 70% 70% at 50% 45%, transparent 0%, rgba(9,9,15,0.35) 60%, rgba(9,9,15,0.85) 100%)',
+              'radial-gradient(ellipse 75% 75% at 50% 45%, transparent 0%, rgba(9,9,15,0.4) 60%, rgba(9,9,15,0.9) 100%)',
           }}
         />
 
-        {/* Overlay that takes over as $14,502 dominates */}
+        {/* Hard overlay darkens the world as the cut lands */}
         <motion.div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-20 bg-black"
           style={{ opacity: overlayDark }}
         />
 
-        {/* Top-left brand mark — tiny, unobtrusive */}
+        {/* Cinema bars — top + bottom black bars that close in during the cut */}
         <motion.div
-          className="absolute top-[clamp(1.5rem,3vw,2rem)] left-[clamp(1.5rem,4vw,3rem)] z-30 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-[#F5E8D4]/55"
+          aria-hidden="true"
+          className="pointer-events-none absolute top-0 left-0 right-0 z-30 bg-[#09090f]"
+          style={{ height: barHeight }}
+        />
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-0 left-0 right-0 z-30 bg-[#09090f]"
+          style={{ height: barHeight }}
+        />
+
+        {/* Top-left brand mark */}
+        <motion.div
+          className="absolute top-[clamp(1.5rem,3vw,2rem)] left-[clamp(1.5rem,4vw,3rem)] z-40 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-[#F5E8D4]/55"
           style={{ opacity: brandOpacity }}
         >
           <span className="text-[#F5E8D4]">Burnd</span>
@@ -96,34 +94,10 @@ export function Act1Hero(): JSX.Element {
           <span>Incident 0001</span>
         </motion.div>
 
-        {/* Live ticker — hidden at t=0, fades in with scroll cue. Escapes center at 0.6. */}
-        <motion.div
-          className="absolute top-[clamp(1.5rem,3vw,2rem)] right-[clamp(1.5rem,4vw,3rem)] z-40 flex items-center gap-3 origin-top-right"
-          style={{
-            scale: tickerScale,
-            x: tickerX,
-            y: tickerY,
-            opacity: tickerOpacity,
-          }}
-        >
-          <motion.span
-            className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400"
-            animate={{ opacity: [1, 0.3, 1] }}
-            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#F5E8D4]/55">Live</span>
-          <motion.span
-            className="font-mono text-[1.25rem] font-semibold tabular-nums leading-none"
-            style={{ color: tickerColor }}
-          >
-            {tickerText}
-          </motion.span>
-        </motion.div>
-
-        {/* Hero headline — bottom-left anchor. Only 2 lines. */}
+        {/* HERO CARD — visible until the cut */}
         <motion.div
           className="absolute bottom-[clamp(2rem,7vh,5rem)] left-[clamp(1.5rem,4vw,3rem)] right-[clamp(1.5rem,4vw,3rem)] z-30"
-          style={{ opacity: headlineOpacity }}
+          style={{ opacity: heroOpacity, y: heroY }}
         >
           <div className="mb-5 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-amber-400/80">
             <span className="h-px w-8 bg-amber-400/60" />
@@ -138,10 +112,30 @@ export function Act1Hero(): JSX.Element {
           </h1>
         </motion.div>
 
-        {/* Scroll cue — faint line that fades after the smallest scroll */}
+        {/* THE CUT — single dominant frame replaces the hero */}
+        <motion.div
+          className="absolute inset-0 z-30 flex flex-col items-center justify-center px-8"
+          style={{ opacity: revealOpacity, scale: revealScale }}
+        >
+          <div className="mb-5 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-amber-400/80">
+            <span className="h-px w-8 bg-amber-400/60" />
+            <span>The bill</span>
+            <span className="h-px w-8 bg-amber-400/60" />
+          </div>
+
+          <div className="font-mono text-[clamp(5rem,18vw,16rem)] font-bold tracking-[-0.04em] text-amber-400 tabular-nums leading-none drop-shadow-[0_0_60px_rgba(245,158,11,0.4)]">
+            $14,502
+          </div>
+
+          <p className="mt-8 max-w-[36ch] text-center font-serif text-[clamp(1.1rem,1.6vw,1.5rem)] italic leading-snug text-[#F5E8D4]/80">
+            One month. One developer. One Claude Code account. No idea where the money went.
+          </p>
+        </motion.div>
+
+        {/* Scroll cue */}
         <motion.div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-6 left-1/2 z-30 -translate-x-1/2 flex flex-col items-center gap-2"
+          className="pointer-events-none absolute bottom-6 left-1/2 z-40 -translate-x-1/2 flex flex-col items-center gap-2"
           style={{ opacity: cueOpacity }}
         >
           <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#F5E8D4]/40">Scroll</span>
