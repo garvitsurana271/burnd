@@ -82,17 +82,9 @@ Claude Code writes a `.jsonl` file for every session to `~/.claude/projects/`. E
 
 ---
 
-## The companion ebook
-
-**"Burning Tokens"** — 7,400 words, 11 chapters. Every detector explained with real data from my $13,631 burn, plus the exact fixes that saved me $76/month.
-
-₹399 (~$4.50) via UPI at [getburnd.vercel.app/#buy](https://getburnd.vercel.app/#buy)
-
----
-
 ## About
 
-Built by **Garvit Surana** — 16, Class 12 ISC, Guwahati, India. After my Anthropic bill hit $13,631 over 6 months with no good tooling to understand why, I built this.
+Built by **Garvit Surana** — Class XII ISC, Guwahati, India. After my Anthropic bill hit $14,502 in one month with no good tooling to understand why, I built this. Portfolio: [garvit-surana.vercel.app](https://garvit-surana.vercel.app).
 
 - Landing page: [getburnd.vercel.app](https://getburnd.vercel.app)
 - npm: [npmjs.com/package/getburnd](https://www.npmjs.com/package/getburnd)
