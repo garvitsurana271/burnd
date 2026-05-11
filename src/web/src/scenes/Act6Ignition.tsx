@@ -57,7 +57,7 @@ export function Act6Ignition(): JSX.Element {
         </div>
 
         <div className="mx-auto mt-16 flex items-center justify-center gap-6 font-mono text-[11px] uppercase tracking-[0.22em] text-[#F5E8D4]/40">
-          <a href="https://github.com/garvitsurana/burnd" className="transition hover:text-[#F5E8D4]/80">GitHub</a>
+          <a href="https://github.com/garvitsurana271/burnd" className="transition hover:text-[#F5E8D4]/80">GitHub</a>
           <span className="text-[#F5E8D4]/20">·</span>
           <a href="/proof" className="transition hover:text-[#F5E8D4]/80">Real invoice</a>
           <span className="text-[#F5E8D4]/20">·</span>
@@ -65,6 +65,17 @@ export function Act6Ignition(): JSX.Element {
           <span className="text-[#F5E8D4]/20">·</span>
           <a href="/calculator" className="transition hover:text-[#F5E8D4]/80">Calculator</a>
         </div>
+
+        <p className="mx-auto mt-10 text-center font-mono text-[11px] uppercase tracking-[0.22em] text-[#F5E8D4]/35">
+          Built by{' '}
+          <a
+            href="https://garvit-surana.vercel.app"
+            rel="author"
+            className="text-[#F5E8D4]/60 underline decoration-amber-400/30 underline-offset-4 transition hover:text-[#F5E8D4]/90 hover:decoration-amber-400/70"
+          >
+            Garvit Surana
+          </a>
+        </p>
       </div>
     </section>
   );
