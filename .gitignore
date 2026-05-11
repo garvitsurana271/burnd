@@ -68,3 +68,7 @@ notes/ebook/*.html
 # Test fixtures with potentially private data
 notes/jsonl-samples/
 **/jsonl-samples/
+
+# Rendered video outputs (large, regenerated from source, GitHub 100MB limit)
+src/video/out/*.mp4
+src/video/out/*.mov
