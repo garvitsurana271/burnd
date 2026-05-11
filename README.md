@@ -4,7 +4,9 @@
 [![npm downloads](https://img.shields.io/npm/dw/getburnd?color=6366f1)](https://www.npmjs.com/package/getburnd)
 [![License: MIT](https://img.shields.io/badge/License-MIT-6366f1.svg)](LICENSE)
 
-> I spent **$13,631** on Claude Code in 6 months and had no idea where it went. Built this to find out.
+Built by **[Garvit Surana](https://garvit-surana.vercel.app)** — Class XII ISC, Guwahati, India.
+
+> I spent **$14,502** on Claude Code in one month and had no idea where it went. Built this to find out.
 
 **Burnd** reads your local `~/.claude/projects/*.jsonl` session files and finds the 8 patterns that waste your Claude Code money — with dollar estimates and concrete one-line fixes.
 
