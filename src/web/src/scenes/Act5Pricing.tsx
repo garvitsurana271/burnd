@@ -79,7 +79,7 @@ export function Act5Pricing(): JSX.Element {
             </ul>
 
             <a
-              href="/buy?plan=monthly"
+              href="https://checkout.dodopayments.com/buy/pdt_0Nd5oxiObAaCyj7Jb7Heg?quantity=1"
               className="mt-10 block rounded-lg border border-[#F5E8D4]/15 bg-white/[0.03] px-6 py-3 text-center font-mono text-sm uppercase tracking-[0.2em] text-[#F5E8D4]/85 transition hover:border-[#F5E8D4]/30 hover:text-[#F5E8D4]"
             >
               Start monthly
@@ -115,7 +115,7 @@ export function Act5Pricing(): JSX.Element {
             </ul>
 
             <a
-              href="/buy?plan=lifetime"
+              href="https://checkout.dodopayments.com/buy/pdt_0Nd5r2dAQtjUuT1MTqLdL?quantity=1"
               className="mt-10 block rounded-lg bg-amber-500 px-6 py-3 text-center font-mono text-sm font-semibold uppercase tracking-[0.2em] text-[#09090f] transition hover:bg-amber-400"
             >
               Buy lifetime · $89
