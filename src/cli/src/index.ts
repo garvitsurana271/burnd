@@ -17,15 +17,16 @@ import { exportCsv } from './pro/export.js';
 import { fireAlertWebhooks } from './pro/webhook.js';
 import { computeCostPerCommit, printCostPerCommit } from './pro/commits.js';
 import { sendWeeklyDigest } from './pro/digest.js';
+import { computeCapStatus, printCapStatus, parsePlanFlag } from './cap.js';
 import { scanOpenClaw, formatOpenClawSummary, defaultOpenClawRoot } from './openclaw/scan.js';
 import { readLastScan, writeLastScan, computeDelta, printDelta, printAliasHint, printSpendCreepWarning } from './lastscan.js';
 import { incrementRunCount, promptEmailCapture, fireTelemetry } from './emailcapture.js';
 import { basename } from 'node:path';
 import kleur from 'kleur';
 
-const VERSION = '0.0.14';
+const VERSION = '0.0.18';
 
-type Command = 'scan' | 'serve' | 'pro' | 'report' | 'export' | 'budget' | 'check' | 'fix' | 'commits' | 'webhook' | 'digest' | 'openclaw';
+type Command = 'scan' | 'serve' | 'pro' | 'report' | 'export' | 'budget' | 'check' | 'fix' | 'commits' | 'webhook' | 'digest' | 'openclaw' | 'cap';
 
 interface CliOptions {
   command: Command;
@@ -57,7 +58,7 @@ function parseArgs(argv: string[]): CliOptions {
 
   let i = 0;
   const cmd = argv[0];
-  if (cmd === 'serve' || cmd === 'pro' || cmd === 'report' || cmd === 'export' || cmd === 'budget' || cmd === 'check' || cmd === 'fix' || cmd === 'commits' || cmd === 'webhook' || cmd === 'digest' || cmd === 'openclaw') {
+  if (cmd === 'serve' || cmd === 'pro' || cmd === 'report' || cmd === 'export' || cmd === 'budget' || cmd === 'check' || cmd === 'fix' || cmd === 'commits' || cmd === 'webhook' || cmd === 'digest' || cmd === 'openclaw' || cmd === 'cap') {
     opts.command = cmd as Command;
     i = 1;
     if (cmd === 'pro' && argv[1] && !argv[1].startsWith('-')) {
@@ -98,6 +99,8 @@ Usage:
   npx getburnd check                  Pre-flight check before starting a Claude session
   npx getburnd fix                    Apply top CLAUDE.md patches for the current project
   npx getburnd commits                Show cost-per-commit across all git projects
+  npx getburnd cap                    Subscription burn-rate vs your plan API-equivalent cap
+                                        flags: --plan pro|max5|max20|team (default: max5)
   npx getburnd serve                  Start the local web dashboard at localhost:${DEFAULT_PORT}
 
 Webhook alerts:
@@ -286,6 +289,19 @@ async function main(): Promise<void> {
       burndVersion: VERSION,
       dashboardDist: opts.dashboardDist,
     });
+    return;
+  }
+
+  // ── Cap (subscription burn-rate vs. plan API-equivalent cap) ────────
+  // Free tier — anyone can run `burnd cap [--plan pro|max5|max20|team]`.
+  // Reads this calendar month's session spend (already computed during scan)
+  // and renders a horizontal progress bar with projected limit-hit date.
+  if (opts.command === 'cap') {
+    const { allStats } = await scanSessions(opts.root, false);
+    const planKey = parsePlanFlag(process.argv.slice(2));
+    const status = computeCapStatus(allStats, planKey);
+    printCapStatus(status);
+    printFooter('https://getburnd.vercel.app');
     return;
   }
 

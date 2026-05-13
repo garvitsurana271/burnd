@@ -107,6 +107,7 @@ import { retryStormDetector } from './retry-storm.js';
 import { skillFiringDetector } from './skill-firing.js';
 import { projectCostOutlierDetector } from './project-cost-outlier.js';
 import { modelSubstitutionDetector } from './model-substitution.js';
+import { oneShotFailureDetector } from './one-shot-failure.js';
 
 // Per-session detectors. Each runs against ONE SessionStats and returns
 // zero or more Insights.
@@ -119,6 +120,7 @@ export const ALL_DETECTORS: readonly Detector[] = Object.freeze([
   retryStormDetector,
   skillFiringDetector,
   modelSubstitutionDetector,
+  oneShotFailureDetector,
 ]);
 
 // Multi-session detectors. Each runs against ALL SessionStats and returns

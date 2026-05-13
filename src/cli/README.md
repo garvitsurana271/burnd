@@ -34,7 +34,7 @@ Opens a local server at `http://localhost:4711` with 5 views: Overview, Sessions
 
 ## What it detects
 
-8 leak detectors, each returning a dollar value and a fix:
+9 leak detectors, each returning a dollar value and a fix:
 
 | Detector | What it catches |
 |---|---|
@@ -46,8 +46,20 @@ Opens a local server at `http://localhost:4711` with 5 views: Overview, Sessions
 | **Late-night coding** | 00:00–05:00 sessions cost 2.5× more per session avg |
 | **API retry storms** | Hidden retry bursts invisible from the Claude UI |
 | **Project cost outliers** | Projects costing 3× more per session than your average |
+| **One-shot edit failures** | Claude missing on 25%+ of Edit/Write calls (costs retries) |
 
 Every insight has a savings estimate, effort minutes, and a step-by-step fix.
+
+## What it tracks
+
+`burnd cap` — subscription burn-rate vs your plan's API-equivalent cap.
+Visual progress bar + projected limit-hit date. Free tier.
+
+```bash
+npx getburnd cap --plan max20   # for $200/mo Max 20x users
+npx getburnd cap --plan max5    # for $100/mo Max 5x
+npx getburnd cap --plan pro     # for $20/mo Pro
+```
 
 ---
 
