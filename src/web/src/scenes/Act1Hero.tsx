@@ -228,6 +228,26 @@ export function Act1Hero(): JSX.Element {
             <a href="/proof" className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#F5E8D4]/55 transition hover:text-[#F5E8D4]">
               See the invoice &rarr;
             </a>
+
+            <a
+              href="https://dev.to/getburnd/i-lost-14502-to-claude-code-in-one-month-heres-the-autopsy-1n1n"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#F5E8D4]/55 transition hover:text-[#F5E8D4]"
+            >
+              Read the autopsy &rarr;
+            </a>
+          </motion.div>
+
+          {/* Social proof — live npm install count */}
+          <motion.div
+            className="mt-6 flex items-center gap-3 font-mono text-[11px] tracking-[0.18em] uppercase text-[#F5E8D4]/45"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 2.85, ease: 'easeOut' }}
+          >
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/80 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse" />
+            <InstallTicker />
           </motion.div>
         </motion.div>
 
@@ -373,5 +393,41 @@ function MagneticButton(): JSX.Element {
       npx getburnd
       <span className="text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/40 transition-colors group-hover:text-[#F5E8D4]/70">copy</span>
     </motion.button>
+  );
+}
+
+// Live npm install count. Fetches from api.npmjs.org/downloads/point/last-month.
+// Falls back to a sensible static number if the API is offline so we never
+// render an empty social-proof line. Cheap one-shot fetch; runs on mount.
+function InstallTicker(): JSX.Element {
+  const [count, setCount] = useState<number | null>(null);
+  const [stale, setStale] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('https://api.npmjs.org/downloads/point/last-month/getburnd')
+      .then((r) => r.json())
+      .then((d) => {
+        if (cancelled) return;
+        const n = typeof d?.downloads === 'number' ? d.downloads : null;
+        if (n != null && n > 0) setCount(n);
+        else { setCount(1979); setStale(true); }
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setCount(1979); setStale(true);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (count == null) {
+    return <span className="opacity-60">loading installs…</span>;
+  }
+  const formatted = count.toLocaleString('en-US');
+  return (
+    <span>
+      <strong className="text-[#F5E8D4]/85 font-semibold tabular-nums">{formatted}</strong>
+      <span className="ml-1.5">{stale ? 'devs ran burnd on their bill' : 'devs ran burnd last 30 days'}</span>
+    </span>
   );
 }

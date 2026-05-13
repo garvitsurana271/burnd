@@ -113,17 +113,19 @@ Serve options:
   --port <n>                 Dashboard port (default: ${DEFAULT_PORT})
   --root <path>              Use a custom Claude projects root
 
-${kleur.bold().yellow('BurndPro')} ($9/month · ₹749/month for Indian devs):
+${kleur.bold().yellow('BurndPro')} ($8.99/month or $89 lifetime — founding price until May 18):
   npx getburnd pro activate <email> <key>   Activate your Pro license
   npx getburnd pro status                   Check license status
+  npx getburnd fix                          Auto-apply CLAUDE.md patches from your top leaks
   npx getburnd budget                       Show weekly budget status
   npx getburnd budget set <amount>          Set weekly budget in USD
   npx getburnd report                       Generate weekly HTML report
   npx getburnd export                       Export all sessions to CSV
   npx getburnd digest                       Send weekly spend summary to your email
+  npx getburnd commits                      Cost-per-commit correlation
+  npx getburnd webhook set <url> <$>        Fire webhook when any session exceeds threshold
 
-  Pro features: budget alerts, weekly reports, historical trends, CSV export, email digest.
-  Get a license: https://getburnd.vercel.app or garvitsurana10@gmail.com
+  Get a license: https://getburnd.vercel.app/#pricing or garvitsurana10@gmail.com
 
 Misc:
   --version, -v              Print version

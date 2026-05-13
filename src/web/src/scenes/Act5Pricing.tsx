@@ -3,16 +3,21 @@ import { motion, useScroll, useTransform } from 'motion/react';
 import { BurningFuse } from '../components/BurningFuse.js';
 
 const MONTHLY_FEATURES = [
-  'All 8 detectors',
-  'Auto-fix CLAUDE.md patches',
-  'Weekly email digest',
-  'CSV export',
+  'Unlimited sessions across all 8 detectors (free is capped to top 3)',
+  '`burnd fix` — auto-apply the CLAUDE.md patch Burnd recommends',
+  '`burnd report` — HTML weekly cost report',
+  '`burnd digest` — weekly email digest of where money is going',
+  '`burnd budget` — set a $/month threshold, get alerted when sessions exceed it',
+  '`burnd webhook` — fire a webhook when any session blows the threshold',
+  '`burnd commits` — cost-per-commit correlation via git log',
+  'CSV + JSON export of every session',
 ];
 
 const LIFETIME_FEATURES = [
-  'Everything in Monthly',
-  'One-time payment, no renewals',
+  'Everything in Monthly, forever',
+  'One payment. No renewals, no surprise charges.',
   'Pays back in under 3 weeks at $2,140/mo saved',
+  'Founding-member status — locked at $89 even when price goes to $129',
 ];
 
 export function Act5Pricing(): JSX.Element {
@@ -68,6 +73,9 @@ export function Act5Pricing(): JSX.Element {
               $8.99
               <span className="text-xl text-[#F5E8D4]/40">/mo</span>
             </div>
+            <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#F5E8D4]/35">
+              + tax may apply at checkout
+            </div>
 
             <ul className="mt-8 space-y-3">
               {MONTHLY_FEATURES.map((f) => (
@@ -104,6 +112,9 @@ export function Act5Pricing(): JSX.Element {
               <span className="text-xl text-amber-400/55"> until May 18</span>
             </div>
             <div className="mt-1 font-mono text-sm text-[#F5E8D4]/40">$129 after</div>
+            <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#F5E8D4]/35">
+              + tax may apply at checkout
+            </div>
 
             <ul className="mt-8 space-y-3">
               {LIFETIME_FEATURES.map((f) => (

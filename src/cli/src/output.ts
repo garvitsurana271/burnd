@@ -38,8 +38,8 @@ export function printOverview(summary: OverviewSummary): void {
     process.stdout.write('\n');
     process.stdout.write(`  You're currently burning ${wasteStr} on fixable Claude waste.\n`);
     process.stdout.write(
-      `  ${kleur.dim('Fix it:')} ${kleur.bold().white('$9/mo')} ${kleur.dim('·')} ${kleur.bold().white('$69/yr')} ${kleur.dim('·')} ${kleur.bold().white('$89 lifetime')}` +
-      `  ${kleur.bold().red('← founding price ends May 1')}\n`,
+      `  ${kleur.dim('Fix it:')} ${kleur.bold().white('$8.99/mo')} ${kleur.dim('·')} ${kleur.bold().white('$89 lifetime')}` +
+      `  ${kleur.bold().red('← founding price ends May 18')}\n`,
     );
     process.stdout.write(`  ${kleur.bold().cyan('getburnd.vercel.app/#pricing')}\n`);
   }
@@ -144,8 +144,8 @@ export function printProUpsell(): void {
   process.stdout.write('  ' + kleur.dim('✦ Cost-per-commit tracking') + '     ' + kleur.dim('✦ Slack / webhook alerts\n'));
   process.stdout.write('  ' + kleur.dim('✦ 90-day spend trend charts') + '    ' + kleur.dim('✦ CSV / Excel export\n'));
   process.stdout.write('\n');
-  process.stdout.write('  ' + kleur.bold().red('Founding price ends May 1:') + '\n');
-  process.stdout.write('  ' + kleur.bold().white('$9/mo') + kleur.dim('  ·  ') + kleur.bold().white('$69/yr') + kleur.dim(' (save 36%)  ·  ') + kleur.bold().white('$89 lifetime') + kleur.dim(' (→ $139)\n'));
+  process.stdout.write('  ' + kleur.bold().red('Founding price ends May 18:') + '\n');
+  process.stdout.write('  ' + kleur.bold().white('$8.99/mo') + kleur.dim('  ·  ') + kleur.bold().white('$89 lifetime') + kleur.dim(' (→ $129)\n'));
   process.stdout.write('  ' + kleur.bold().cyan('getburnd.vercel.app/#pricing') + '\n');
   process.stdout.write('\n');
   process.stdout.write(kleur.bold().yellow('  ════════════════════════════════════════════════\n'));

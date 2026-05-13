@@ -8,6 +8,8 @@ Built by **[Garvit Surana](https://garvit-surana.vercel.app)** — Class XII ISC
 
 > I spent **$14,502** on Claude Code in one month and had no idea where it went. Built this to find out.
 
+📖 **[Read the autopsy](https://dev.to/getburnd/i-lost-14502-to-claude-code-in-one-month-heres-the-autopsy-1n1n) →** 8-minute breakdown on dev.to of the 8 patterns ranked by what they actually cost me, with detector source.
+
 **Burnd** reads your local `~/.claude/projects/*.jsonl` session files and finds the 8 patterns that waste your Claude Code money — with dollar estimates and concrete one-line fixes.
 
 Free. Open source. **Nothing leaves your machine.**
