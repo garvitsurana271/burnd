@@ -39,7 +39,7 @@ export function printOverview(summary: OverviewSummary): void {
     process.stdout.write(`  You're currently burning ${wasteStr} on fixable Claude waste.\n`);
     process.stdout.write(
       `  ${kleur.dim('Fix it:')} ${kleur.bold().white('$8.99/mo')} ${kleur.dim('·')} ${kleur.bold().white('$89 lifetime')}` +
-      `  ${kleur.bold().red('← founding price ends May 18')}\n`,
+      `  ${kleur.bold().red('← founding price · first 100 customers')}\n`,
     );
     process.stdout.write(`  ${kleur.bold().cyan('getburnd.vercel.app/#pricing')}\n`);
   }
@@ -144,8 +144,8 @@ export function printProUpsell(): void {
   process.stdout.write('  ' + kleur.dim('✦ Cost-per-commit tracking') + '     ' + kleur.dim('✦ Slack / webhook alerts\n'));
   process.stdout.write('  ' + kleur.dim('✦ 90-day spend trend charts') + '    ' + kleur.dim('✦ CSV / Excel export\n'));
   process.stdout.write('\n');
-  process.stdout.write('  ' + kleur.bold().red('Founding price ends May 18:') + '\n');
-  process.stdout.write('  ' + kleur.bold().white('$8.99/mo') + kleur.dim('  ·  ') + kleur.bold().white('$89 lifetime') + kleur.dim(' (→ $129)\n'));
+  process.stdout.write('  ' + kleur.bold().red('Founding price · first 100 customers:') + '\n');
+  process.stdout.write('  ' + kleur.bold().white('$8.99/mo') + kleur.dim('  ·  ') + kleur.bold().white('$89 lifetime') + kleur.dim(' (→ $129 after first 100)\n'));
   process.stdout.write('  ' + kleur.bold().cyan('getburnd.vercel.app/#pricing') + '\n');
   process.stdout.write('\n');
   process.stdout.write(kleur.bold().yellow('  ════════════════════════════════════════════════\n'));
@@ -162,7 +162,7 @@ export function printFooter(installedDomain?: string): void {
     );
   } else {
     process.stdout.write(
-      kleur.dim('  Full dashboard (8 detectors, spend chart): ') +
+      kleur.dim('  Full dashboard (9 detectors, spend chart): ') +
         kleur.cyan('https://getburnd.vercel.app') +
         kleur.dim('  |  ') +
         kleur.bold('npx getburnd serve') +

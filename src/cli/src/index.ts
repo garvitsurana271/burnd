@@ -24,7 +24,7 @@ import { incrementRunCount, promptEmailCapture, fireTelemetry } from './emailcap
 import { basename } from 'node:path';
 import kleur from 'kleur';
 
-const VERSION = '0.0.18';
+const VERSION = '0.0.19';
 
 type Command = 'scan' | 'serve' | 'pro' | 'report' | 'export' | 'budget' | 'check' | 'fix' | 'commits' | 'webhook' | 'digest' | 'openclaw' | 'cap';
 
@@ -116,7 +116,7 @@ Serve options:
   --port <n>                 Dashboard port (default: ${DEFAULT_PORT})
   --root <path>              Use a custom Claude projects root
 
-${kleur.bold().yellow('BurndPro')} ($8.99/month or $89 lifetime — founding price until May 18):
+${kleur.bold().yellow('BurndPro')} ($8.99/month or $89 lifetime — founding price, first 100 customers):
   npx getburnd pro activate <email> <key>   Activate your Pro license
   npx getburnd pro status                   Check license status
   npx getburnd fix                          Auto-apply CLAUDE.md patches from your top leaks
@@ -710,7 +710,7 @@ async function main(): Promise<void> {
       kleur.cyan('BurndPro') +
       kleur.dim('\n'),
     );
-    process.stdout.write(kleur.dim('  ') + kleur.cyan('getburnd.vercel.app/#pricing') + kleur.dim('  ·  $89 lifetime through May 18 → $129 after\n\n'));
+    process.stdout.write(kleur.dim('  ') + kleur.cyan('getburnd.vercel.app/#pricing') + kleur.dim('  ·  $89 lifetime founding (first 100 customers, then $129)\n\n'));
   }
 
   // Sponsored insight slot (shown to free users only, after top leaks).

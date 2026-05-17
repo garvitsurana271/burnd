@@ -23,25 +23,51 @@ export interface ModelRates {
   cacheWrite1h: number;
 }
 
-// Pricing table as of early 2026. Verify against Anthropic's pricing page
-// before launch and on every Claude API release.
+// Pricing table verified against Anthropic's source-of-truth pricing page
+// on 2026-05-17. Verified URL:
+// https://platform.claude.com/docs/en/about-claude/pricing
 //
-// Source-of-truth URL: https://www.anthropic.com/pricing
-//
-// Notes:
-// - Rates are an APPROXIMATION pending verification at registration time.
-// - Cache write rates use the standard 1.25x (5m) and 2x (1h) multipliers
-//   on the input rate per Anthropic's documented cache pricing.
-// - The "<synthetic>" pseudo-model gets all-zero rates as a backup; the
-//   primary defense is the filter in `costForRecord` below.
+// IMPORTANT context for future maintenance:
+// - Anthropic cut Opus pricing 3x starting with Opus 4.5. Opus 4.5, 4.6, 4.7
+//   are all $5/$25 per million tokens (input/output). Older Opus 4.1 and 4.0
+//   are still at the legacy $15/$75 rate.
+// - Sonnet 4.x and Haiku 4.5 pricing unchanged.
+// - Cache write rates follow the standard 1.25x (5m) and 2x (1h) multipliers
+//   on the input rate. Cache read = 0.1x base input rate.
+// - The "<synthetic>" pseudo-model gets all-zero rates; the primary defense
+//   is the filter in `costForRecord` below.
 const RATES: Record<string, ModelRates> = {
+  // Opus 4.5+ — post-pricecut tier ($5/$25 input/output)
+  'claude-opus-4-7': {
+    input: 5.0,
+    output: 25.0,
+    cacheRead: 0.5,
+    cacheWrite5m: 6.25,
+    cacheWrite1h: 10.0,
+  },
   'claude-opus-4-6': {
+    input: 5.0,
+    output: 25.0,
+    cacheRead: 0.5,
+    cacheWrite5m: 6.25,
+    cacheWrite1h: 10.0,
+  },
+  'claude-opus-4-5': {
+    input: 5.0,
+    output: 25.0,
+    cacheRead: 0.5,
+    cacheWrite5m: 6.25,
+    cacheWrite1h: 10.0,
+  },
+  // Opus 4.1 and below — legacy pricing ($15/$75 input/output)
+  'claude-opus-4-1': {
     input: 15.0,
     output: 75.0,
     cacheRead: 1.5,
     cacheWrite5m: 18.75,
     cacheWrite1h: 30.0,
   },
+  // Sonnet 4.x — $3/$15
   'claude-sonnet-4-6': {
     input: 3.0,
     output: 15.0,
@@ -49,7 +75,22 @@ const RATES: Record<string, ModelRates> = {
     cacheWrite5m: 3.75,
     cacheWrite1h: 6.0,
   },
+  'claude-sonnet-4-5': {
+    input: 3.0,
+    output: 15.0,
+    cacheRead: 0.3,
+    cacheWrite5m: 3.75,
+    cacheWrite1h: 6.0,
+  },
+  // Haiku 4.5 — $1/$5 (note: Haiku 3.5 was $0.80/$4 but is deprecated)
   'claude-haiku-4-5-20251001': {
+    input: 1.0,
+    output: 5.0,
+    cacheRead: 0.1,
+    cacheWrite5m: 1.25,
+    cacheWrite1h: 2.0,
+  },
+  'claude-haiku-4-5': {
     input: 1.0,
     output: 5.0,
     cacheRead: 0.1,

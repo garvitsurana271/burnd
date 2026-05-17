@@ -94,13 +94,22 @@ describe('pricing.costForUsage', () => {
 
 describe('pricing.ratesForModel', () => {
   it('returns the correct rates for known models', () => {
-    expect(ratesForModel('claude-opus-4-6').input).toBe(15.0);
+    // Opus 4.5+ uses the post-pricecut tier ($5 input / $25 output).
+    // Opus 4.1 retains the legacy $15/$75 rate.
+    expect(ratesForModel('claude-opus-4-7').input).toBe(5.0);
+    expect(ratesForModel('claude-opus-4-7').output).toBe(25.0);
+    expect(ratesForModel('claude-opus-4-6').input).toBe(5.0);
+    expect(ratesForModel('claude-opus-4-5').input).toBe(5.0);
+    expect(ratesForModel('claude-opus-4-1').input).toBe(15.0);
     expect(ratesForModel('claude-sonnet-4-6').input).toBe(3.0);
     expect(ratesForModel('claude-haiku-4-5-20251001').input).toBe(1.0);
+    expect(ratesForModel('claude-haiku-4-5').input).toBe(1.0);
   });
 
   it('reports known vs unknown models', () => {
+    expect(isKnownModel('claude-opus-4-7')).toBe(true);
     expect(isKnownModel('claude-opus-4-6')).toBe(true);
+    expect(isKnownModel('claude-haiku-4-5')).toBe(true);
     expect(isKnownModel('claude-future-model-9')).toBe(false);
   });
 });
