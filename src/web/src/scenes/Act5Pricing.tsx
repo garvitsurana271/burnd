@@ -109,9 +109,9 @@ export function Act5Pricing(): JSX.Element {
             </div>
             <div className="mt-3 font-mono text-5xl font-bold tabular-nums text-amber-400">
               $89
-              <span className="text-xl text-amber-400/55"> until May 18</span>
+              <span className="text-xl text-amber-400/55"> founding</span>
             </div>
-            <div className="mt-1 font-mono text-sm text-[#F5E8D4]/40">$129 after</div>
+            <div className="mt-1 font-mono text-sm text-[#F5E8D4]/40">first 100 customers · $129 after</div>
             <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#F5E8D4]/35">
               + tax may apply at checkout
             </div>

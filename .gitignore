@@ -53,6 +53,9 @@ notes/domain-verification.md
 .vercel
 .playwright-mcp/
 
+# Local archive of past-session detritus (screenshots, snap markdowns, old plans)
+_archive/
+
 # Screenshots (audit artifacts)
 *.png
 *.jpg

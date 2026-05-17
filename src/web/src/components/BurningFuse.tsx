@@ -1,26 +1,20 @@
-import { useEffect, useState } from 'react';
+// Founding-cohort visualizer. Previously a calendar countdown to May 18,
+// 2026, which auto-staled the moment that date passed. Reworked 2026-05-17
+// to represent "X of 100 founding licenses claimed" instead — a milestone-
+// based scarcity signal that never goes stale.
+//
+// SOLD is hand-bumped for now. When Dodo's count API + env vars are wired,
+// swap to a fetch from /api/sales-count or similar.
 
-// Founding-member window: Apr 20 → May 18 2026, at $89 lifetime. After: $129.
-const DEADLINE = new Date('2026-05-18T23:59:00+05:30').getTime();
-const START = new Date('2026-04-20T00:00:00+05:30').getTime();
+const SOLD = 0;
+const CAP = 100;
 
 export function BurningFuse(): JSX.Element {
-  const [now, setNow] = useState<number>(() => Date.now());
-
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  const remaining = Math.max(0, DEADLINE - now);
-  const days = Math.floor(remaining / (24 * 3600 * 1000));
-  const hours = Math.floor((remaining / (3600 * 1000)) % 24);
-  const minutes = Math.floor((remaining / 60_000) % 60);
-
-  // Progress: 0 = just started, 1 = deadline reached.
-  const progress = Math.min(1, Math.max(0, (now - START) / (DEADLINE - START)));
-  // Flame tip x position along the 380px fuse span.
+  const progress = Math.min(1, Math.max(0, SOLD / CAP));
+  // Flame tip x position along the 380px fuse span. Even when 0% sold,
+  // the tip sits at the start so the flame animation reads as "live."
   const tipX = 10 + progress * 380;
+  const remaining = Math.max(0, CAP - SOLD);
 
   return (
     <div className="inline-flex flex-wrap items-center gap-4">
@@ -31,7 +25,7 @@ export function BurningFuse(): JSX.Element {
             <stop offset="100%" stopColor="#f59e0b" />
           </linearGradient>
         </defs>
-        {/* Unburned track */}
+        {/* Unclaimed track */}
         <line
           x1="10"
           y1="10"
@@ -41,7 +35,7 @@ export function BurningFuse(): JSX.Element {
           strokeWidth="2"
           strokeLinecap="round"
         />
-        {/* Burned portion */}
+        {/* Claimed portion */}
         <line
           x1="10"
           y1="10"
@@ -51,7 +45,7 @@ export function BurningFuse(): JSX.Element {
           strokeWidth="3"
           strokeLinecap="round"
         />
-        {/* Blinking flame tip */}
+        {/* Live flame tip */}
         <circle cx={tipX} cy="10" r="5" fill="#f59e0b">
           <animate
             attributeName="opacity"
@@ -63,7 +57,7 @@ export function BurningFuse(): JSX.Element {
       </svg>
 
       <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-amber-400/80 tabular-nums">
-        {days}d {hours}h {minutes}m until lifetime goes to $129
+        {remaining} of {CAP} founding licenses left · then $129
       </span>
     </div>
   );
