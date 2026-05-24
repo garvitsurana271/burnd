@@ -48,6 +48,16 @@ notes/launch/
 notes/ebook/
 notes/week-1-summary.md
 notes/domain-verification.md
+notes/burnd-revenue-push-*/
+notes/pitch/
+notes/snap_*
+notes/*-strategy-*.md
+notes/master-plan-*.md
+notes/*-internalization-sheet.md
+notes/*-audit-*.md
+snap_*.md
+snap_*.yml
+dialog_snap.md
 
 # Vercel / Playwright internals
 .vercel
