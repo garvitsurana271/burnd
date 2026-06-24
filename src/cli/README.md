@@ -43,7 +43,7 @@ Opens a local server at `http://localhost:4711` with 5 views: Overview, Sessions
 | **Repeated reads** | Same file read 3+ times in one session |
 | **Tool error storms** | Agent thrashing on a broken environment |
 | **Tool overuse** | One tool dominating 70%+ of calls (usually Bash) |
-| **Late-night coding** | 00:00–05:00 sessions cost 2.5× more per session avg |
+| **Off-focus-window coding** | Sessions outside your usual coding hours cost 2.5× more per session avg |
 | **API retry storms** | Hidden retry bursts invisible from the Claude UI |
 | **Project cost outliers** | Projects costing 3× more per session than your average |
 | **One-shot edit failures** | Claude missing on 25%+ of Edit/Write calls (costs retries) |
@@ -130,7 +130,7 @@ npx getburnd webhook set https://hooks.slack.com/... 5
 
 ---
 
-## BurndPro — $9/month
+## BurndPro — $8.99/month or $89 lifetime
 
 Pro unlocks automation — things that actually do the work for you, not just tell you what to do.
 
@@ -189,7 +189,7 @@ src/
 ├── anonymize.ts         Privacy boundary
 ├── output.ts            Terminal formatting (kleur)
 ├── insights.ts          Insight ranking
-└── detectors/           8 leak detectors (one file each)
+└── detectors/           9 leak detectors (one file each)
     ├── model-substitution.ts
     ├── long-bash-output.ts
     ├── repeated-read.ts
@@ -197,6 +197,8 @@ src/
     ├── tool-overuse.ts
     ├── tired-coding.ts
     ├── retry-storm.ts
+    ├── skill-firing.ts
+    ├── one-shot-failure.ts
     └── project-cost-outlier.ts
 
 pro/

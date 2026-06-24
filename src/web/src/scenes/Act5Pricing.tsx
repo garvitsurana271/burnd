@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'motion/react';
 import { BurningFuse } from '../components/BurningFuse.js';
 
 const MONTHLY_FEATURES = [
-  'Unlimited sessions across all 8 detectors (free is capped to top 3)',
+  'Unlimited sessions across all 9 detectors (free is capped to top 3)',
   '`burnd fix` — auto-apply the CLAUDE.md patch Burnd recommends',
   '`burnd report` — HTML weekly cost report',
   '`burnd digest` — weekly email digest of where money is going',

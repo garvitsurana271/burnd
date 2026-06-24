@@ -20,6 +20,7 @@ const DETECTORS: Detector[] = [
   { id: 'thrash', name: 'THRASH', what: 'High agent error rate', cost: 'Compounds retries', fix: 'Rolls back to working state' },
   { id: 'outlier', name: 'PROJECT OUTLIER', what: 'One project 5x median cost', cost: '~$340/mo blind spot', fix: 'Diff vs baseline' },
   { id: 'skill', name: 'SKILL FIRING', what: 'Anomalous skill trigger rate', cost: 'Variable', fix: 'Suggests skill-scoping' },
+  { id: 'oneshot', name: 'ONE-SHOT FAILURE', what: 'Claude missing on 25%+ of edits', cost: '~$0.015 per failed edit', fix: 'Flags loops, suggests prompt fix' },
 ];
 
 const RING_POSITIONS: Array<[number, number, number]> = [
@@ -57,7 +58,7 @@ export function Act3Embers(): JSX.Element {
         </div>
 
         <h2 className="font-serif text-[#F5E8D4] text-[clamp(2.5rem,6vw,5.5rem)] font-normal leading-[0.95] tracking-[-0.01em] max-w-[20ch]">
-          Eight ways <span className="italic">your bill</span> leaks.
+          Nine ways <span className="italic">your bill</span> leaks.
           <br />
           <span className="italic text-amber-400">One detector each.</span>
         </h2>

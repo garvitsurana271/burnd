@@ -72,7 +72,7 @@ const LEAK_LINES: Seg[][] = [
 ];
 
 const MONTHLY_FEATURES = [
-  'Unlimited sessions across all 8 detectors (free is capped to top 3)',
+  'Unlimited sessions across all 9 detectors (free is capped to top 3)',
   '`burnd fix` — auto-apply the CLAUDE.md patch Burnd recommends',
   '`burnd report` — HTML weekly cost report',
   '`burnd digest` — weekly email digest of where money is going',
@@ -260,7 +260,7 @@ function Section3Detectors(): JSX.Element {
         <Eyebrow>Section 03 · the detectors</Eyebrow>
 
         <h2 className="font-serif text-[#F5E8D4] text-[clamp(2rem,8vw,3.5rem)] font-normal leading-[0.95] tracking-[-0.01em]">
-          Eight ways <span className="italic">your bill</span> leaks.
+          Nine ways <span className="italic">your bill</span> leaks.
           <br />
           <span className="italic text-amber-400">One detector each.</span>
         </h2>
