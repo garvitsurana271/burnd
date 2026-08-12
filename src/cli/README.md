@@ -8,9 +8,9 @@
 
 **Watch the 35-second story →** [youtu.be/izctEOJBids](https://youtu.be/izctEOJBids)
 
-**Read the full autopsy →** [I lost $14,502 to Claude Code in one month. Here's the autopsy.](https://dev.to/getburnd/i-lost-14502-to-claude-code-in-one-month-heres-the-autopsy-1n1n) (8 min read, dev.to)
+**The ten cost-leak patterns**, ranked by what they actually cost, with detector source.
 
-Built by [Garvit Surana](https://getburnd.vercel.app) — 16, Class 12 ISC, Guwahati, India — after spending $14,502 on Claude Code in one month.
+Built by [Garvit Surana](https://getburnd.vercel.app) — 16, Class 12 ISC, Guwahati, India.
 
 ---
 
