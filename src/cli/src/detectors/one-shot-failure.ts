@@ -80,7 +80,7 @@ export const oneShotFailureDetector: Detector = {
           'For string-match-based Edit tools, exact-match failures are the most common cause. Run the file through a formatter before editing so Claude sees a stable canonical version.',
           'If errors cluster on one tool (e.g., MultiEdit), prefer single Edit calls until you confirm Claude has the context right.',
         ],
-        proFixSteps: [
+        detailedFixSteps: [
           `This session's one-shot rate on edit-class tools: ${oneShotPct}%. Breakdown: ${breakdownStr}. Estimated wasted retry cost: $${savingsUsd.toFixed(2)}.`,
           `The two most common causes of low one-shot rates: (a) Claude is editing files it hasn't read in this session (give it Read first), (b) string-match Edit calls failing because of whitespace/quote drift between Claude's expected and actual file content.`,
           `Immediate fix — add to your CLAUDE.md: "Before any Edit call, confirm you have the exact current file contents in context. Prefer reading the file first if you haven't this session."`,

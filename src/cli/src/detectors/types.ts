@@ -25,13 +25,13 @@ export interface Insight {
   savingsEstimateUsd: number;
   // Rough time-to-fix in minutes. Used for the "effort" column.
   effortMinutes: number;
-  // Concrete steps shown to all users (free tier).
+  // Short, general steps. Printed by the CLI on every scan.
   fixSteps: string[];
-  // Extended, session-specific steps shown only to BurndPro users.
-  // Includes exact commands, deeper diagnostics, and follow-up checks.
-  proFixSteps: string[];
+  // Extended, session-specific steps: exact commands, deeper diagnostics,
+  // and follow-up checks. Shown in the dashboard's expanded insight view.
+  detailedFixSteps: string[];
   // The single CLAUDE.md line (or short block) that fixes this leak.
-  // Pro users can copy-paste this directly into their project's CLAUDE.md.
+  // Copy-pasteable directly into a project's CLAUDE.md.
   // null if the fix can't be expressed as a CLAUDE.md directive.
   claudeMdPatch: string | null;
 }

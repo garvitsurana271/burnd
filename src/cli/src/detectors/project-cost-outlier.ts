@@ -79,7 +79,7 @@ export const projectCostOutlierDetector = {
           'Look at the most expensive session in this project (Burnd\'s Sessions view will surface it) and identify the cost spike.',
           'Apply patterns from your cheaper projects (shorter sessions, more focused prompts, less context).',
         ],
-        proFixSteps: [
+        detailedFixSteps: [
           `"${shortProjectName(projectDir)}" median: $${projectMedian.toFixed(2)}/session vs your overall median of $${overallMedian.toFixed(2)}/session — ${(projectMedian / overallMedian).toFixed(1)}× more expensive across ${projectSessions.length} sessions, totalling $${totalProjectCost.toFixed(2)}.`,
           `The most expensive session in this project cost $${anchorSession.totalCostUsd.toFixed(2)}. Open it in the Sessions view, sort by tool cost, and identify whether the spike came from a single operation (massive file read, long build output, context overload) or was spread evenly.`,
           `Common reasons a project is 3x+ more expensive than your average: (a) CLAUDE.md is too large — it loads on every session. Trim it. (b) The codebase is large and Claude reads the whole tree — add a .claudeignore for node_modules/dist/build. (c) Tests generate massive output that gets fed back as context.`,

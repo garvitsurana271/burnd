@@ -96,16 +96,16 @@ export const tiredCodingDetector: Detector = {
         savingsEstimateUsd: savingsUsd,
         effortMinutes: 0,
         fixSteps: [
-          'Consider deferring expensive multi-step work to your focus hours — tired prompts tend to spiral into more iterations.',
-          'Write the prompt now, paste fresh in the morning. 10 minutes of rested context often saves 20+ minutes of Claude iteration.',
-          'For urgent late work, write MORE explicit prompts to compensate for fatigue.',
+          'Queue expensive multi-step work for your focus window — off-window sessions spiral into more iterations per unit of work.',
+          'Draft the prompt when the idea lands, run it during focus hours. The prompt costs nothing to write; the iteration loop is what costs.',
+          'When off-window work is unavoidable, write MORE explicit prompts — narrower scope, exact file paths, stated acceptance criteria.',
         ],
-        proFixSteps: [
+        detailedFixSteps: [
           `Session ${stats.sessionId.slice(0, 8)}… started at ${startedAtLocal} and cost $${stats.totalCostUsd.toFixed(2)} — above your personal P75 of $${baseline.sessionCostP75.toFixed(2)}.`,
           `Your focus window (${focusStr} ${baseline.localTimezone}) was derived from your ${baseline.sessionCount} scanned sessions — sessions outside it consistently cost more per unit of work.`,
           `If the same workflow had run inside your focus window, we estimate it would have cost ~$${(stats.totalCostUsd * (1 - DAYTIME_SAVINGS_FACTOR)).toFixed(2)} — saving $${savingsUsd.toFixed(2)}.`,
           `Practical rule: any task that will take >10 Claude turns gets queued for focus hours. Use a "tomorrow.md" text file in each project to park late-night ideas without burning tokens on them.`,
-          `BurndPro's weekly report tracks your focus-vs-outside cost ratio over time — watch it as you adjust your schedule.`,
+          `Run \`npx getburnd report\` weekly to track your focus-vs-outside cost ratio over time as you adjust your schedule.`,
         ],
         claudeMdPatch: null,
       },

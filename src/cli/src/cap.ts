@@ -4,7 +4,7 @@
 // + insight), compares against the user's stated Claude plan API-equivalent
 // cap, renders a horizontal progress bar with projected limit-hit date.
 //
-// Free tier feature. Available to anyone running `burnd cap`.
+// Available to anyone running `burnd cap`.
 // CodeBurn ships a similar "Subscription Tracking" with menu-bar live updates;
 // we ship the same insight in the CLI without the menu bar, on the assumption
 // that anyone who runs Burnd already lives in a terminal.

@@ -63,7 +63,7 @@ export const toolOveruseDetector: Detector = {
           'Update your CLAUDE.md or initial prompt to nudge Claude toward the cheaper tool by default.',
           'Re-run the workflow next week and compare the cost in Burnd.',
         ],
-        proFixSteps: [
+        detailedFixSteps: [
           `${topTool} was called ${topCount} times — ${(share * 100).toFixed(0)}% of all ${totalCalls} tool calls in this session. Each unnecessary ${topTool} call sends extra tokens for shell overhead, stderr, and output parsing.`,
           topTool === 'Bash'
             ? `Bash replacements by use-case: file reads → Read tool (no shell overhead); file edits → Edit tool (sends only the diff); searching for files → Glob; searching file contents → Grep. Each of these costs 2–5× fewer tokens than the equivalent Bash command.`

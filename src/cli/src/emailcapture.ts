@@ -1,4 +1,4 @@
-// Email capture — free tier retention hook.
+// Email capture — opt-in signup for the weekly digest.
 //
 // Strategy: gate the "vs last scan" delta behind an email prompt on run 2.
 // Run 1 = full output, no friction (let the wow moment land).
@@ -11,7 +11,7 @@
 
 import * as readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-import { readConfig, writeConfig, getInstallId } from './license.js';
+import { readConfig, writeConfig, getInstallId } from './config.js';
 import kleur from 'kleur';
 
 const SUBSCRIBE_URL = 'https://getburnd.vercel.app/api/subscribe';
@@ -51,7 +51,6 @@ export async function promptEmailCapture(context: {
   version: string;
   platform: string;
   detectorIds: string[];
-  isPro: boolean;
 }): Promise<void> {
   if (!shouldPromptEmail()) return;
 
@@ -102,7 +101,6 @@ export interface TelemetryEvent {
   version: string;
   platform: string;
   detectorIds: string[];
-  isPro: boolean;
   runCountTier?: string;
   installId?: string;
 }
@@ -132,7 +130,6 @@ function fireSubscribe(email: string, context: {
   version: string;
   platform: string;
   detectorIds: string[];
-  isPro: boolean;
 }): Promise<void> {
   return fetch(SUBSCRIBE_URL, {
     method: 'POST',

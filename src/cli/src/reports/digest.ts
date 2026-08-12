@@ -9,7 +9,7 @@
 // Uses Resend API (https://resend.com) — user provides their own API key via
 // `burnd config set resendApiKey <key>`. No Burnd-side infrastructure required.
 
-import { readConfig } from '../license.js';
+import { readConfig } from '../config.js';
 import type { Snapshot } from '../snapshot.js';
 
 interface ResendEmailPayload {

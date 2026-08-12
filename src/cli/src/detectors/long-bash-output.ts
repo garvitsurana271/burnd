@@ -63,7 +63,7 @@ export const longBashOutputDetector: Detector = {
           'For test commands, use the test runner\'s "fail-only" or "verbose=1" flag to drop passing-test noise.',
           'Re-run the same workflow in Burnd next week to confirm the savings.',
         ],
-        proFixSteps: [
+        detailedFixSteps: [
           `Bash was called ${bash.callCount} times averaging ${Math.round(avgBytes).toLocaleString()} bytes/call in this session. That's ${Math.round(totalWastedTokens).toLocaleString()} wasted input tokens — $${savingsUsd.toFixed(2)} thrown away on noise Claude doesn't need.`,
           `The highest-impact fix is usually the build/test commands. Replace \`npm test\` with \`npm test -- --reporter=min 2>&1 | tail -30\`. Replace \`npm run build\` with \`npm run build 2>&1 | grep -E "(error|warning|✓|✗)" | head -40\`.`,
           `For find/ls commands: never use \`ls -la\` or \`find . -type f\` without piping. Use \`find . -name "*.ts" | head -20\` or switch to the Glob tool entirely (no shell, no output bloat).`,

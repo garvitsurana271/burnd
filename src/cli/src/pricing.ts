@@ -24,20 +24,58 @@ export interface ModelRates {
 }
 
 // Pricing table verified against Anthropic's source-of-truth pricing page
-// on 2026-05-17. Verified URL:
+// on 2026-08-12. Verified URL:
 // https://platform.claude.com/docs/en/about-claude/pricing
 //
 // IMPORTANT context for future maintenance:
-// - Anthropic cut Opus pricing 3x starting with Opus 4.5. Opus 4.5, 4.6, 4.7
-//   are all $5/$25 per million tokens (input/output). Older Opus 4.1 and 4.0
-//   are still at the legacy $15/$75 rate.
-// - Sonnet 4.x and Haiku 4.5 pricing unchanged.
+// - Anthropic cut Opus pricing 3x starting with Opus 4.5. Opus 4.5 through
+//   Opus 5 are all $5/$25 per million tokens (input/output). Older Opus 4.1
+//   and 4.0 are still at the legacy $15/$75 rate.
+// - Fable 5 and Mythos 5 sit ABOVE the Opus tier at $10/$50.
+// - Sonnet 5 lists at $3/$15. An introductory $2/$10 rate runs through
+//   2026-08-31; we deliberately price at the standard rate so estimates stay
+//   correct after it lapses (and so we never under-report spend).
 // - Cache write rates follow the standard 1.25x (5m) and 2x (1h) multipliers
 //   on the input rate. Cache read = 0.1x base input rate.
 // - The "<synthetic>" pseudo-model gets all-zero rates; the primary defense
 //   is the filter in `costForRecord` below.
+//
+// WHEN ANTHROPIC SHIPS A NEW MODEL: add it here. An unmatched model id falls
+// back to FALLBACK_RATES and every session using it is mispriced. burnd 0.0.19
+// shipped without Opus 5 / Fable 5 / Opus 4.8 and silently priced every
+// post-July-2026 session at the legacy $15/$75 rate — a 3x over-report. The
+// `unknownModelsSeen` set below exists so that failure is never silent again.
 const RATES: Record<string, ModelRates> = {
+  // Fable 5 / Mythos 5 — above the Opus tier ($10/$50 input/output)
+  'claude-fable-5': {
+    input: 10.0,
+    output: 50.0,
+    cacheRead: 1.0,
+    cacheWrite5m: 12.5,
+    cacheWrite1h: 20.0,
+  },
+  'claude-mythos-5': {
+    input: 10.0,
+    output: 50.0,
+    cacheRead: 1.0,
+    cacheWrite5m: 12.5,
+    cacheWrite1h: 20.0,
+  },
   // Opus 4.5+ — post-pricecut tier ($5/$25 input/output)
+  'claude-opus-5': {
+    input: 5.0,
+    output: 25.0,
+    cacheRead: 0.5,
+    cacheWrite5m: 6.25,
+    cacheWrite1h: 10.0,
+  },
+  'claude-opus-4-8': {
+    input: 5.0,
+    output: 25.0,
+    cacheRead: 0.5,
+    cacheWrite5m: 6.25,
+    cacheWrite1h: 10.0,
+  },
   'claude-opus-4-7': {
     input: 5.0,
     output: 25.0,
@@ -67,7 +105,14 @@ const RATES: Record<string, ModelRates> = {
     cacheWrite5m: 18.75,
     cacheWrite1h: 30.0,
   },
-  // Sonnet 4.x — $3/$15
+  // Sonnet 4.x / 5 — $3/$15
+  'claude-sonnet-5': {
+    input: 3.0,
+    output: 15.0,
+    cacheRead: 0.3,
+    cacheWrite5m: 3.75,
+    cacheWrite1h: 6.0,
+  },
   'claude-sonnet-4-6': {
     input: 3.0,
     output: 15.0,
@@ -106,19 +151,40 @@ const RATES: Record<string, ModelRates> = {
   },
 };
 
-// Fall back rates used when an unknown model id is encountered.
-// Conservatively assume "as expensive as Opus" so we never undercount cost
-// (better to alarm a user about a high estimate than to silently miss spend).
+// Fallback rates for an unknown model id. Anchored to the most expensive
+// CURRENT model (Fable 5, $10/$50) rather than the legacy Opus 4.1 rate.
+//
+// The principle is still "never undercount" — but bounded by what Anthropic
+// actually charges today. The old $15/$75 anchor was the legacy Opus 4.1 rate,
+// which no current model has used since Opus 4.5. Applying it to a newly
+// released model over-reports by 3x and destroys the credibility of every
+// number burnd prints, which is a worse failure than a small undercount.
 const FALLBACK_RATES: ModelRates = {
-  input: 15.0,
-  output: 75.0,
-  cacheRead: 1.5,
-  cacheWrite5m: 18.75,
-  cacheWrite1h: 30.0,
+  input: 10.0,
+  output: 50.0,
+  cacheRead: 1.0,
+  cacheWrite5m: 12.5,
+  cacheWrite1h: 20.0,
 };
 
+// Model ids that hit FALLBACK_RATES during this scan. A silent fallback is how
+// burnd shipped three months of 3x-inflated numbers; the CLI reads this after
+// scanning and warns so the estimate is never quietly wrong again.
+const unknownModelsSeen = new Set<string>();
+
+export function unknownModels(): string[] {
+  return [...unknownModelsSeen].sort();
+}
+
+export function resetUnknownModels(): void {
+  unknownModelsSeen.clear();
+}
+
 export function ratesForModel(model: string): ModelRates {
-  return RATES[model] ?? FALLBACK_RATES;
+  const rates = RATES[model];
+  if (rates) return rates;
+  unknownModelsSeen.add(model);
+  return FALLBACK_RATES;
 }
 
 export function isKnownModel(model: string): boolean {

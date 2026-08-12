@@ -6,17 +6,18 @@ import { streamRecords, type ParseStats } from './parser.js';
 import { newEmptyStats, ingestRecord, type SessionStats } from './session.js';
 import { runAllDetectors, runAllMultiSessionDetectors, computeUserBaseline, type Insight } from './detectors/index.js';
 import { topNBySavings, totalSavingsUsd } from './insights.js';
-import { printHeader, printOverview, printTopInsights, printShareBlock, printFooter, printProUpsell, printSponsoredInsight, buildShareUrl, type SharePayload } from './output.js';
+import { printHeader, printOverview, printTopInsights, printShareBlock, printFooter, buildShareUrl, type SharePayload } from './output.js';
 import { anonymize } from './anonymize.js';
+import { unknownModels } from './pricing.js';
 import { startServer, DEFAULT_PORT, DEFAULT_DASHBOARD_DIST } from './serve.js';
-import { readConfig, writeConfig, validateLicense, generateKey, isProActive } from './license.js';
-import { computeBudget, printBudget } from './pro/budget.js';
-import { appendHistory, readHistory } from './pro/history.js';
-import { generateWeeklyReport } from './pro/report.js';
-import { exportCsv } from './pro/export.js';
-import { fireAlertWebhooks } from './pro/webhook.js';
-import { computeCostPerCommit, printCostPerCommit } from './pro/commits.js';
-import { sendWeeklyDigest } from './pro/digest.js';
+import { readConfig, writeConfig } from './config.js';
+import { computeBudget, printBudget } from './reports/budget.js';
+import { appendHistory, readHistory } from './reports/history.js';
+import { generateWeeklyReport } from './reports/report.js';
+import { exportCsv } from './reports/export.js';
+import { fireAlertWebhooks } from './reports/webhook.js';
+import { computeCostPerCommit, printCostPerCommit } from './reports/commits.js';
+import { sendWeeklyDigest } from './reports/digest.js';
 import { computeCapStatus, printCapStatus, parsePlanFlag } from './cap.js';
 import { scanOpenClaw, formatOpenClawSummary, defaultOpenClawRoot } from './openclaw/scan.js';
 import { readLastScan, writeLastScan, computeDelta, printDelta, printAliasHint, printSpendCreepWarning } from './lastscan.js';
@@ -24,9 +25,9 @@ import { incrementRunCount, promptEmailCapture, fireTelemetry } from './emailcap
 import { basename } from 'node:path';
 import kleur from 'kleur';
 
-const VERSION = '0.0.19';
+const VERSION = '0.1.0';
 
-type Command = 'scan' | 'serve' | 'pro' | 'report' | 'export' | 'budget' | 'check' | 'fix' | 'commits' | 'webhook' | 'digest' | 'openclaw' | 'cap';
+type Command = 'scan' | 'serve' | 'report' | 'export' | 'budget' | 'check' | 'fix' | 'commits' | 'webhook' | 'digest' | 'openclaw' | 'cap';
 
 interface CliOptions {
   command: Command;
@@ -58,13 +59,9 @@ function parseArgs(argv: string[]): CliOptions {
 
   let i = 0;
   const cmd = argv[0];
-  if (cmd === 'serve' || cmd === 'pro' || cmd === 'report' || cmd === 'export' || cmd === 'budget' || cmd === 'check' || cmd === 'fix' || cmd === 'commits' || cmd === 'webhook' || cmd === 'digest' || cmd === 'openclaw' || cmd === 'cap') {
+  if (cmd === 'serve' || cmd === 'report' || cmd === 'export' || cmd === 'budget' || cmd === 'check' || cmd === 'fix' || cmd === 'commits' || cmd === 'webhook' || cmd === 'digest' || cmd === 'openclaw' || cmd === 'cap') {
     opts.command = cmd as Command;
     i = 1;
-    if (cmd === 'pro' && argv[1] && !argv[1].startsWith('-')) {
-      opts.subcommand = argv[1];
-      i = 2;
-    }
     if (cmd === 'budget' && argv[1] === 'set') {
       opts.subcommand = 'set';
       opts.budgetAmount = Number(argv[2] ?? '0');
@@ -116,19 +113,12 @@ Serve options:
   --port <n>                 Dashboard port (default: ${DEFAULT_PORT})
   --root <path>              Use a custom Claude projects root
 
-${kleur.bold().yellow('BurndPro')} ($8.99/month or $89 lifetime — founding price, first 100 customers):
-  npx getburnd pro activate <email> <key>   Activate your Pro license
-  npx getburnd pro status                   Check license status
-  npx getburnd fix                          Auto-apply CLAUDE.md patches from your top leaks
-  npx getburnd budget                       Show weekly budget status
-  npx getburnd budget set <amount>          Set weekly budget in USD
-  npx getburnd report                       Generate weekly HTML report
-  npx getburnd export                       Export all sessions to CSV
-  npx getburnd digest                       Send weekly spend summary to your email
-  npx getburnd commits                      Cost-per-commit correlation
-  npx getburnd webhook set <url> <$>        Fire webhook when any session exceeds threshold
-
-  Get a license: https://getburnd.vercel.app/#pricing or garvitsurana10@gmail.com
+Reports and budget:
+  npx getburnd budget                 Show weekly budget status
+  npx getburnd budget set <amount>    Set weekly budget in USD
+  npx getburnd report                 Generate weekly HTML report
+  npx getburnd export                 Export all sessions to CSV
+  npx getburnd digest                 Send weekly spend summary to your email
 
 Misc:
   --version, -v              Print version
@@ -208,64 +198,6 @@ async function main(): Promise<void> {
     return;
   }
 
-  // ── Pro license management ──────────────────────────────────────────
-  if (opts.command === 'pro') {
-    const config = readConfig();
-
-    if (opts.subcommand === 'activate') {
-      const email = opts.positionalArgs[0];
-      const key = opts.positionalArgs[1];
-      if (!email || !key) {
-        process.stderr.write('Usage: npx getburnd pro activate <email> <key>\n');
-        process.exit(1);
-      }
-      config.email = email;
-      config.licenseKey = key;
-      writeConfig(config);
-
-      const status = validateLicense(config);
-      if (status.active) {
-        process.stdout.write(kleur.bold().green('\n  ✓ BurndPro activated!\n'));
-        process.stdout.write(kleur.dim(`  Email: ${status.email}\n`));
-        if (status.reason) process.stdout.write(kleur.yellow(`  Note: ${status.reason}\n`));
-        process.stdout.write('\n');
-      } else {
-        process.stdout.write(kleur.bold().red('\n  ✗ License key is invalid or expired.\n'));
-        process.stdout.write(kleur.dim(`  ${status.reason}\n\n`));
-      }
-      return;
-    }
-
-    if (opts.subcommand === 'status') {
-      const status = validateLicense(config);
-      process.stdout.write('\n');
-      if (status.active) {
-        process.stdout.write(kleur.bold().green('  ⚡ BurndPro — Active\n'));
-        process.stdout.write(kleur.dim(`  Email: ${status.email}\n`));
-        process.stdout.write(kleur.dim(`  Valid for: ${status.expiresMonth}\n`));
-        if (status.reason) process.stdout.write(kleur.yellow(`  ${status.reason}\n`));
-      } else {
-        process.stdout.write(kleur.dim('  BurndPro — ') + kleur.red('Inactive\n'));
-        process.stdout.write(kleur.dim(`  ${status.reason}\n`));
-      }
-      process.stdout.write('\n');
-      return;
-    }
-
-    if (opts.subcommand === 'keygen') {
-      const email = opts.positionalArgs[0];
-      const month = opts.positionalArgs[1];
-      if (!email || !month) {
-        process.stderr.write('Usage: npx getburnd pro keygen <email> <YYYY-MM>\n');
-        process.exit(1);
-      }
-      process.stdout.write(generateKey(email, month) + '\n');
-      return;
-    }
-
-    printHelp();
-    return;
-  }
 
   // ── Budget set ──────────────────────────────────────────────────────
   if (opts.command === 'budget' && opts.subcommand === 'set') {
@@ -293,7 +225,7 @@ async function main(): Promise<void> {
   }
 
   // ── Cap (subscription burn-rate vs. plan API-equivalent cap) ────────
-  // Free tier — anyone can run `burnd cap [--plan pro|max5|max20|team]`.
+  // Anyone can run `burnd cap [--plan pro|max5|max20|team]`.
   // Reads this calendar month's session spend (already computed during scan)
   // and renders a horizontal progress bar with projected limit-hit date.
   if (opts.command === 'cap') {
@@ -315,16 +247,15 @@ async function main(): Promise<void> {
     return;
   }
 
-  // ── Fix (Pro only — auto-apply CLAUDE.md patches) ───────────────────
+  // ── Fix (auto-apply CLAUDE.md patches) ──────────────────────────────
+  //
+  // Caveat worth knowing: since Opus 5 (July 2026) Anthropic advises
+  // SHRINKING CLAUDE.md rather than growing it — they deleted 80%+ of Claude
+  // Code's own system prompt with no measurable eval loss, and `claude doctor`
+  // now helps rightsize these files. Treat every patch below as a hypothesis
+  // to test, not a rule to keep forever. Delete the ones that stop earning
+  // their tokens.
   if (opts.command === 'fix') {
-    if (!isProActive()) {
-      process.stdout.write('\n');
-      process.stdout.write(kleur.bold().yellow('  ⚡ burnd fix is a BurndPro feature.\n'));
-      process.stdout.write(kleur.dim('  Free tier shows which patches to apply — Pro applies them automatically.\n'));
-      process.stdout.write(kleur.dim('  Run `npx getburnd` to see your top leaks, then upgrade:\n'));
-      process.stdout.write('  ' + kleur.bold().cyan('getburnd.vercel.app/#pricing') + kleur.dim('  — $79 one-time\n\n'));
-      return;
-    }
     {
     const { allStats, allInsights } = await scanSessions(opts.root, false);
     if (allStats.length === 0) {
@@ -431,18 +362,11 @@ async function main(): Promise<void> {
     process.stdout.write(kleur.bold().green(`  ✓ Applied ${patchLines.length} patch${patchLines.length > 1 ? 'es' : ''} to ${claudeMdPath}\n`));
     process.stdout.write(kleur.dim('  Run `npx getburnd` in 7 days to see if costs dropped.\n\n'));
     return;
-    } // end Pro-gated fix block
+    }
   }
 
-  // ── Check (Pro only — pre-flight audit before a session) ───────────
+  // ── Check (pre-flight audit before a session) ───────────────────────
   if (opts.command === 'check') {
-    if (!isProActive()) {
-      process.stdout.write('\n');
-      process.stdout.write(kleur.bold().yellow('  ⚡ burnd check is a BurndPro feature.\n'));
-      process.stdout.write(kleur.dim('  Pre-flight session audits (avg cost, active leaks, checklist) are Pro-only.\n'));
-      process.stdout.write('  ' + kleur.bold().cyan('getburnd.vercel.app/#pricing') + kleur.dim('  — $79 one-time\n\n'));
-      return;
-    }
     {
     const { allStats, allInsights } = await scanSessions(opts.root, false);
     if (allStats.length === 0) {
@@ -530,16 +454,11 @@ async function main(): Promise<void> {
     process.stdout.write('\n');
     process.stdout.write(kleur.dim(`  Run \`npx getburnd serve\` to see the full dashboard.\n\n`));
     return;
-    } // end Pro-gated check block
+    }
   }
 
   // ── Digest (send weekly email summary via Resend) ────────────────────
   if (opts.command === 'digest') {
-    if (!isProActive()) {
-      process.stdout.write(kleur.yellow('\n  ⚡ Email digest is a BurndPro feature.\n'));
-      process.stdout.write(kleur.dim('  Get a license at https://getburnd.vercel.app/#buy\n\n'));
-      return;
-    }
     const { allStats: digestStats } = await scanSessions(opts.root, false);
     const { buildSnapshot } = await import('./snapshot.js');
     const digestSnapshot = buildSnapshot(digestStats, { burndVersion: VERSION, filesScanned: digestStats.length, recordsParsed: 0, recordsSkipped: 0 });
@@ -575,31 +494,20 @@ async function main(): Promise<void> {
     return;
   }
 
-  // Free-tier gate: free users are capped at top 3 leaks per scan.
-  // Pro users can request any number via --top. The total count is still
-  // reported so free users know how many leaks they're missing.
-  const FREE_TOP_CAP = 3;
-  const isPro = isProActive();
-  const requestedTop = Number.isFinite(opts.top) && opts.top > 0 ? opts.top : FREE_TOP_CAP;
-  const effectiveTop = isPro ? requestedTop : Math.min(requestedTop, FREE_TOP_CAP);
-  const top = topNBySavings(allInsights, effectiveTop);
+  // Default to the top 3 leaks; `--top <n>` overrides with no ceiling.
+  const DEFAULT_TOP = 3;
+  const requestedTop = Number.isFinite(opts.top) && opts.top > 0 ? opts.top : DEFAULT_TOP;
+  const top = topNBySavings(allInsights, requestedTop);
   const hiddenLeaksCount = Math.max(0, allInsights.length - top.length);
 
-  // ── Pro: save history on every scan ─────────────────────────────────
-  if (isProActive()) {
-    appendHistory(allStats, top, allFiles.length);
-  }
+  // Save history on every scan so `report` can show week-over-week trend.
+  appendHistory(allStats, top, allFiles.length);
 
   // ── Alert webhooks — fire for expensive sessions ─────────────────────
   await fireAlertWebhooks(allStats);
 
   // ── Export ──────────────────────────────────────────────────────────
   if (opts.command === 'export') {
-    if (!isProActive()) {
-      process.stdout.write(kleur.yellow('\n  ⚡ CSV export is a BurndPro feature.\n'));
-      process.stdout.write(kleur.dim('  Get a license at https://getburnd.vercel.app/#buy\n\n'));
-      return;
-    }
     const path = exportCsv(allStats);
     process.stdout.write(kleur.green(`\n  ✓ Exported ${allStats.length} sessions to:\n`));
     process.stdout.write(kleur.cyan(`    ${path}\n\n`));
@@ -608,11 +516,6 @@ async function main(): Promise<void> {
 
   // ── Report ─────────────────────────────────────────────────────────
   if (opts.command === 'report') {
-    if (!isProActive()) {
-      process.stdout.write(kleur.yellow('\n  ⚡ Weekly reports are a BurndPro feature.\n'));
-      process.stdout.write(kleur.dim('  Get a license at https://getburnd.vercel.app/#buy\n\n'));
-      return;
-    }
     const history = readHistory();
     const path = generateWeeklyReport(allStats, top, history);
     process.stdout.write(kleur.green(`\n  ✓ Weekly report generated:\n`));
@@ -622,7 +525,6 @@ async function main(): Promise<void> {
   }
 
   // ── Default scan output ─────────────────────────────────────────────
-  const proActive = isProActive();
 
   // Increment run counter before any output. Used for email capture gating.
   const runCount = incrementRunCount();
@@ -657,9 +559,8 @@ async function main(): Promise<void> {
     version: VERSION,
     platform: process.platform,
     detectorIds: activeDetectorIds,
-    isPro: proActive,
   };
-  if (runCount >= 2 && !proActive) {
+  if (runCount >= 2) {
     await promptEmailCapture(emailContext);
   }
 
@@ -680,7 +581,24 @@ async function main(): Promise<void> {
     totalSavingsAvailableUsd: potentialSavingsUsd,
   });
 
-  // ── vs last scan delta (free tier, run 2+) ──────────────────────────
+  // Unpriced models make every dollar figure above an estimate on a guess.
+  // Say so loudly rather than printing a confident wrong number.
+  const unpriced = unknownModels();
+  if (unpriced.length > 0) {
+    process.stdout.write(
+      kleur.yellow('  ⚠  Unpriced model') + kleur.yellow(unpriced.length === 1 ? '' : 's') +
+      kleur.yellow(': ') + kleur.bold().yellow(unpriced.join(', ')) + '\n',
+    );
+    process.stdout.write(
+      kleur.dim('     Costs for these are estimated at the highest current rate and may be too high.\n'),
+    );
+    process.stdout.write(
+      kleur.dim('     Update the rate table: ') + kleur.cyan('github.com/garvitsurana271/burnd') +
+      kleur.dim(' → src/cli/src/pricing.ts\n\n'),
+    );
+  }
+
+  // ── vs last scan delta (run 2+) ─────────────────────────────────────
   if (lastScan !== null) {
     const delta = computeDelta(lastScan, {
       totalCostUsdLast7Days,
@@ -693,29 +611,21 @@ async function main(): Promise<void> {
     printSpendCreepWarning(activeDetectorIds, lastScan.activeDetectorIds);
   }
 
-  // Pass isPro so Pro users see full descriptions + all fix steps.
-  printTopInsights(top, proActive);
+  printTopInsights(top);
 
-  // Free tier: tell the user how many leaks are hidden behind the Pro gate.
-  // This is the core free → Pro conversion moment: they just SAW real dollar
-  // leaks; knowing more exist creates the right kind of pull.
-  if (!proActive && hiddenLeaksCount > 0) {
+  // Tell the user how many more leaks exist beyond the ones printed, so the
+  // default top-3 view never hides the scale of what was found.
+  if (hiddenLeaksCount > 0) {
     const totalSavingsHidden = allInsights
-      .slice(FREE_TOP_CAP)
+      .slice(requestedTop)
       .reduce((acc, i) => acc + i.savingsEstimateUsd, 0);
     process.stdout.write(
       kleur.dim('  ') +
-      kleur.bold().yellow(`+ ${hiddenLeaksCount} more leak${hiddenLeaksCount === 1 ? '' : 's'} hidden`) +
-      kleur.dim(` (worth ~$${totalSavingsHidden.toFixed(2)}) — see them all with `) +
-      kleur.cyan('BurndPro') +
-      kleur.dim('\n'),
+      kleur.bold().yellow(`+ ${hiddenLeaksCount} more leak${hiddenLeaksCount === 1 ? '' : 's'}`) +
+      kleur.dim(` worth ~$${totalSavingsHidden.toFixed(2)} — see them with `) +
+      kleur.cyan(`--top ${allInsights.length}`) +
+      kleur.dim('\n\n'),
     );
-    process.stdout.write(kleur.dim('  ') + kleur.cyan('getburnd.vercel.app/#pricing') + kleur.dim('  ·  $89 lifetime founding (first 100 customers, then $129)\n\n'));
-  }
-
-  // Sponsored insight slot (shown to free users only, after top leaks).
-  if (!proActive && top.length > 0) {
-    printSponsoredInsight();
   }
 
   if (top.length > 0) {
@@ -733,8 +643,8 @@ async function main(): Promise<void> {
     printShareBlock(top[0]!.title, savings, shareUrl);
   }
 
-  // ── Pro: budget after scan ──────────────────────────────────────────
-  if (opts.command === 'budget' || proActive) {
+  // ── Budget after scan (shown whenever one is configured) ────────────
+  {
     const config = readConfig();
     const budget = computeBudget(allStats, config);
     if (budget) {
@@ -750,11 +660,6 @@ async function main(): Promise<void> {
   // Show shell alias hint on first scan only.
   if (isFirstScan) {
     printAliasHint();
-  }
-
-  // Show Pro upsell to free-tier users only.
-  if (!proActive) {
-    printProUpsell();
   }
 }
 

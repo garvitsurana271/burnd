@@ -57,7 +57,7 @@ export const skillFiringDetector: Detector = {
           'Make the description more specific — say exactly when the skill should fire and when it should NOT.',
           'Test by re-running a similar workflow and checking that the skill fires less often.',
         ],
-        proFixSteps: [
+        detailedFixSteps: [
           `The Skill tool fired ${skill.callCount} times — ${(share * 100).toFixed(0)}% of all tool calls. Each unnecessary invocation loads the full skill content into context and adds overhead. At ~$0.05/call, that's $${wastedUsd.toFixed(2)} from over-triggering.`,
           `To identify the offending skill: open this session in your Claude Code history and search for "tool_use" with name "Skill". The \`input.skill\` field tells you exactly which skill fired each time.`,
           `The most common root cause: the skill description uses broad trigger words ("whenever", "always", "for any") that the agent matches too eagerly. Replace with specific conditions: "Only invoke when the user explicitly says X" or "Use only when Y is needed."`,

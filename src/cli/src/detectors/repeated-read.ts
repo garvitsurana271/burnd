@@ -57,7 +57,7 @@ export const repeatedReadDetector: Detector = {
           'When making sequential edits, use Edit (which preserves the file in context) instead of Read → Write → Read.',
           'For long-running sessions, ask Claude to summarize file contents at the top of each new task instead of re-reading.',
         ],
-        proFixSteps: [
+        detailedFixSteps: [
           `This session re-read ${pathsWithRereads} file(s) 3+ times each — ${totalRereads} redundant reads at ~$0.0075/read = $${savingsUsd.toFixed(2)} wasted. Worst offender: read ${worstCount}× in a single session.`,
           `The repeated-read pattern almost always means: (a) Claude lost track of the file mid-task (context too long), or (b) your prompts don't anchor Claude's understanding before each sub-task.`,
           `Immediate fix — add to your CLAUDE.md: "After reading a file, note its current contents in your thinking before editing. Do not re-read a file unless the contents may have changed since your last read."`,

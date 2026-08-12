@@ -34,7 +34,8 @@ Opens a local server at `http://localhost:4711` with 5 views: Overview, Sessions
 
 ## What it detects
 
-9 leak detectors, each returning a dollar value and a fix:
+10 leak detectors, each returning a dollar value and a fix. Nine run per session; the
+tenth (project cost outliers) compares across sessions:
 
 | Detector | What it catches |
 |---|---|
@@ -130,14 +131,15 @@ npx getburnd webhook set https://hooks.slack.com/... 5
 
 ---
 
-## BurndPro — $8.99/month or $89 lifetime
+## Everything else (all free)
 
-Pro unlocks automation — things that actually do the work for you, not just tell you what to do.
+There was a paid tier. It was removed in 0.1.0 — see the
+[postmortem](../../POSTMORTEM.md). Every command below is free and unlicensed.
 
 | Feature | What it does |
 |---|---|
-| **Auto-apply CLAUDE.md fixes** | One click writes the patch to your project — no copy-paste |
-| **Weekly email digest** | Spend, trend %, top 3 leaks — every Monday via Resend |
+| **Auto-apply CLAUDE.md fixes** | `burnd fix` writes the patch to your project |
+| **Weekly email digest** | Spend, trend %, top 3 leaks — via Resend, your own API key |
 | **Cost-per-commit tracking** | `burnd commits` — git correlation across all your repos |
 | **Slack / webhook alerts** | POST to any URL when a session exceeds your threshold |
 | **CSV / Excel export** | All sessions in a spreadsheet-ready format |
@@ -145,14 +147,6 @@ Pro unlocks automation — things that actually do the work for you, not just te
 | **HTML cost reports** | Shareable, self-contained weekly reports |
 | **Budget tracking** | Set a weekly cap, get warned when you're close |
 
-**Get a license:** [getburnd.vercel.app/#buy](https://getburnd.vercel.app/#buy)
-
-```bash
-npx getburnd pro activate <email> <key>
-npx getburnd pro status
-```
-
-Pro also unlocks:
 ```bash
 npx getburnd digest     # send weekly spend summary to your email (Resend)
 npx getburnd report     # generate HTML weekly report
@@ -185,11 +179,12 @@ src/
 ├── pricing.ts           Anthropic rate table + cost formula
 ├── snapshot.ts          JSON shape the dashboard consumes
 ├── serve.ts             Local HTTP server + /api/apply-patch endpoint
-├── license.ts           Pro license validation (HMAC)
+├── config.ts            ~/.burnd/ config persistence
 ├── anonymize.ts         Privacy boundary
 ├── output.ts            Terminal formatting (kleur)
 ├── insights.ts          Insight ranking
-└── detectors/           9 leak detectors (one file each)
+├── reports/             Budget, digest, export, history, report, webhook, commits
+└── detectors/           10 leak detectors (one file each)
     ├── model-substitution.ts
     ├── long-bash-output.ts
     ├── repeated-read.ts

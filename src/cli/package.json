@@ -1,7 +1,7 @@
 {
   "name": "getburnd",
-  "version": "0.0.19",
-  "description": "Find what's burning a hole in your Claude Code budget. Local-first CLI that reads ~/.claude/projects/*.jsonl, detects 9 cost-leak patterns (retry storms, wrong-model-on-task, context bloat, repeated reads, tool overuse, one-shot edit failures), tracks subscription burn-rate against your Pro/Max cap, and shows dollar values + fixes per session. Built after losing $14,502 on Claude Code in one month. Demo: https://youtu.be/izctEOJBids",
+  "version": "0.1.0",
+  "description": "Find what's burning a hole in your Claude Code budget. Local-first CLI that reads ~/.claude/projects/*.jsonl, detects 10 cost-leak patterns (retry storms, wrong-model-on-task, context bloat, repeated reads, tool overuse, one-shot edit failures), tracks subscription burn-rate against your Pro/Max cap, and shows dollar values + fixes per session. Every feature free, no licence, nothing leaves your machine. Built after losing $14,502 on Claude Code in one month.",
   "keywords": [
     "claude",
     "claude-code",

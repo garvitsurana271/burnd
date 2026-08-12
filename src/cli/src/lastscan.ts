@@ -1,4 +1,4 @@
-// Last-scan persistence — free tier feature.
+// Last-scan persistence.
 //
 // After every scan, we write a lightweight summary to ~/.burnd/last-scan.json.
 // On the *next* scan, we read it back and compute a delta: spend up/down,
@@ -6,8 +6,6 @@
 // run burnd twice actually see whether their fixes worked.
 //
 // Design constraints:
-//   - Available on free tier (not Pro-gated). The delta is the hook that
-//     brings users back. Pro is the thing they upgrade to once they're back.
 //   - No PII, no session IDs, no project paths in the stored JSON.
 //   - File stays small (<2KB) regardless of how many sessions the user has.
 

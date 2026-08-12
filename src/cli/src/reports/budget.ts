@@ -1,6 +1,6 @@
 import kleur from 'kleur';
 import type { SessionStats } from '../session.js';
-import type { BurndConfig } from '../license.js';
+import type { BurndConfig } from '../config.js';
 
 export interface BudgetStatus {
   weeklyBudgetUsd: number;
@@ -60,7 +60,7 @@ export function computeBudget(allStats: SessionStats[], config: BurndConfig): Bu
 
 export function printBudget(status: BudgetStatus): void {
   process.stdout.write('\n');
-  process.stdout.write(kleur.bold().yellow('  ⚡ BurndPro') + kleur.dim(' — Weekly Budget Tracker\n'));
+  process.stdout.write(kleur.bold().yellow('  ⚡ burnd') + kleur.dim(' — Weekly Budget Tracker\n'));
   process.stdout.write(kleur.dim('  ─────────────────────────────────────────────────────────────\n\n'));
 
   const fmt = (usd: number, local: number, sym: string) =>

@@ -74,7 +74,7 @@ export const modelSubstitutionDetector: Detector = {
           'Use /model in-session to upgrade to Opus only when you hit a genuinely hard reasoning problem.',
           'Reserve Opus for architecture decisions, complex debugging, or novel multi-step planning — not file edits and reads.',
         ],
-        proFixSteps: [
+        detailedFixSteps: [
           `This session (${stats.sessionId.slice(0, 8)}…) ran ${stats.assistantTurnCount} turns at an average of ${avgRounded} output tokens/turn — well below the 400-token threshold where Opus adds measurable value.`,
           `Exact cost breakdown: input $${(stats.totalInputTokens * ratesForModel(OPUS_MODEL).input / 1_000_000).toFixed(3)}, cache reads $${(stats.totalCacheReadTokens * ratesForModel(OPUS_MODEL).cacheRead / 1_000_000).toFixed(3)}, output $${(stats.totalOutputTokens * ratesForModel(OPUS_MODEL).output / 1_000_000).toFixed(3)}. At Sonnet rates that drops to $${sonnetCostUsd.toFixed(3)} total.`,
           `To switch immediately: run \`claude config set model claude-sonnet-4-6\` in your terminal, OR add \`model: claude-sonnet-4-6\` to the CLAUDE.md in ${stats.projectDir.split('-').slice(-2).join('/')}.`,

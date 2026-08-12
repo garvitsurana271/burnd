@@ -15,7 +15,6 @@ import type { Insight } from './detectors/index.js';
 import type { SessionStats } from './session.js';
 import { runAllDetectors, runAllMultiSessionDetectors, computeUserBaseline } from './detectors/index.js';
 import { hashForUpload } from './anonymize.js';
-import { isProActive } from './license.js';
 
 export interface SnapshotSession {
   // Display fields — local-only, never uploaded.
@@ -74,7 +73,6 @@ export interface SnapshotMeta {
   sessionsScanned: number;
   recordsParsed: number;
   recordsSkipped: number;
-  isPro: boolean;
 }
 
 export interface SnapshotTotals {
@@ -272,7 +270,6 @@ export function buildSnapshot(
       sessionsScanned: allStats.length,
       recordsParsed: meta.recordsParsed,
       recordsSkipped: meta.recordsSkipped,
-      isPro: isProActive(),
     },
     totals,
     sessions: snapshotSessions,

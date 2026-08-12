@@ -2,7 +2,7 @@
 // configured threshold. POSTs a JSON payload to the user's webhook URL.
 // Works with Slack incoming webhooks, Discord webhooks, or any HTTP endpoint.
 
-import { readConfig } from '../license.js';
+import { readConfig } from '../config.js';
 import type { SessionStats } from '../session.js';
 
 export interface WebhookPayload {

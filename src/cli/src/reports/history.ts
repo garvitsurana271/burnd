@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { historyPath } from '../license.js';
+import { historyPath } from '../config.js';
 import type { SessionStats } from '../session.js';
 import type { Insight } from '../detectors/index.js';
 
