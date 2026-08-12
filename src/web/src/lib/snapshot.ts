@@ -12,7 +12,7 @@ export interface InsightView {
   savingsEstimateUsd: number;
   effortMinutes: number;
   fixSteps: string[];
-  proFixSteps: string[];
+  detailedFixSteps: string[];
   claudeMdPatch: string | null;
 }
 
@@ -70,7 +70,7 @@ export interface SnapshotMetaView {
   sessionsScanned: number;
   recordsParsed: number;
   recordsSkipped: number;
-  isPro: boolean;
+
 }
 
 export interface SnapshotTotalsView {

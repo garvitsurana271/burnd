@@ -1,5 +1,5 @@
 import { useState, Fragment } from 'react';
-import { ChevronDown, Clock, DollarSign, Target, Zap, Lock, TrendingDown, Copy, Check, Terminal } from 'lucide-react';
+import { ChevronDown, Clock, DollarSign, Target, Zap, TrendingDown, Copy, Check, Terminal } from 'lucide-react';
 import type { InsightView, SnapshotView } from '../lib/snapshot.js';
 import { PageHeader } from '../components/PageHeader.js';
 import { Card } from '../components/Card.js';
@@ -162,33 +162,8 @@ export function InsightsPage({ snapshot }: InsightsPageProps): JSX.Element {
               <InsightCard
                 insight={insight}
                 rank={idx + 1}
-                isPro={snapshot.meta.isPro}
                 rollup={detectorRollup.get(insight.detectorId)}
               />
-              {/* Mid-list upgrade banner — shown after the 3rd insight for free users */}
-              {idx === 2 && !snapshot.meta.isPro && !filterDetector && (
-                <div className="flex items-center gap-4 rounded-lg border border-axis-accent/40 bg-gradient-to-r from-axis-accentSoft to-axis-surface px-5 py-4">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-axis-accent/20">
-                    <Zap className="h-4 w-4 text-axis-accent" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-mono text-[11px] uppercase tracking-wider text-axis-accent">
-                      BurndPro
-                    </div>
-                    <div className="mt-0.5 font-sans text-sm font-semibold text-axis-text">
-                      Every leak above has a deeper fix. Pro unlocks session-specific diagnostics, exact commands, and follow-up checks.
-                    </div>
-                  </div>
-                  <a
-                    href="https://getburnd.vercel.app/#pricing"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="shrink-0 rounded-md bg-axis-accent px-4 py-2 font-mono text-[12px] font-semibold text-white transition-opacity hover:opacity-80"
-                  >
-                    Upgrade →
-                  </a>
-                </div>
-              )}
             </Fragment>
           ))
         )}
@@ -303,12 +278,10 @@ function CopyButton({ text }: { text: string }): JSX.Element {
 function InsightCard({
   insight,
   rank,
-  isPro,
   rollup,
 }: {
   insight: InsightView;
   rank: number;
-  isPro: boolean;
   rollup: DetectorRollup | undefined;
 }): JSX.Element {
   const [expanded, setExpanded] = useState(rank <= 3);
@@ -367,9 +340,8 @@ function InsightCard({
             </ol>
           </div>
 
-          {/* "If fixed" simulator — visible to ALL users, free and Pro.
-              Shows historical damage from this leak pattern to make the
-              cost of inaction concrete. For free users, it's the upsell hook. */}
+          {/* "If fixed" simulator — historical damage from this leak pattern,
+              to make the cost of inaction concrete. */}
           {rollup && rollup.sessionCount > 1 && (
             <div className="mt-5 rounded-md border border-red-900/40 bg-red-950/20 p-4">
               <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-red-400">
@@ -387,32 +359,22 @@ function InsightCard({
                 </div>
                 <div className="mb-0.5 font-mono text-[11px] text-axis-textDim leading-relaxed">
                   This leak pattern fired {rollup.sessionCount} times in your history.
-                  {!isPro && (
-                    <> Fix it now with the session-specific steps below.</>
-                  )}
+                  Fix it with the session-specific steps below.
                 </div>
               </div>
-              {!isPro && (
-                <a
-                  href="https://getburnd.vercel.app/#pricing" target="_blank" rel="noreferrer"
-                  className="mt-3 inline-flex items-center gap-1.5 rounded bg-axis-accent px-3 py-1.5 font-mono text-[11px] font-semibold text-white transition-opacity hover:opacity-80"
-                >
-                  <Zap className="h-3 w-3" />
-                  Get the exact fix — Upgrade to Pro
-                </a>
-              )}
             </div>
           )}
 
-          {/* Pro deep-analysis section */}
-          {isPro && insight.proFixSteps.length > 0 ? (
+          {/* Session-specific deep analysis. This used to be Pro-gated behind a
+              blurred paywall; every feature is free as of 0.1.0. */}
+          {insight.detailedFixSteps.length > 0 && (
             <div className="mt-5 rounded-md border border-axis-accent/30 bg-axis-accentSoft/30 p-4">
               <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-axis-accent">
                 <Zap className="h-3 w-3" />
-                Pro — Session-specific deep analysis
+                Session-specific deep analysis
               </div>
               <ol className="mt-3 flex flex-col gap-2 text-sm text-axis-text">
-                {insight.proFixSteps.map((step, i) => (
+                {insight.detailedFixSteps.map((step, i) => (
                   <li key={i} className="flex gap-3">
                     <span className="mt-0.5 font-mono text-axis-accent/60">{i + 1}.</span>
                     <span className="leading-relaxed">{step}</span>
@@ -420,7 +382,7 @@ function InsightCard({
                 ))}
               </ol>
 
-              {/* CLAUDE.md Auto-Patcher — the killer Pro feature */}
+              {/* CLAUDE.md Auto-Patcher */}
               {insight.claudeMdPatch && (
                 <div className="mt-4 rounded-md border border-green-800/40 bg-green-950/30">
                   <div className="flex items-center justify-between border-b border-green-800/30 px-3 py-2">
@@ -438,42 +400,7 @@ function InsightCard({
                 </div>
               )}
             </div>
-          ) : !isPro && insight.proFixSteps.length > 0 ? (
-            <div className="mt-5 overflow-hidden rounded-md border border-axis-border">
-              {/* Blurred preview of pro content */}
-              <div className="relative px-4 pt-4 pb-2">
-                <div className="pointer-events-none select-none blur-sm">
-                  <div className="font-mono text-[10px] uppercase tracking-wider text-axis-accent">
-                    Pro — Session-specific deep analysis
-                  </div>
-                  <ol className="mt-2 flex flex-col gap-1.5 text-sm text-axis-text opacity-70">
-                    {insight.proFixSteps.slice(0, 2).map((step, i) => (
-                      <li key={i} className="flex gap-3">
-                        <span className="font-mono">{i + 1}.</span>
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-axis-surface/60 backdrop-blur-[1px]">
-                  <Lock className="h-4 w-4 text-axis-textMuted" />
-                  <span className="font-mono text-[11px] text-axis-textMuted">BurndPro only</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between border-t border-axis-border bg-axis-bg px-4 py-3">
-                <span className="font-sans text-xs text-axis-textMuted">
-                  Get exact commands, token breakdowns & follow-up checks for this specific session.
-                </span>
-                <a
-                  href="https://getburnd.vercel.app/#pricing" target="_blank" rel="noreferrer"
-                  className="ml-4 shrink-0 rounded bg-axis-accent px-3 py-1.5 font-mono text-[11px] font-semibold text-white transition-opacity hover:opacity-80"
-                >
-                  <Zap className="mr-1 inline h-3 w-3" />
-                  Upgrade
-                </a>
-              </div>
-            </div>
-          ) : null}
+          )}
         </div>
       )}
     </Card>

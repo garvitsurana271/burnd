@@ -5,7 +5,6 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { BurningFuse } from '../components/BurningFuse.js';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -69,24 +68,6 @@ const LEAK_LINES: Seg[][] = [
     { t: '$340/mo',                        cls: 'font-bold text-amber-400' },
     { t: ' savings',                       cls: 'text-[#F5E8D4]/55' },
   ],
-];
-
-const MONTHLY_FEATURES = [
-  'Unlimited sessions across all 9 detectors (free is capped to top 3)',
-  '`burnd fix` — auto-apply the CLAUDE.md patch Burnd recommends',
-  '`burnd report` — HTML weekly cost report',
-  '`burnd digest` — weekly email digest of where money is going',
-  '`burnd budget` — set a $/month threshold, get alerted when sessions exceed it',
-  '`burnd webhook` — fire a webhook when any session blows the threshold',
-  '`burnd commits` — cost-per-commit correlation via git log',
-  'CSV + JSON export of every session',
-];
-
-const LIFETIME_FEATURES = [
-  'Everything in Monthly, forever',
-  'One payment. No renewals, no surprise charges.',
-  'Pays back in under 3 weeks at $2,140/mo saved',
-  'Founding-member status — locked at $89 even when price goes to $129',
 ];
 
 const bars = [60, 78, 45, 92, 68, 88, 72, 95];
@@ -369,133 +350,122 @@ function Section4Dashboard(): JSX.Element {
   );
 }
 
-// ─── Section 5 — Pricing (Act 5) ─────────────────────────────────────────────
+// ─── Section 5 — What happened (Act 5) ────────────────────────────
+
+// This was the pricing section ($8.99/mo, $89 lifetime, live Dodo checkout).
+// Burnd stopped being sold in 0.1.0 — every feature is free — so this became
+// the honest ending instead. See POSTMORTEM.md at the repo root.
+
+const WHAT_HAPPENED = [
+  {
+    stat: '10',
+    label: 'detectors, all free',
+    detail: 'Every command unlocked in 0.1.0. No licence, no tiers, no account.',
+  },
+  {
+    stat: '5,367:1',
+    label: 'the download gap',
+    detail: 'ccusage ships 423,971/month against burnd’s 79. The category has a free winner.',
+  },
+  {
+    stat: '2×',
+    label: 'absorbed by the vendor',
+    detail: 'Anthropic shipped /usage, then claude doctor. Both were burnd’s core value.',
+  },
+];
 
 function Section5Pricing(): JSX.Element {
   return (
     <section className="px-5 py-16">
       <motion.div {...FADE_UP} transition={{ duration: 0.55 }}>
-        <Eyebrow>Section 05 · pricing</Eyebrow>
+        <Eyebrow>Section 05 · what happened</Eyebrow>
 
         <h2 className="font-serif text-[#F5E8D4] text-[clamp(2rem,8vw,3.5rem)] font-normal leading-[0.95] tracking-[-0.01em]">
-          Pay $89 <span className="italic">once.</span>
+          It&rsquo;s free now.
           <br />
-          Save $2,140{' '}
-          <span className="italic text-amber-400">every month.</span>
+          Here&rsquo;s{' '}
+          <span className="italic text-amber-400">why it failed.</span>
         </h2>
+
+        <p className="mt-6 text-base leading-relaxed text-[#F5E8D4]/70">
+          Burnd was sold for $89. It earned nothing. Rather than quietly leave a
+          paywall on a product nobody bought, I removed it, made all 10 detectors
+          free, and wrote up the numbers honestly &mdash; including the ones that
+          don&rsquo;t flatter me.
+        </p>
       </motion.div>
 
-      <motion.div {...FADE_UP} transition={{ duration: 0.5, delay: 0.1 }} className="mt-8">
-        <BurningFuse />
-      </motion.div>
-
-      {/* Pricing cards — stacked on mobile */}
+      {/* The three numbers */}
       <div className="mt-10 flex flex-col gap-5">
-        {/* Monthly */}
-        <motion.div
-          {...FADE_UP}
-          transition={{ duration: 0.5, delay: 0.12 }}
-          className="rounded-2xl border border-[#F5E8D4]/10 bg-black/60 p-7"
-        >
-          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/40">
-            Pro Monthly
-          </div>
-          <div className="mt-3 font-mono text-4xl font-bold tabular-nums text-[#F5E8D4]">
-            $8.99
-            <span className="text-lg text-[#F5E8D4]/40">/mo</span>
-          </div>
-          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#F5E8D4]/35">
-            + tax may apply at checkout
-          </div>
-          <ul className="mt-6 space-y-3">
-            {MONTHLY_FEATURES.map((f) => (
-              <li key={f} className="flex items-start gap-2 text-sm text-[#F5E8D4]/75">
-                <span className="mt-[3px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#F5E8D4]/30" />
-                {f}
-              </li>
-            ))}
-          </ul>
-          <a
-            href="https://checkout.dodopayments.com/buy/pdt_0Nd5oxiObAaCyj7Jb7Heg?quantity=1"
-            className="mt-8 block rounded-lg border border-[#F5E8D4]/15 bg-white/[0.03] px-6 py-3 text-center font-mono text-sm uppercase tracking-[0.2em] text-[#F5E8D4]/85 transition hover:border-[#F5E8D4]/30 hover:text-[#F5E8D4]"
+        {WHAT_HAPPENED.map((item, i) => (
+          <motion.div
+            key={item.label}
+            {...FADE_UP}
+            transition={{ duration: 0.5, delay: 0.1 + i * 0.07 }}
+            className="rounded-2xl border border-[#F5E8D4]/10 bg-black/60 p-7"
           >
-            Start monthly
-          </a>
-        </motion.div>
-
-        {/* Lifetime */}
-        <motion.div
-          {...FADE_UP}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="relative rounded-2xl border-2 border-amber-400/40 bg-black/80 p-7 shadow-[0_0_60px_rgba(245,158,11,0.18)]"
-        >
-          <div className="absolute -top-3 left-5 rounded-full bg-amber-400 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#09090f]">
-            Lifetime · best value
-          </div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-amber-400/70">
-            Pro Lifetime
-          </div>
-          <div className="mt-3 font-mono text-4xl font-bold tabular-nums text-amber-400">
-            $89
-            <span className="text-lg text-amber-400/55"> founding</span>
-          </div>
-          <div className="mt-1 font-mono text-sm text-[#F5E8D4]/40">first 100 customers · $129 after</div>
-          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#F5E8D4]/35">
-            + tax may apply at checkout
-          </div>
-          <ul className="mt-6 space-y-3">
-            {LIFETIME_FEATURES.map((f) => (
-              <li key={f} className="flex items-start gap-2 text-sm text-[#F5E8D4]/85">
-                <span className="mt-[3px] h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400/70" />
-                {f}
-              </li>
-            ))}
-          </ul>
-          <a
-            href="https://checkout.dodopayments.com/buy/pdt_0Nd5r2dAQtjUuT1MTqLdL?quantity=1"
-            className="mt-8 block rounded-lg bg-amber-500 px-6 py-3 text-center font-mono text-sm font-semibold uppercase tracking-[0.2em] text-[#09090f] transition hover:bg-amber-400"
-          >
-            Buy lifetime · $89
-          </a>
-        </motion.div>
+            <div className="font-mono text-4xl font-bold tabular-nums text-amber-400">
+              {item.stat}
+            </div>
+            <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/45">
+              {item.label}
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-[#F5E8D4]/65">
+              {item.detail}
+            </p>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Free vs Pro split */}
-      <div className="mt-12 flex flex-col gap-5">
-        <motion.div
-          {...FADE_UP}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="rounded-xl border border-[#F5E8D4]/10 bg-black/40 p-6"
-        >
-          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/40">
-            Free
-          </div>
-          <p className="mt-3 font-serif text-xl italic text-[#F5E8D4]/85">
-            Top 3 leaks per scan. Once.
-          </p>
-          <div className="mt-4 h-px w-full bg-[#F5E8D4]/10" />
-          <div className="mt-4 font-mono text-[11px] leading-relaxed text-[#F5E8D4]/35">
-            NOT included: burnd fix · burnd digest · burnd report · burnd export · burnd commits
-          </div>
-        </motion.div>
+      {/* The lesson */}
+      <motion.div
+        {...FADE_UP}
+        transition={{ duration: 0.5, delay: 0.22 }}
+        className="relative mt-8 rounded-2xl border-2 border-amber-400/35 bg-black/80 p-7 shadow-[0_0_60px_rgba(245,158,11,0.15)]"
+      >
+        <div className="absolute -top-3 left-5 rounded-full bg-amber-400 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.24em] text-[#09090f]">
+          The lesson
+        </div>
 
-        <motion.div
-          {...FADE_UP}
-          transition={{ duration: 0.5, delay: 0.18 }}
-          className="rounded-xl border border-amber-400/30 bg-black/60 p-6"
+        <p className="font-serif text-xl italic leading-[1.3] text-amber-100">
+          Any tool that is a thin read-layer over a vendor&rsquo;s own artifacts
+          will be absorbed by that vendor.
+        </p>
+
+        <p className="mt-5 text-sm leading-relaxed text-[#F5E8D4]/60">
+          The <span className="font-mono text-[#F5E8D4]/80">.jsonl</span> files
+          burnd parses are Anthropic&rsquo;s format, on Anthropic&rsquo;s disk, and
+          on Anthropic&rsquo;s roadmap. I didn&rsquo;t lose to a competitor. I lost
+          to the platform I built on.
+        </p>
+
+        <a
+          href="https://github.com/garvitsurana271/burnd/blob/main/POSTMORTEM.md"
+          className="mt-8 block rounded-lg bg-amber-500 px-6 py-3 text-center font-mono text-sm font-semibold uppercase tracking-[0.2em] text-[#09090f] transition hover:bg-amber-400"
         >
-          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-amber-400/70">
-            Pro
-          </div>
-          <p className="mt-3 font-serif text-xl italic text-amber-200">
-            All leaks. All fixes. Forever.
-          </p>
-          <div className="mt-4 h-px w-full bg-amber-400/15" />
-          <div className="mt-4 font-mono text-[11px] leading-relaxed text-amber-200/60">
-            Every command · auto-apply patches · weekly digest · CSV export · cost-per-commit
-          </div>
-        </motion.div>
-      </div>
+          Read the postmortem
+        </a>
+      </motion.div>
+
+      {/* Still works */}
+      <motion.div
+        {...FADE_UP}
+        transition={{ duration: 0.5, delay: 0.28 }}
+        className="mt-8 rounded-xl border border-[#F5E8D4]/10 bg-black/40 p-6"
+      >
+        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#F5E8D4]/40">
+          Still maintained enough to work
+        </div>
+        <p className="mt-3 font-serif text-xl italic text-[#F5E8D4]/85">
+          <span className="font-mono not-italic text-amber-400">npx getburnd</span>{' '}
+          &mdash; free, local, no account.
+        </p>
+        <div className="mt-4 h-px w-full bg-[#F5E8D4]/10" />
+        <div className="mt-4 font-mono text-[11px] leading-relaxed text-[#F5E8D4]/40">
+          All 10 detectors · burnd fix · burnd report · burnd digest · burnd export ·
+          burnd commits · burnd cap · nothing leaves your machine
+        </div>
+      </motion.div>
 
       <div className="mt-14 h-px w-full bg-gradient-to-r from-amber-400/60 via-[#F5E8D4]/15 to-transparent" />
     </section>

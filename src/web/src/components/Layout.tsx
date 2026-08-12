@@ -139,25 +139,13 @@ export function Layout({
                 generated {formatRelativeTime(snapshot.meta.generatedAt)}
               </div>
 
-              {/* Pro upgrade banner / status */}
-              {snapshot.meta.isPro ? (
-                <div className="mt-4 flex items-center gap-2 rounded-md border border-indigo-400/40 bg-indigo-400/10 px-3 py-2">
-                  <Zap className="h-3.5 w-3.5 shrink-0 text-indigo-400" />
-                  <span className="font-mono text-[11px] font-semibold text-indigo-400">
-                    BurndPro Active
-                  </span>
-                </div>
-              ) : (
-                <a
-                  href="https://getburnd.vercel.app/#pricing"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-md border border-amber-400/40 bg-amber-500/10 px-2 py-2 font-mono text-[11px] font-semibold text-amber-400 transition-colors hover:bg-amber-500/20 hover:border-amber-400/70"
-                >
-                  <Zap className="h-3 w-3" />
-                  Upgrade to BurndPro
-                </a>
-              )}
+              {/* Everything is free as of 0.1.0 — see POSTMORTEM.md */}
+              <div className="mt-4 flex items-center gap-2 rounded-md border border-indigo-400/40 bg-indigo-400/10 px-3 py-2">
+                <Zap className="h-3.5 w-3.5 shrink-0 text-indigo-400" />
+                <span className="font-mono text-[11px] font-semibold text-indigo-400">
+                  All features free
+                </span>
+              </div>
             </>
           ) : (
             <div className="font-mono text-[10px] text-[#F5E8D4]/30">loading...</div>
